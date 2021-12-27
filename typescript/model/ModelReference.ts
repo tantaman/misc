@@ -1,4 +1,4 @@
-import { SID_of } from "../sid/sid";
+import { SID_of } from "mono/sid";
 import PersistedModel from "./PersistedModel";
 
 /**

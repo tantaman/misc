@@ -1,5 +1,5 @@
 type Disposer = () => void;
-import { SID_of } from "../components/storage/sid";
+import { SID_of } from "mono/sid";
 import typedKeys from "../utils/typedKeys_UNSAFE";
 import { Changeset } from "./Changeset";
 

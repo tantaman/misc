@@ -1,8 +1,8 @@
-import deviceId from "../deviceId";
-import sid, { SID_of } from "../components/storage/sid";
+import deviceId from "../sid/deviceId";
+import sid, { SID_of } from "mono/sid";
 import Model, { HasId } from "./Model";
 import { changeset, Changeset } from "./Changeset";
-import { invariant } from "../Util";
+import invariant from "../utils/invariant";
 
 // TODO: sid_of<child> ...
 // Prevent id from being provided by child type:
