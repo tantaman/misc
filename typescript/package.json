@@ -1,16 +1,12 @@
 {
-  "name": "mono-typescript",
-  "version": "1.0.0",
-  "description": "Mono repo for my oft-used frameworks",
-  "main": "index.js",
-  "repository": "git@github.com:tantaman/mono.git",
-  "author": "Tantaman",
-  "license": "MIT",
-  "private": false,
-  "dev-dependencies": {
-    "jest": "^27.4.5"
+  "turbo": {
+    "pipeline": {
+      "build": {
+        "dependsOn": ["^build"]
+      }
+    }
   },
   "devDependencies": {
-    "jest": "^27.4.5"
+    "turbo": "^1.0.24"
   }
 }
