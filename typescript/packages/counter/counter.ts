@@ -1,4 +1,5 @@
-import { floor } from "../utils/math";
+import { math } from "@strut/utils";
+const {floor} = math;
 export const INTERVAL = 5000;
 
 /*
