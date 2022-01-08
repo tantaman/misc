@@ -1,4 +1,7 @@
 {
   "private": true,
-  "workspaces": ["apps/counter.example-app", "apps/counter.ui"]
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
 }
