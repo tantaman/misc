@@ -8,7 +8,7 @@
 export default function launch(uiURI: URL) {
   // @ts-ignore
   const id = crypto.randomUUID();
-  uiURI.searchParams.append("id", id);
+  uiURI.searchParams.append("winow-id", id);
   const wnd = window.open(
     uiURI,
     "Counter UI",
