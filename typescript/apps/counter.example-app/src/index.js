@@ -3,6 +3,7 @@ import counter from "@strut/counter";
 import './base.css';
 import './todo.css';
 
+const count = counter('todo-mvc');
 // ## Create a temp element.
 // This temp element will be used to sanatize strings that will be rendered as `HTML`.
 //
@@ -23,6 +24,7 @@ const tempEl = document.createElement("div");
 // (above) so we don't incur the cost of creating an element every time we want to
 // sanitize a string.
 const sanitize = (value) => {
+  count.bump('sanatize');
 	if (value) {
 		// ### Escape Hatch
 		// Below is an "escape-hatch" to allow developers (who know what they are doing)
@@ -66,6 +68,7 @@ const sanitize = (value) => {
 //
 // **Example output:** `{ __html__: '<p>some sanitized content</p>.' }`
 const html = (parts, ...values) => {
+  count.bump('html-template');
 	// We return an object with an `__html__` property so we can compose the results
 	// of `html` invocations. Remember earlier that `sanitize` ignores objects with
 	// an `__html__` property as they've already been processed or asserted to be
@@ -100,6 +103,7 @@ const html = (parts, ...values) => {
 // parallel the component tree. The `state` parameter represents our applicaton's
 // state tree.
 const todoApp = (state) => {
+  count.bump('render.todoApp');
 	// The root app delegates most of it srendering to sub-components
 	// (like header, footer and todo components) but does render top
 	// level statistics about the TODOs itself.
@@ -135,8 +139,9 @@ const todoApp = (state) => {
 	</div>`;
 };
 // ## Header
-const header = () =>
-	html`<header class="header">
+const header = () => {
+  count.bump('render.header');
+	return html`<header class="header">
 		<h1>todos</h1>
 		<input
 			type="text"
@@ -148,8 +153,10 @@ const header = () =>
 			value="${state.newTodo}"
 		/>
 	</header>`;
+};
 // ## Todo
 const todo = (item, i) => {
+  count.bump('render.todo');
 	if (state.filter === "completed" && !item.complete) return "";
 	if (state.filter === "active" && item.complete) return "";
 	let body = "";
@@ -186,6 +193,7 @@ const todo = (item, i) => {
 };
 // ## Footer
 const footer = (remaining, items) => {
+  count.bump('render.footer');
 	let clearCompleted = "";
 	if (remaining.length !== items.length) {
 		clearCompleted = html`
@@ -223,37 +231,44 @@ const footer = (remaining, items) => {
 // ## Actions
 // ### Toggle All
 window.toggleAll = () => {
+  count.bump('event.toggleAll');
 	const hasRemaining = state.items.filter((i) => !i.complete).length != 0;
 	state.items.forEach((i) => (i.complete = hasRemaining));
 	turnTheCrank();
 }
 // ### Clear Completed
 window.clearCompleted = () => {
+  count.bump('event.clearCompleted');
 	state.items = state.items.filter((i) => !i.complete);
 	turnTheCrank();
 }
 // ### Toggle
 window.toggle = (i) => {
+  count.bump('event.toggle');
 	state.items[i].complete = !state.items[i].complete;
 	turnTheCrank();
 }
 // ### Remove
 window.remove = (i) => {
+  count.bump('event.remove');
 	state.items.splice(i, 1);
 	turnTheCrank();
 }
 // ### Start Editing
 window.startEditing = (i) => {
+  count.bump('event.startEditing');
 	state.items[i]._editing = true;
 	turnTheCrank();
 }
 // ### Update Filter
 window.updateFilter = (filter) => {
+  count.bump('event.updateFilter');
 	window.location.hash = filter;
 }
 // ## Events
 // ### On Create
 window.onCreate = (e) => {
+  count.bump('event.onCreate');
 	const text = getFinalText(e);
 	if (text) {
 		state.items.push({
@@ -266,6 +281,7 @@ window.onCreate = (e) => {
 }
 // ### On Save
 window.onSave = (e, i) => {
+  count.bump('event.onSave');
 	if (e.which === 27) {
 		state.items[i]._editing = false;
 		e.target.value = state.items[i].name;
@@ -287,6 +303,7 @@ window.onSave = (e, i) => {
 }
 // ### Hash Change
 window.onhashchange = function () {
+  count.bump('event.onHashChange');
 	state.filter = window.location.hash.split("#")[1] || "";
 	turnTheCrank();
 };
@@ -295,6 +312,7 @@ const getFinalText = (e) =>
 let state;
 let container;
 window.onload = () => {
+  count.bump('event.onLoad');
 	container = document.getElementById("container");
 	const prevState = window.localStorage.getItem("todos-vanilla-slim");
 	state = {
@@ -309,11 +327,15 @@ window.onload = () => {
 }
 // ## Re-Render
 function turnTheCrank(refocus, cb) {
+  count.bump('render.turnTheCrank');
 	requestAnimationFrame(() => {
+    count.bump('render.turnTheCrank.inAnimationFrame');
 		container.innerHTML = todoApp(state).__html__;
 		if (refocus) document.getElementById(refocus).focus();
 		if (cb) cb();
 	});
 }
-const setItems = (window.onbeforeunload = () =>
-	window.localStorage.setItem("todos-vanilla-slim", JSON.stringify(state.items)));
+const setItems = (window.onbeforeunload = () => {
+  count.bump('storage.setItems');
+	window.localStorage.setItem("todos-vanilla-slim", JSON.stringify(state.items));
+});
