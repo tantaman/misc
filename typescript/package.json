@@ -1,12 +1,4 @@
 {
-  "turbo": {
-    "pipeline": {
-      "build": {
-        "dependsOn": ["^build"]
-      }
-    }
-  },
-  "devDependencies": {
-    "turbo": "^1.0.24"
-  }
+  "private": true,
+  "workspaces": ["apps/counter.example-app", "packages/counter.ui"]
 }
