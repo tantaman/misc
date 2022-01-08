@@ -2,6 +2,9 @@
   "name": "@strut/model",
   "version": "0.0.1",
   "main": "index.ts",
+  "dependencies": {
+    "@strut/utils": "0.0.1"
+  },
   "devDependencies": {
     "jest": "^27.4.7"
   }
