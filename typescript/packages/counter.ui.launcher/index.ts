@@ -5,10 +5,16 @@
 // If package, they'd build the display on their own by setting an entrypoing and a js main that renders the package.
 // If app, we'd do the building of the app for them... then how would they host?
 
+import { aggregatedMeasurements, Measurement, subscribe } from "@strut/counter/counter";
+
 export default function launch(uiURI: URL) {
   // @ts-ignore
-  const id = crypto.randomUUID();
-  uiURI.searchParams.append("winow-id", id);
+  const childId = crypto.randomUUID();
+  // @ts-ignore
+  const myId = crypto.randomUUID();
+  uiURI.searchParams.append("window-id", childId);
+  uiURI.searchParams.append("opener-id", myId);
+
   const wnd = window.open(
     uiURI,
     "Counter UI",
@@ -22,14 +28,30 @@ export default function launch(uiURI: URL) {
 
   // Listen for messages coming from wnd
   const wndListener = (e) => {
-    if (e.data.source !== id) {
+    if (e.data.source !== childId) {
       return;
     }
 
     window.removeEventListener('message', wndListener);
+
+    // Send out the catchup data
     wnd.postMessage({
-      /* All data up till current time */
+      source: myId,
+      event: "catchup",
+      payload: aggregatedMeasurements,
     }, "*");
+
+    // Then subscribe for update data so we don't send
+    // a catchup and update that have the same data
+    subscribe(processNewData);
   };
   window.addEventListener("message", wndListener);
+
+  function processNewData(batch: Map<string, Measurement[]>) {
+    wnd.postMessage({
+      source: myId,
+      event: "update",
+      payload: batch,
+    });
+  }
 }

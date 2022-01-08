@@ -25,8 +25,10 @@ window.addEventListener("message", (e) => {
 
   switch (e.data.event) {
     case "catchup":
+      console.log(e.data.payload);
       break;
     case "update":
+      console.log(e.data.payload);
       break;
   }
 });

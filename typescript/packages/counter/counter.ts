@@ -13,7 +13,7 @@ We need to count persist operations to undertand:
 2. What event is causing the persist
 */
 export type AGG = "sum" | "avg" | "min" | "max";
-type Measurement = {
+export type Measurement = {
   value: number;
   time: number;
 };
@@ -26,7 +26,22 @@ const pendingMeasurements = new Map<string, MeasurementList>();
 // Aggregations. collections of numbers by key over time in 5 second snapshots
 export const aggregatedMeasurements = new Map<string, Measurement[]>();
 
-export function makeKey(namespace: string, key: string, agg: AGG) {
+const subscribers: ((batch: Map<string, Measurement[]>) => void)[] = [];
+export function subscribe(cb: (batch: Map<string, Measurement[]>) => void): () => void {
+  subscribers.push(cb);
+  return () => {
+    const i = subscribers.indexOf(cb);
+    subscribers.splice(i, 1);
+  };
+}
+
+function notifySubscribers(batch: Map<string, Measurement[]>) {
+  for (const s of subscribers) {
+    s(batch);
+  }
+}
+
+function makeKey(namespace: string, key: string, agg: AGG) {
   return namespace + ":" + key + ":" + agg;
 }
 
@@ -41,16 +56,19 @@ setInterval(() => {
     return;
   }
   lastTime = currentTime;
+  const currentBatch: Map<string, Measurement[]> = new Map();
   for (let [key, value] of pendingMeasurements.entries()) {
-    aggregate(key, value, currentTime);
+    currentBatch.set(key, aggregate(key, value, currentTime));
   }
+  notifySubscribers(currentBatch);
 }, INTERVAL);
 
 function aggregate(
   key: string,
   unaggregated: MeasurementList,
   bound: number
-): void {
+): Measurement[] {
+  const currentBatch: Measurement[] = [];
   let aggregation = aggregatedMeasurements.get(key);
   if (aggregation == null) {
     aggregation = [];
@@ -66,10 +84,12 @@ function aggregate(
     if (!front) {
       // We have unaccumulated values to push
       if (accumulatorStart != null) {
-        aggregation.push({
+        const measurement = {
           value: accumulator,
           time: floor(accumulatorStart, INTERVAL),
-        });
+        };
+        aggregation.push(measurement);
+        currentBatch.push(measurement);
       }
       break;
     }
@@ -92,10 +112,12 @@ function aggregate(
     // We've hit a node past the allowed interval
     // push our accumulated results
     if (front.time - accumulatorStart >= INTERVAL) {
-      aggregation.push({
+      const measurement = {
         value: accumulator,
         time: floor(accumulatorStart, INTERVAL),
-      });
+      };
+      aggregation.push(measurement);
+      currentBatch.push(measurement);
       accumulator = 0;
       numAccumulations = 0;
       accumulatorStart = front.time;
@@ -106,6 +128,8 @@ function aggregate(
     accumulator += front.value;
     numAccumulations += 1;
   } while (front != null);
+
+  return currentBatch;
 }
 
 class Counter {
