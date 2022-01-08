@@ -339,3 +339,5 @@ const setItems = (window.onbeforeunload = () => {
   count.bump('storage.setItems');
 	window.localStorage.setItem("todos-vanilla-slim", JSON.stringify(state.items));
 });
+
+counterUiLauncher(new URL(window.location.origin + '/counter.ui/src'));
