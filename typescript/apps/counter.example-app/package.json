@@ -1,5 +1,5 @@
 {
-  "name": "@strut/counter.ui",
+  "name": "@strut/counter.example-app",
   "version": "0.1.0",
   "dependencies": {
     "@strut/counter.ui.launcher": "0.0.1",
