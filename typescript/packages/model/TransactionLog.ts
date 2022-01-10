@@ -1,4 +1,4 @@
-import Observable from "../../events/Observable";
+import Observable from "@strut/events/Observable";
 import type { MergedChangesets, Transaction } from "./Changeset";
 import { Task } from "./NotifyQueue";
 

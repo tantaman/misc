@@ -1,6 +1,6 @@
 import { useEffect, useReducer } from "react";
 import { IModel } from "./Model";
-import counter from "../counter";
+import counter from "@strut/counter";
 
 const count = counter("model-infra/Hooks");
 export function useSubscription<T extends IModel<any>>(m: T): T {

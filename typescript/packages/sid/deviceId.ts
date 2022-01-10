@@ -1,4 +1,4 @@
-import nullthrows from "../utils/nullthrows";
+import { nullthrows } from "@strut/utils";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 
 async function genVisitorId() {

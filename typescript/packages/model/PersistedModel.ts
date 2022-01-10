@@ -2,7 +2,7 @@ import deviceId from "../sid/deviceId";
 import sid, { SID_of } from "../sid";
 import Model, { HasId } from "./Model";
 import { changeset, Changeset } from "./Changeset";
-import invariant from "../utils/invariant";
+import { invariant } from "@strut/utils";
 
 // TODO: sid_of<child> ...
 // Prevent id from being provided by child type:

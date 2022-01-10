@@ -6,7 +6,7 @@ Need to check for presence of id.
 Require all models to have ids? We could just generate ones...
 */
 
-import { SID_of } from "mono/sid";
+import { SID_of } from "@strut/sid";
 import { IModel, isHasId } from "./Model";
 
 /**

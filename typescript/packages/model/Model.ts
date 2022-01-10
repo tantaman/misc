@@ -1,6 +1,6 @@
 type Disposer = () => void;
-import { SID_of } from "mono/sid";
-import typedKeys from "../utils/typedKeys_UNSAFE";
+import { SID_of } from "@strut/sid";
+import { typedKeys } from "@strut/utils";
 import { Changeset } from "./Changeset";
 
 export interface IModel<T extends Object> {
