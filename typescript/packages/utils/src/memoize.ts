@@ -1,3 +1,5 @@
+import { nullthrows } from "..";
+
 export interface MemoizedFn<T> {
   (): T;
   clear: () => void;
@@ -16,7 +18,7 @@ export default function memoize<T>(fn: () => T): MemoizedFn<T> {
       run = true;
     }
 
-    return cached;
+    return nullthrows(cached);
   };
 
   ret.clear = () => {
