@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "main": "index.ts",
   "dependencies": {
-    "@strut/utils": "0.0.1"
+    "@strut/utils": "workspace:*",
+    "@strut/events": "workspace:*"
   },
   "devDependencies": {
     "jest": "^27.4.7"

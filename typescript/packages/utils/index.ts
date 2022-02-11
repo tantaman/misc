@@ -6,4 +6,6 @@ import typedKeys from "./src/typedKeys_UNSAFE";
 import memoize from "./src/memoize";
 import asString from "./src/asString";
 
+export type Concat<T, S, V> = string;
+
 export { invariant, math, notEmpty, nullthrows, typedKeys, memoize, asString };
