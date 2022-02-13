@@ -1,8 +1,8 @@
 {
   "name": "@strut/counter",
   "version": "0.0.1",
-  "main": "index.ts" ,
+  "main": "index.ts",
   "dependencies": {
-    "@strut/counter": "0.0.1"
+    "@strut/utils": "0.0.1"
   }
 }

@@ -1,5 +1,5 @@
 import { math } from "@strut/utils";
-const {floor} = math;
+const { floor } = math;
 export const INTERVAL = 5000;
 
 /*
@@ -27,7 +27,9 @@ const pendingMeasurements = new Map<string, MeasurementList>();
 export const aggregatedMeasurements = new Map<string, Measurement[]>();
 
 const subscribers: ((batch: Map<string, Measurement[]>) => void)[] = [];
-export function subscribe(cb: (batch: Map<string, Measurement[]>) => void): () => void {
+export function subscribe(
+  cb: (batch: Map<string, Measurement[]>) => void
+): () => void {
   subscribers.push(cb);
   return () => {
     const i = subscribers.indexOf(cb);

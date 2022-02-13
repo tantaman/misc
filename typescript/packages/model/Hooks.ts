@@ -2,6 +2,7 @@ import { useEffect, useReducer } from "react";
 import { IModel } from "./Model";
 import counter from "@strut/counter";
 
+// TODO: use the new react18 external state hook thinger.
 const count = counter("model-infra/Hooks");
 export function useSubscription<T extends IModel<any>>(m: T): T {
   const [tick, forceUpdate] = useReducer((x) => x + 1, 0);
