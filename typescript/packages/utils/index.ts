@@ -7,6 +7,7 @@ import memoize from "./src/memoize";
 import asString from "./src/asString";
 import debounce from "./src/debounce";
 import keyById from "./src/keyById";
+import readAndParse from "./src/readAndParse";
 
 export type Concat<T, S, V> = string;
 
@@ -20,4 +21,5 @@ export {
   asString,
   debounce,
   keyById,
+  readAndParse,
 };
