@@ -1,4 +1,8 @@
 // If you make this a module you can allow other files to extend the type
+
+import Plan from "./Plan";
+import { IChunkIterable } from "./ChunkIterable";
+
 // like as is done in tiptap
 export type Expression =
   | ReturnType<typeof first>
@@ -34,4 +38,13 @@ export function before(cursor: string): { type: "before"; cursor: string } {
 
 export function after(cursor: string): { type: "after"; cursor: string } {
   return { type: "after", cursor };
+}
+
+export interface ISourceExpression<TOut> {
+  readonly iterable: IChunkIterable<TOut>;
+  optimize(plan: Plan): Plan;
+}
+
+export interface IDerivedExpression<TIn, TOut> {
+  chainAfter(iterable: IChunkIterable<TIn>): IChunkIterable<TOut>;
 }

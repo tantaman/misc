@@ -1,25 +1,42 @@
-import { Expression } from "./Expression";
-import { Query } from "./Query";
+import { ChunkIterable } from "./ChunkIterable";
+import { IDerivedExpression, ISourceExpression } from "./Expression";
 
 export default class Plan {
-  #source: Query;
-  #expressions: Expression[];
+  #source: ISourceExpression<any>;
+  // pairwise TIn and TOuts should match
+  #derivations: IDerivedExpression<any, any>[];
 
-  constructor(source: Query) {
+  constructor(
+    source: ISourceExpression<any>,
+    derivations: IDerivedExpression<any, any>[]
+  ) {
     this.#source = source;
+    this.#derivations = derivations;
   }
 
-  addExpression(expression?: Expression): this {
+  get derivations(): ReadonlyArray<IDerivedExpression<any, any>> {
+    return this.#derivations;
+  }
+
+  get iterable(): ChunkIterable<any> /* final TOut */ {
+    let iterable = this.#source.iterable;
+    return this.#derivations.reduce(
+      (iterable, expression) => expression.chainAfter(iterable),
+      iterable
+    );
+  }
+
+  addDerivation(expression?: IDerivedExpression<any, any>): this {
     if (!expression) {
       return this;
     }
 
-    this.#expressions.push(expression);
+    this.#derivations.push(expression);
 
     return this;
   }
 
   optimize() {
-    throw new Error("unimplemented");
+    return this.#source.optimize(this);
   }
 }

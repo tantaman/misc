@@ -1,49 +1,75 @@
-import { after, before, Expression, first, last } from "./Expression";
+import {
+  after,
+  before,
+  Expression,
+  first,
+  IDerivedExpression,
+  ISourceExpression,
+  last,
+} from "./Expression";
 import Plan from "./Plan";
 
-export interface Query {
-  readonly priorQuery?: Query;
-  readonly expression?: Expression;
-
+export interface Query<T> {
   plan(): Plan;
+  gen(): Promise<T[]>;
 }
 
-export abstract class BaseQuery implements Query {
+abstract class BaseQuery<T> implements Query<T> {
+  async gen(): Promise<T[]> {
+    const plan = this.plan().optimize();
+
+    let results: T[] = [];
+    for await (const chunk of plan.iterable) {
+      results = results.concat(chunk);
+    }
+
+    return results;
+  }
+
+  abstract plan(): Plan;
+}
+
+export abstract class SourceQuery<T> extends BaseQuery<T> {
   // source query
   // expression
   // make a recursive data structure of queries and expressions.
   // then convert to plan which will collapse expression as needed.
   // How do expressions convert themselves to SQL or whatever?
-  constructor(
-    public readonly priorQuery?: Query,
-    public readonly expression?: Expression
-  ) {}
+  constructor(public readonly expression: ISourceExpression<T>) {
+    super();
+  }
 
   // Expression could be null if we're hopping an edge?
   // That'd just be a change in query type rather than an expression?
-  abstract new(priorQuery: Query, expression: Expression): this;
+  // abstract new<TOut, Tq extends DerivedQuery<T, TOut>>(
+  //   priorQuery: Query<T>,
+  //   expression: Expression
+  // ): Tq;
 
-  first(n: number): this {
-    return this.new(this, first(n));
+  plan() {
+    return new Plan(this.expression, []);
   }
+}
 
-  last(n: number): this {
-    return this.new(this, last(n));
-  }
+export abstract class DerivedQuery<TIn, TOut> extends BaseQuery<TOut> {
+  #priorQuery: Query<TIn>;
+  #expression?: IDerivedExpression<TIn, TOut>;
 
-  after(c: string): this {
-    return this.new(this, after(c));
-  }
-
-  before(c: string): this {
-    return this.new(this, before(c));
+  constructor(
+    priorQuery: Query<TIn>,
+    expression?: IDerivedExpression<TIn, TOut>
+  ) {
+    super();
+    this.#priorQuery = priorQuery;
+    this.#expression = expression;
   }
 
   plan() {
-    if (this.priorQuery) {
-      return this.priorQuery.plan().addExpression(this.expression);
+    const plan = this.#priorQuery.plan();
+    if (this.#expression) {
+      plan.addDerivation(this.#expression);
     }
 
-    return new Plan(this).addExpression(this.expression);
+    return plan;
   }
 }
