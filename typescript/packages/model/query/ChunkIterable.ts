@@ -82,27 +82,26 @@ export class FilteredChunkIterable<T> extends BaseChunkIterable<T> {
   }
 }
 
-export class FirstChunkIterable<T> extends BaseChunkIterable<T> {
-  constructor(private source: ChunkIterable<T>, private first: number) {
+export class TakeChunkIterable<T> extends BaseChunkIterable<T> {
+  constructor(private source: ChunkIterable<T>, private num: number) {
     super();
   }
 
   async *[Symbol.asyncIterator](): AsyncIterator<readonly T[]> {
-    let numLeft = this.first;
+    let numLeft = this.num;
     if (numLeft === 0) {
       return [];
     }
 
     for await (const chunk of this.source) {
-      let retChunk: T[] = [];
-      for (const elem of chunk) {
-        numLeft -= 1;
-        retChunk.push(elem);
-        if (numLeft === 0) {
-          return retChunk;
-        }
+      if (chunk.length < numLeft) {
+        yield chunk;
+        numLeft -= chunk.length;
+      } else {
+        yield chunk.slice(0, numLeft);
+        numLeft = 0;
+        break;
       }
-      yield retChunk;
     }
   }
 }

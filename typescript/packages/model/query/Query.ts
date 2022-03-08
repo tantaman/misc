@@ -1,11 +1,4 @@
-import {
-  after,
-  before,
-  Expression,
-  first,
-  IDerivedExpression,
-  ISourceExpression,
-} from "./Expression";
+import { DerivedExpression, SourceExpression } from "./Expression";
 import Plan from "./Plan";
 
 export interface Query<T> {
@@ -34,7 +27,7 @@ export abstract class SourceQuery<T> extends BaseQuery<T> {
   // make a recursive data structure of queries and expressions.
   // then convert to plan which will collapse expression as needed.
   // How do expressions convert themselves to SQL or whatever?
-  constructor(public readonly expression: ISourceExpression<T>) {
+  constructor(public readonly expression: SourceExpression<T>) {
     super();
   }
 
@@ -52,11 +45,11 @@ export abstract class SourceQuery<T> extends BaseQuery<T> {
 
 export abstract class DerivedQuery<TIn, TOut> extends BaseQuery<TOut> {
   #priorQuery: Query<TIn>;
-  #expression?: IDerivedExpression<TIn, TOut>;
+  #expression?: DerivedExpression<TIn, TOut>;
 
   constructor(
     priorQuery: Query<TIn>,
-    expression?: IDerivedExpression<TIn, TOut>
+    expression?: DerivedExpression<TIn, TOut>
   ) {
     super();
     this.#priorQuery = priorQuery;

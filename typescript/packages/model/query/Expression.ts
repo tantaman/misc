@@ -1,15 +1,11 @@
 // If you make this a module you can allow other files to extend the type
 
 import Plan from "./Plan";
-import { ChunkIterable, FirstChunkIterable } from "./ChunkIterable";
+import { ChunkIterable, TakeChunkIterable } from "./ChunkIterable";
+import { Predicate } from "./Predicate";
+import { FieldGetter } from "./Field";
 
-export type ExpressionType = "first" | "before" | "after" | "filter";
-
-// like as is done in tiptap
-export type Expression =
-  | ReturnType<typeof first>
-  | ReturnType<typeof before>
-  | ReturnType<typeof after>;
+export type ExpressionType = "take" | "before" | "after" | "filter";
 
 /*
 declare module '@mono/model/query' {
@@ -22,22 +18,22 @@ export type Expression = // union of the mapping of return types of the members 
 // maybe something like: https://github.com/ueberdosis/tiptap/blob/main/packages/core/src/types.ts#L197
 */
 
-export function first<T>(first: number): {
-  type: "first";
-  first: number;
-} & IDerivedExpression<T, T> {
+export function take<T>(num: number): {
+  type: "take";
+  num: number;
+} & DerivedExpression<T, T> {
   return {
-    type: "first",
-    first,
+    type: "take",
+    num,
     chainAfter(iterable) {
-      return new FirstChunkIterable(iterable, first);
+      return new TakeChunkIterable(iterable, num);
     },
   };
 }
 
 export function before<T>(
   cursor: string
-): { type: "before"; cursor: string } & IDerivedExpression<T, T> {
+): { type: "before"; cursor: string } & DerivedExpression<T, T> {
   return {
     type: "before",
     cursor,
@@ -49,7 +45,7 @@ export function before<T>(
 
 export function after<T>(
   cursor: string
-): { type: "after"; cursor: string } & IDerivedExpression<T, T> {
+): { type: "after"; cursor: string } & DerivedExpression<T, T> {
   return {
     type: "after",
     cursor,
@@ -59,11 +55,24 @@ export function after<T>(
   };
 }
 
-export interface ISourceExpression<TOut> {
+// Needs to be more robust as we need to know if field and value are hoistable to the backend.
+// So this should be some spec that references the schema in some way.
+export function filter<Tm, Tv>(
+  getter: FieldGetter<Tm, Tv>,
+  op: Predicate<Tv>
+) {}
+// Should have a field getter that
+// 1. Has the db field
+// 2. has the method if can't hoist
+// Should have a predicate class
+// That we can determine if hoistable or not
+
+export interface SourceExpression<TOut> {
   readonly iterable: ChunkIterable<TOut>;
   optimize(plan: Plan): Plan;
 }
 
-export interface IDerivedExpression<TIn, TOut> {
+export interface DerivedExpression<TIn, TOut> {
   chainAfter(iterable: ChunkIterable<TIn>): ChunkIterable<TOut>;
+  type: ExpressionType;
 }
