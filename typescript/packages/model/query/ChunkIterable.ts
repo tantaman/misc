@@ -33,6 +33,18 @@ export class StaticSourceChunkIterable<T> extends BaseChunkIterable<T> {
   }
 }
 
+export class PromiseSourceSingleChunkIterable<T> extends BaseChunkIterable<T> {
+  constructor(private source: Promise<T[]>) {
+    super();
+  }
+
+  async *[Symbol.asyncIterator](): AsyncIterator<readonly T[]> {
+    const ret = await this.source;
+
+    yield ret;
+  }
+}
+
 export class MappedChunkIterable<TIn, TOut> extends BaseChunkIterable<TOut> {
   constructor(
     private source: ChunkIterable<TIn>,
@@ -66,6 +78,31 @@ export class FilteredChunkIterable<T> extends BaseChunkIterable<T> {
         }
       }
       yield filteredChunk;
+    }
+  }
+}
+
+export class FirstChunkIterable<T> extends BaseChunkIterable<T> {
+  constructor(private source: ChunkIterable<T>, private first: number) {
+    super();
+  }
+
+  async *[Symbol.asyncIterator](): AsyncIterator<readonly T[]> {
+    let numLeft = this.first;
+    if (numLeft === 0) {
+      return [];
+    }
+
+    for await (const chunk of this.source) {
+      let retChunk: T[] = [];
+      for (const elem of chunk) {
+        numLeft -= 1;
+        retChunk.push(elem);
+        if (numLeft === 0) {
+          return retChunk;
+        }
+      }
+      yield retChunk;
     }
   }
 }

@@ -5,7 +5,6 @@ import {
   first,
   IDerivedExpression,
   ISourceExpression,
-  last,
 } from "./Expression";
 import Plan from "./Plan";
 
