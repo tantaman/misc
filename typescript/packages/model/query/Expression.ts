@@ -6,7 +6,7 @@ import { Predicate } from "./Predicate";
 import { FieldGetter } from "./Field";
 
 export type ExpressionType = "take" | "before" | "after" | "filter";
-
+export type Direction = "asc" | "dec";
 /*
 declare module '@mono/model/query' {
   interface Expressions<ReturnType> {
@@ -60,6 +60,11 @@ export function after<T>(
 export function filter<Tm, Tv>(
   getter: FieldGetter<Tm, Tv>,
   op: Predicate<Tv>
+) {}
+
+export function orderBy<Tm, Tv>(
+  getter: FieldGetter<Tm, Tv>,
+  direction: Direction
 ) {}
 // Should have a field getter that
 // 1. Has the db field
