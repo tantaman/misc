@@ -1,5 +1,6 @@
 import {
   DerivedExpression,
+  Expression,
   HopExpression,
   SourceExpression,
 } from "./Expression";
@@ -66,12 +67,9 @@ export abstract class HopQuery<TIn, TOut> extends BaseQuery<TOut> {
 
 export abstract class DerivedQuery<TIn, TOut> extends BaseQuery<TOut> {
   #priorQuery: Query<TIn>;
-  #expression?: DerivedExpression<TIn, TOut>;
+  #expression?: Expression;
 
-  constructor(
-    priorQuery: Query<TIn>,
-    expression?: DerivedExpression<TIn, TOut>
-  ) {
+  constructor(priorQuery: Query<TIn>, expression?: Expression) {
     super();
     this.#priorQuery = priorQuery;
     this.#expression = expression;

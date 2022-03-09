@@ -1,18 +1,16 @@
 import { ChunkIterable } from "./ChunkIterable";
-import { DerivedExpression, Expression, HopExpression } from "./Expression";
+import { Expression, HopExpression } from "./Expression";
 import { IPlan } from "./Plan";
 
 export default class HopPlan implements IPlan {
   #sourcePlan: IPlan;
-  #hop: HopExpression<any, any>;
   #derivations: Expression[];
 
   constructor(
     sourcePlan: IPlan,
-    hop: HopExpression<any, any>,
+    public readonly hop: HopExpression<any, any>,
     derivations: Expression[]
   ) {
-    this.#hop = hop;
     this.#derivations = derivations;
     this.#sourcePlan = sourcePlan;
   }
@@ -22,14 +20,14 @@ export default class HopPlan implements IPlan {
   }
 
   get iterable(): ChunkIterable<any> {
-    const iterable = this.#hop.chainAfter(this.#sourcePlan.iterable);
+    const iterable = this.hop.chainAfter(this.#sourcePlan.iterable);
     return this.#derivations.reduce(
       (iterable, expression) => expression.chainAfter(iterable),
       iterable
     );
   }
 
-  addDerivation(expression?: DerivedExpression<any, any>): this {
+  addDerivation(expression?: Expression): this {
     if (!expression) {
       return this;
     }
@@ -44,9 +42,9 @@ export default class HopPlan implements IPlan {
    * The last query is what the user executes.
    * This last query will optimize from the end back on down.
    */
-  optimize(nextHop?: HopPlan) {
+  optimize(nextHop?: HopPlan): IPlan {
     // Optimize our hop and fold in the next hop
-    const optimizedPlanForThisHop = this.#hop.optimize(this, nextHop);
+    const optimizedPlanForThisHop = this.hop.optimize(this, nextHop);
     return this.#sourcePlan.optimize(optimizedPlanForThisHop);
   }
 }

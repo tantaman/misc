@@ -1,7 +1,11 @@
 // If you make this a module you can allow other files to extend the type
 
 import Plan, { IPlan } from "./Plan";
-import { ChunkIterable, TakeChunkIterable } from "./ChunkIterable";
+import {
+  ChunkIterable,
+  FilteredChunkIterable,
+  TakeChunkIterable,
+} from "./ChunkIterable";
 import { Predicate } from "./Predicate";
 import { FieldGetter } from "./Field";
 import HopPlan from "./HopPlan";
@@ -73,15 +77,28 @@ export function after<T>(
 // So this should be some spec that references the schema in some way.
 export function filter<Tm, Tv>(
   getter: FieldGetter<Tm, Tv>,
-  op: Predicate<Tv>
-): DerivedExpression<Tm, Tm> {
-  throw new Error();
+  predicate: Predicate<Tv>
+): {
+  type: "filter";
+  getter: FieldGetter<Tm, Tv>;
+  predicate: Predicate<Tv>;
+} & DerivedExpression<Tm, Tm> {
+  return {
+    type: "filter",
+    getter,
+    predicate,
+    chainAfter(iterable) {
+      return new FilteredChunkIterable(iterable, async (m) =>
+        predicate.call(getter.get(m))
+      );
+    },
+  };
 }
 
 export function orderBy<Tm, Tv>(
   getter: FieldGetter<Tm, Tv>,
   direction: Direction
-): DerivedExpression<Tm, Tm> {
+): { type: "orderBy" } & DerivedExpression<Tm, Tm> {
   throw new Error();
 }
 
