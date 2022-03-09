@@ -2,6 +2,7 @@ import { DerivedExpression, filter, orderBy, SourceExpression, take } from "./Ex
 import SQLSourceChunkIterable from './SQLSourceChunkIterable';
 import Plan from "./Plan";
 import { ChunkIterable } from "./ChunkIterable";
+import { Schema } from "../schema/Schema";
 type HoistedOperations<T> = {
   filters?: readonly ReturnType<typeof filter<T, any>>[];
   orderBy?: ReturnType<typeof orderBy<T, any>>;
@@ -13,7 +14,7 @@ class SQLSourceExpression<T> implements SourceExpression<T> {
   constructor(
     // we should take a schema instead of db
     // we'd need the schema to know if we can hoist certain fields or not
-    private schema: string,
+    private schema: Schema,
     private hoistedOperations: HoistedOperations<T>
   ) {}
 
@@ -25,16 +26,21 @@ class SQLSourceExpression<T> implements SourceExpression<T> {
     const remainingExpressions: DerivedExpression<any, any>[] = [];
     const filters = [];
     for (const derivation of plan.derivations) {
-      if (derivation.type === "filter") {
-        // would need to do more checks
-        // like see if the field getter references a raw field
-        // pull in any hoistable derivation.
-
-        // Also.. if we hit a hop expression then we
-        // need special handling
-        filters.push(derivation);
-      } else {
-        remainingExpressions.push(derivation);
+      switch (derivation.type) {
+        case "filter":
+          break;
+        case "take":
+          break;
+        case "before":
+          break;
+        case "after":
+          break;
+        case "orderBy":
+          break;
+        case "hop":
+          break;
+        default:
+          remainingExpressions.push(derivation);
       }
     }
 

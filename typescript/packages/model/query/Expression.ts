@@ -5,7 +5,13 @@ import { ChunkIterable, TakeChunkIterable } from "./ChunkIterable";
 import { Predicate } from "./Predicate";
 import { FieldGetter } from "./Field";
 
-export type ExpressionType = "take" | "before" | "after" | "filter";
+export type ExpressionType =
+  | "take"
+  | "before"
+  | "after"
+  | "filter"
+  | "orderBy"
+  | "hop";
 export type Direction = "asc" | "dec";
 /*
 declare module '@mono/model/query' {
@@ -66,6 +72,17 @@ export function orderBy<Tm, Tv>(
   getter: FieldGetter<Tm, Tv>,
   direction: Direction
 ) {}
+
+// put in the edge?
+export function hop() {}
+
+/*
+  junction edge
+  foreign key
+  all require a getter on the source.
+  and a getter on the dest.
+  and the schema of the dest
+  */
 // Should have a field getter that
 // 1. Has the db field
 // 2. has the method if can't hoist
