@@ -1,8 +1,13 @@
-import { DerivedExpression, SourceExpression } from "./Expression";
-import Plan from "./Plan";
+import {
+  DerivedExpression,
+  HopExpression,
+  SourceExpression,
+} from "./Expression";
+import HopPlan from "./HopPlan";
+import Plan, { IPlan } from "./Plan";
 
 export interface Query<T> {
-  plan(): Plan;
+  plan(): IPlan;
   gen(): Promise<T[]>;
 }
 
@@ -18,7 +23,7 @@ abstract class BaseQuery<T> implements Query<T> {
     return results;
   }
 
-  abstract plan(): Plan;
+  abstract plan(): IPlan;
 }
 
 export abstract class SourceQuery<T> extends BaseQuery<T> {
@@ -40,6 +45,22 @@ export abstract class SourceQuery<T> extends BaseQuery<T> {
 
   plan() {
     return new Plan(this.expression, []);
+  }
+}
+
+export abstract class HopQuery<TIn, TOut> extends BaseQuery<TOut> {
+  #priorQuery: Query<TIn>;
+
+  constructor(
+    priorQuery: Query<TIn>,
+    public readonly expression: HopExpression<TIn, TOut>
+  ) {
+    super();
+    this.#priorQuery = priorQuery;
+  }
+
+  plan() {
+    return new HopPlan(this.#priorQuery.plan(), this.expression, []);
   }
 }
 

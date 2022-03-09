@@ -1,9 +1,10 @@
-import { DerivedExpression, filter, hop, orderBy, SourceExpression, take } from "../Expression";
+import { DerivedExpression, filter, hop, HopExpression, orderBy, SourceExpression, take } from "../Expression";
 import SQLSourceChunkIterable from './SQLSourceChunkIterable';
 import Plan from "../Plan";
 import { ChunkIterable } from "../ChunkIterable";
 import { Schema } from "../../schema/Schema";
-type HoistedOperations<T> = {
+import HopPlan from "../HopPlan";
+export type HoistedOperations<T> = {
   filters?: readonly ReturnType<typeof filter<T, any>>[];
   orderBy?: ReturnType<typeof orderBy<T, any>>;
   limit?: ReturnType<typeof take<T>>;
@@ -17,7 +18,6 @@ type HoistedOperations<T> = {
   what: 'model' | 'ids' | 'edges' | 'count';
 };
 
-
 export default class SQLSourceExpression<T> implements SourceExpression<T> {
   constructor(
     // we should take a schema instead of db
@@ -27,10 +27,13 @@ export default class SQLSourceExpression<T> implements SourceExpression<T> {
   ) {}
 
   get iterable(): ChunkIterable<T> {
-    return new SQLSourceChunkIterable();
+    return new SQLSourceChunkIterable(
+      this.schema,
+      this.hoistedOperations,
+    );
   }
 
-  optimize(plan: Plan): Plan {
+  optimize(plan: Plan, nextHop?: HopPlan): Plan {
     const remainingExpressions: DerivedExpression<any, any>[] = [];
     let {
       filters,
@@ -51,27 +54,39 @@ export default class SQLSourceExpression<T> implements SourceExpression<T> {
           }
           break;
         case "take":
-          this.#optimizeTake();
+          if (!this.#optimizeTake()) {
+            remainingExpressions.push(derivation);
+          }
           break;
         case "before":
-          this.#optimizeBefore();
+          if (!this.#optimizeBefore()) {
+            remainingExpressions.push(derivation);
+          }
           break;
         case "after":
-          this.#optimizeAfter();
+          if (!this.#optimizeAfter()) {
+            remainingExpressions.push(derivation);
+          }
           break;
         case "orderBy":
-          this.#optimizeOrderBy();
+          if (!this.#optimizeOrderBy()) {
+            remainingExpressions.push(derivation);
+          }
           break;
         case "hop":
-          // optimizing a hop will consume remaining expressions...?
-          // no... not things that need chaining after this expression.
-          // how can we let optimizeHop consume derivations?
-          // updates the index of the loop?
-          this.#optimizeHop();
-          break;
+          // This can't happen... hop will be in `nextHop`
+          throw new Error('Hops should be passed in as hop plans');
         default:
           remainingExpressions.push(derivation);
       }
+    }
+
+    if (nextHop) {
+      this.#optimizeHop(nextHop);
+      // We need to take remainingExpressions out of nextHop and push...
+      // NextHop is as optimized as possible at this point.
+      // Whether the hop expression can be folded into the source expression is the only thing to check for.
+      // All other expressions in the hop are not foldable.
     }
 
     return new Plan(
@@ -92,5 +107,5 @@ export default class SQLSourceExpression<T> implements SourceExpression<T> {
 
   #optimizeOrderBy(): boolean { return false; }
 
-  #optimizeHop(): boolean { return false; }
+  #optimizeHop(hop: HopPlan): boolean { return false; }
 }

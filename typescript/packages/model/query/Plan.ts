@@ -1,7 +1,15 @@
 import { ChunkIterable } from "./ChunkIterable";
-import { DerivedExpression, Expression, SourceExpression } from "./Expression";
+import { Expression, SourceExpression } from "./Expression";
+import HopPlan from "./HopPlan";
 
-export default class Plan {
+export interface IPlan {
+  get derivations(): readonly Expression[];
+  get iterable(): ChunkIterable<any>;
+  addDerivation(expression?: Expression): this;
+  optimize(nextHop?: HopPlan): IPlan;
+}
+
+export default class Plan implements IPlan {
   #source: SourceExpression<any>;
   // pairwise TIn and TOuts should match
   #derivations: Expression[];
@@ -16,14 +24,14 @@ export default class Plan {
   }
 
   get iterable(): ChunkIterable<any> /* final TOut */ {
-    let iterable = this.#source.iterable;
+    const iterable = this.#source.iterable;
     return this.#derivations.reduce(
       (iterable, expression) => expression.chainAfter(iterable),
       iterable
     );
   }
 
-  addDerivation(expression?: DerivedExpression<any, any>): this {
+  addDerivation(expression?: Expression): this {
     if (!expression) {
       return this;
     }
@@ -33,7 +41,11 @@ export default class Plan {
     return this;
   }
 
-  optimize() {
+  optimize(nextHop?: HopPlan) {
     return this.#source.optimize(this);
   }
+
+  // partition(): [Plan, ...HopPlan] {
+  //   const sourcePlan =
+  // }
 }

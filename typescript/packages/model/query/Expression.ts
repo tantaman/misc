@@ -1,9 +1,10 @@
 // If you make this a module you can allow other files to extend the type
 
-import Plan from "./Plan";
+import Plan, { IPlan } from "./Plan";
 import { ChunkIterable, TakeChunkIterable } from "./ChunkIterable";
 import { Predicate } from "./Predicate";
 import { FieldGetter } from "./Field";
+import HopPlan from "./HopPlan";
 
 export type ExpressionType =
   | "take"
@@ -86,6 +87,11 @@ export function orderBy<Tm, Tv>(
 
 // put in the edge?
 export function hop<TIn, TOut>(): HopExpression<TIn, TOut> {
+  // hops have _kinds_
+  // like SQL hops
+  // or Cypher hops
+  // We'd have to determine this by taking in the edge information from
+  // the schema.
   throw new Error();
 }
 
@@ -104,7 +110,7 @@ export function hop<TIn, TOut>(): HopExpression<TIn, TOut> {
 
 export interface SourceExpression<TOut> {
   readonly iterable: ChunkIterable<TOut>;
-  optimize(plan: Plan): Plan;
+  optimize(plan: Plan, nextHop?: HopPlan): Plan;
 }
 
 export interface DerivedExpression<TIn, TOut> {
@@ -114,6 +120,9 @@ export interface DerivedExpression<TIn, TOut> {
 
 export interface HopExpression<TIn, TOut> {
   chainAfter(iterable: ChunkIterable<TIn>): ChunkIterable<TOut>;
-  optimize(plan: Plan): Plan;
+  /**
+   * Optimizes the current plan (plan) and folds in the nxet hop (nextHop) if possible.
+   */
+  optimize(plan: HopPlan, nextHop?: HopPlan): HopPlan;
   type: "hop";
 }
