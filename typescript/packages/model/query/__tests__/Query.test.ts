@@ -9,5 +9,6 @@ import {
 import Plan from "../Plan";
 
 /*
-
+Just do a full integration test.
+With schemas and models and everything?
 */
