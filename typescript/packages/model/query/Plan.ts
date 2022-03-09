@@ -1,20 +1,17 @@
 import { ChunkIterable } from "./ChunkIterable";
-import { DerivedExpression, SourceExpression } from "./Expression";
+import { DerivedExpression, Expression, SourceExpression } from "./Expression";
 
 export default class Plan {
   #source: SourceExpression<any>;
   // pairwise TIn and TOuts should match
-  #derivations: DerivedExpression<any, any>[];
+  #derivations: Expression[];
 
-  constructor(
-    source: SourceExpression<any>,
-    derivations: DerivedExpression<any, any>[]
-  ) {
+  constructor(source: SourceExpression<any>, derivations: Expression[]) {
     this.#source = source;
     this.#derivations = derivations;
   }
 
-  get derivations(): ReadonlyArray<DerivedExpression<any, any>> {
+  get derivations(): ReadonlyArray<Expression> {
     return this.#derivations;
   }
 

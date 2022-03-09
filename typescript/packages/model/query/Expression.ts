@@ -13,6 +13,13 @@ export type ExpressionType =
   | "orderBy"
   | "hop";
 export type Direction = "asc" | "dec";
+export type Expression =
+  | ReturnType<typeof take>
+  | ReturnType<typeof before>
+  | ReturnType<typeof after>
+  | ReturnType<typeof filter>
+  | ReturnType<typeof orderBy>
+  | ReturnType<typeof hop>;
 /*
 declare module '@mono/model/query' {
   interface Expressions<ReturnType> {
@@ -66,15 +73,21 @@ export function after<T>(
 export function filter<Tm, Tv>(
   getter: FieldGetter<Tm, Tv>,
   op: Predicate<Tv>
-) {}
+): DerivedExpression<Tm, Tm> {
+  throw new Error();
+}
 
 export function orderBy<Tm, Tv>(
   getter: FieldGetter<Tm, Tv>,
   direction: Direction
-) {}
+): DerivedExpression<Tm, Tm> {
+  throw new Error();
+}
 
 // put in the edge?
-export function hop() {}
+export function hop<TIn, TOut>(): HopExpression<TIn, TOut> {
+  throw new Error();
+}
 
 /*
   junction edge
@@ -97,4 +110,10 @@ export interface SourceExpression<TOut> {
 export interface DerivedExpression<TIn, TOut> {
   chainAfter(iterable: ChunkIterable<TIn>): ChunkIterable<TOut>;
   type: ExpressionType;
+}
+
+export interface HopExpression<TIn, TOut> {
+  chainAfter(iterable: ChunkIterable<TIn>): ChunkIterable<TOut>;
+  optimize(plan: Plan): Plan;
+  type: "hop";
 }
