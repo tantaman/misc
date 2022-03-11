@@ -1,5 +1,5 @@
-import deviceId from "../sid/deviceId";
-import sid, { SID_of } from "../sid";
+import deviceId from "@strut/sid/deviceId";
+import sid, { SID_of } from "@strut/sid";
 import Model, { HasId } from "./Model";
 import { changeset, Changeset } from "./Changeset";
 import { invariant } from "@strut/utils";

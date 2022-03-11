@@ -1,9 +1,9 @@
-import { Schema } from "../../schema/Schema";
+import Schema from "../../schema/Schema";
 import { BaseChunkIterable } from "../ChunkIterable";
 import { HoistedOperations } from "./SQLSourceExpression";
 
 export default class SQLSourceChunkIterable<T> extends BaseChunkIterable<T> {
-  constructor(schema: Schema, hoistedOperations: HoistedOperations<T>) {
+  constructor(schema: Schema, hoistedOperations: HoistedOperations) {
     super();
   }
 

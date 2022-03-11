@@ -1,53 +1,56 @@
-import { after, before, DerivedExpression, Expression, filter, hop, HopExpression, orderBy, SourceExpression, take } from "../Expression";
-import SQLSourceChunkIterable from './SQLSourceChunkIterable';
+import {
+  after,
+  before,
+  DerivedExpression,
+  Expression,
+  filter,
+  hop,
+  HopExpression,
+  orderBy,
+  SourceExpression,
+  take,
+} from "../Expression";
+import SQLSourceChunkIterable from "./SQLSourceChunkIterable";
 import Plan from "../Plan";
 import { ChunkIterable } from "../ChunkIterable";
 import Schema from "../../schema/Schema";
 import HopPlan from "../HopPlan";
-export type HoistedOperations<T> = {
-  filters?: readonly ReturnType<typeof filter<T, any>>[];
-  orderBy?: ReturnType<typeof orderBy<T, any>>;
-  limit?: ReturnType<typeof take<T>>;
-  before?: ReturnType<typeof before<T>>;
-  after?: ReturnType<typeof after<T>>;
+export type HoistedOperations = {
+  filters?: readonly ReturnType<typeof filter>[];
+  orderBy?: ReturnType<typeof orderBy>;
+  limit?: ReturnType<typeof take>;
+  before?: ReturnType<typeof before>;
+  after?: ReturnType<typeof after>;
   // Points to the fully optimized hop expression.
   hop?: ReturnType<typeof hop>;
   // What we're actually selecting.
   // Could be IDs if we can't hoist the next hop and need to load them into the server for
   // the next hop. Could be based on what the caller asked for (count / ids / edges / models).
-  what: 'model' | 'ids' | 'edges' | 'count';
+  what: "model" | "ids" | "edges" | "count";
 };
-import {ModelFieldGetter} from '../Field';
+import { ModelFieldGetter } from "../Field";
 
-interface SQLResult {};
+interface SQLResult {}
 
-export default class SQLSourceExpression implements SourceExpression<SQLResult> {
+export default class SQLSourceExpression
+  implements SourceExpression<SQLResult>
+{
   constructor(
     // we should take a schema instead of db
     // we'd need the schema to know if we can hoist certain fields or not
     private schema: Schema,
-    private hoistedOperations: HoistedOperations<any>
+    private hoistedOperations: HoistedOperations
   ) {}
 
   get iterable(): ChunkIterable<SQLResult> {
-    return new SQLSourceChunkIterable(
-      this.schema,
-      this.hoistedOperations,
-    );
+    return new SQLSourceChunkIterable(this.schema, this.hoistedOperations);
   }
 
   optimize(plan: Plan, nextHop?: HopPlan): Plan {
     const remainingExpressions: Expression[] = [];
-    let {
-      filters,
-      orderBy,
-      limit,
-      hop,
-      what,
-      before,
-      after,
-    } = this.hoistedOperations;
-    const writableFilters = [...filters];
+    let { filters, orderBy, limit, hop, what, before, after } =
+      this.hoistedOperations;
+    const writableFilters = filters ? [...filters] : [];
 
     for (let i = 0; i < plan.derivations.length; ++i) {
       const derivation = plan.derivations[i];
@@ -87,14 +90,17 @@ export default class SQLSourceExpression implements SourceExpression<SQLResult> 
           break;
         case "hop":
           // This can't happen... hop will be in `nextHop`
-          throw new Error('Hops should be passed in as hop plans');
+          throw new Error("Hops should be passed in as hop plans");
         default:
           remainingExpressions.push(derivation);
       }
     }
 
     if (nextHop) {
-      const [hoistedHop, derivedExressions] = this.#optimizeHop(nextHop, remainingExpressions.length > 0);
+      const [hoistedHop, derivedExressions] = this.#optimizeHop(
+        nextHop,
+        remainingExpressions.length > 0
+      );
       for (const e of derivedExressions) {
         remainingExpressions.push(e);
       }
@@ -102,36 +108,52 @@ export default class SQLSourceExpression implements SourceExpression<SQLResult> 
     }
 
     return new Plan(
-      new SQLSourceExpression(this.schema, { filters, orderBy, limit, hop, what, before, after }),
+      new SQLSourceExpression(this.schema, {
+        filters,
+        orderBy,
+        limit,
+        hop,
+        what,
+        before,
+        after,
+      }),
       remainingExpressions
     );
   }
 
   #optimizeFilter(expression: ReturnType<typeof filter>): boolean {
     if (
-      expression.getter instanceof ModelFieldGetter
-      && expression.getter.fieldName !== null
-      && expression.getter.schema === this.schema
+      expression.getter instanceof ModelFieldGetter &&
+      expression.getter.fieldName !== null &&
+      expression.getter.schema === this.schema
     ) {
       return true;
     }
     return false;
   }
 
-  #optimizeTake(expression: ReturnType<typeof take>): boolean { return false; }
+  #optimizeTake(expression: ReturnType<typeof take>): boolean {
+    return false;
+  }
 
-  #optimizeBefore(expression: ReturnType<typeof before>): boolean { return false; }
+  #optimizeBefore(expression: ReturnType<typeof before>): boolean {
+    return false;
+  }
 
-  #optimizeAfter(expression: ReturnType<typeof after>): boolean { return false; }
+  #optimizeAfter(expression: ReturnType<typeof after>): boolean {
+    return false;
+  }
 
-  #optimizeOrderBy(expression: ReturnType<typeof orderBy>): boolean { return false; }
+  #optimizeOrderBy(expression: ReturnType<typeof orderBy>): boolean {
+    return false;
+  }
 
   #optimizeHop(
     hop: HopPlan,
-    thisHasRemainingExpressions: boolean,
+    thisHasRemainingExpressions: boolean
   ): [HopExpression<any, any> | undefined, readonly Expression[]] {
     if (this.#canHoistHop(hop, thisHasRemainingExpressions)) {
-      return [hop.hop, hop.derivations]
+      return [hop.hop, hop.derivations];
     }
 
     // can't hoist it. Just return everything as derived expressions.

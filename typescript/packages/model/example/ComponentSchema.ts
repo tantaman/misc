@@ -13,7 +13,7 @@ export default class ComponentSchema extends Schema {
     return {
       id: Field.id.guid(),
       selected: Field.bool(),
-      classes: Field.stringOf("CassClass"),
+      classes: Field.stringOf("CssClass"),
       style: Field.map(
         Field.stringOf("CssAttribute"),
         Field.stringOf("CssValue")
