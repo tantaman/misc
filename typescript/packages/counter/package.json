@@ -1,8 +1,11 @@
 {
   "name": "@strut/counter",
   "version": "0.0.1",
-  "main": "index.ts",
+  "main": "lib/index.js",
   "dependencies": {
     "@strut/utils": "0.0.1"
+  },
+  "script": {
+    "build": "tsc"
   }
 }

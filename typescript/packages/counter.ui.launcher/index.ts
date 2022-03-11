@@ -5,7 +5,7 @@
 // If package, they'd build the display on their own by setting an entrypoing and a js main that renders the package.
 // If app, we'd do the building of the app for them... then how would they host?
 
-import { aggregatedMeasurements, Measurement, subscribe } from "@strut/counter/counter";
+import { aggregatedMeasurements, Measurement, subscribe } from "@strut/counter";
 
 export default function launch(uiURI: URL) {
   // @ts-ignore
@@ -18,12 +18,12 @@ export default function launch(uiURI: URL) {
   const wnd = window.open(
     uiURI,
     "Counter UI",
-    "toolbar=no,location=no,directories=no,status=no,menubar=no"
-      + ",scrollbars=yes,resizable=yes,fullscreen=yes",
+    "toolbar=no,location=no,directories=no,status=no,menubar=no" +
+      ",scrollbars=yes,resizable=yes,fullscreen=yes"
   );
 
   if (wnd == null) {
-    throw new Error('Could not open Counter UI at ' + uiURI.toString());
+    throw new Error("Could not open Counter UI at " + uiURI.toString());
   }
 
   // Listen for messages coming from wnd
@@ -32,14 +32,17 @@ export default function launch(uiURI: URL) {
       return;
     }
 
-    window.removeEventListener('message', wndListener);
+    window.removeEventListener("message", wndListener);
 
     // Send out the catchup data
-    wnd.postMessage({
-      source: myId,
-      event: "catchup",
-      payload: aggregatedMeasurements,
-    }, "*");
+    wnd.postMessage(
+      {
+        source: myId,
+        event: "catchup",
+        payload: aggregatedMeasurements,
+      },
+      "*"
+    );
 
     // Then subscribe for update data so we don't send
     // a catchup and update that have the same data
