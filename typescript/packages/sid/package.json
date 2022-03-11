@@ -1,9 +1,13 @@
 {
   "name": "@strut/sid",
   "version": "0.0.1",
-  "main": "index.ts",
+  "main": "lib/index.js",
   "dependencies": {
     "@strut/utils": "workspace:*",
     "@fingerprintjs/fingerprintjs": "^3.3.2"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch:": "tsc -w"
   }
 }

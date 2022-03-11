@@ -1,4 +1,4 @@
-import { nullthrows } from "..";
+import nullthrows from "./nullthrows";
 
 export interface MemoizedFn<T> {
   (): T;
