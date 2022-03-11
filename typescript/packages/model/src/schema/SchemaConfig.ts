@@ -1,10 +1,12 @@
 import { invariant } from "@strut/utils";
 import ClassConfig from "./ClassConfig.js";
 import ModuleConfig from "./ModuleConfig.js";
+import StorageConfig from "./StorageConfig.js";
 
 export default class SchemaConfig {
   readonly module = new ModuleConfig();
   readonly class = new ClassConfig();
+  readonly storage = new StorageConfig();
 
   private _description: string;
 

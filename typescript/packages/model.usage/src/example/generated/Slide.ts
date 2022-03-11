@@ -1,55 +1,47 @@
-import Model from '@strut/model/Model.js';
-import { Field, ObjectType, Int, Float, ID } from 'type-graphql'
-@ObjectType({description: "Represents a single slide within a deck"})
-export default class Slide
-  extends Model<{
-  id: string,
-  selected: boolean,
-  focused: boolean,
-  classes: string,
-  style: Map<string, string>,
-  deckId: string
+import Model from "@strut/model/Model.js";
+import { Field, ObjectType, Int, Float, ID } from "type-graphql";
+@ObjectType({ description: "Represents a single slide within a deck" })
+export default class Slide extends Model<{
+  id: string;
+  selected: boolean;
+  focused: boolean;
+  classes: string;
+  style: Map<string, string>;
+  deckId: string;
 }> {
-    @Field(type => ID)
+  @Field((type) => ID)
   getId(): string {
     return this.data.id;
   }
 
-  @Field(type => Boolean)
+  @Field((type) => Boolean)
   getSelected(): boolean {
     return this.data.selected;
   }
 
-  @Field(type => Boolean)
+  @Field((type) => Boolean)
   getFocused(): boolean {
     return this.data.focused;
   }
 
-  @Field(type => String)
+  @Field((type) => String)
   getClasses(): string {
     return this.data.classes;
   }
 
-  
   getStyle(): Map<string, string> {
     return this.data.style;
   }
 
-  
   getDeckId(): string {
     return this.data.deckId;
   }
 
-    queryComponents(): ComponentQuery {
-    return ComponentQuery.fromForeignId(
-      this.getId(), 'slide'
-    );
+  queryComponents(): ComponentQuery {
+    return ComponentQuery.fromForeignId(this.getId(), "slide");
   }
 
   queryDeck(): DeckQuery {
-    return DeckQuery.fromId(
-      this.getDeckId()
-    );
+    return DeckQuery.fromId(this.getDeckId());
   }
-
 }

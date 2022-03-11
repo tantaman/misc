@@ -2,8 +2,14 @@ import Schema from "../schema/Schema.js";
 import CodegenStep from "./CodegenStep.js";
 import GenTypescriptModel from "./GenTypescriptModel.js";
 import * as fs from "fs";
+import GenTypescriptQuery from "./GenTypescriptQuery.js";
+// @ts-ignore
+import prettier from "prettier";
 
-const defaultSteps: Array<{ new (Schema): CodegenStep }> = [GenTypescriptModel];
+const defaultSteps: Array<{ new (Schema): CodegenStep }> = [
+  GenTypescriptModel,
+  GenTypescriptQuery,
+];
 
 export default class CodegenPipleine {
   constructor(
@@ -11,18 +17,16 @@ export default class CodegenPipleine {
   ) {}
 
   async gen(schemas: Array<Schema>, dest: string) {
-    const schemaResults = schemas.map((schema) =>
+    const files = schemas.flatMap((schema) =>
       this.steps.map((step) => new step(schema).gen())
     );
 
     await Promise.all(
-      schemaResults.map(
-        async (r) =>
-          await Promise.all(
-            r.map(
-              async (f) =>
-                await fs.promises.writeFile(dest + "/" + f.name, f.contents)
-            )
+      files.map(
+        async (f) =>
+          await fs.promises.writeFile(
+            dest + "/" + f.name,
+            prettier.format(f.contents, { parser: "typescript" })
           )
       )
     );
