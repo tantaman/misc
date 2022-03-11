@@ -8,7 +8,7 @@ function fieldToTsType(field: Field<FieldType>): string {
     case "int":
       return "number";
     case "map":
-      return `Map<string, ${fieldToTsType(
+      return `ReadonlyMap<string, ${fieldToTsType(
         (field as MapField<any, any>).valueType
       )}>`;
   }

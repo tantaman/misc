@@ -30,7 +30,7 @@ export type HoistedOperations = {
 };
 import { ModelFieldGetter } from "../Field.js";
 
-interface SQLResult {}
+export interface SQLResult {}
 
 export default class SQLSourceExpression
   implements SourceExpression<SQLResult>

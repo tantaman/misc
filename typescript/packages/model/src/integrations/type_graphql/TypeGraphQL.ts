@@ -48,7 +48,7 @@ export class TypeGraphQL implements AphroditeIntegration {
     }
 
     const type = this.getGraphQLType(field);
-    return `@Field(type => ${type}${optionsString})`;
+    return `@Field(_ => ${type}${optionsString})`;
   }
 
   private getGraphQLType(field: Field<FieldType>): string {

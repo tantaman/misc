@@ -14,7 +14,51 @@ export default class GenTypescriptQuery extends CodegenStep {
   gen(): CodegenFile {
     return {
       name: this.schema.getQueryTypeName() + ".ts",
-      contents: "",
+      contents: `import {DerivedQuery} from '@strut/model/query/Query';
+class ${this.schema.getQueryTypeName()} extends DerivedQuery {
+  static create() {
+    return new ${this.schema.getQueryTypeName()}(
+      Factory.createSourceQueryFor(schema),
+      new ModelLoadExpression(schema),
+    );
+  }
+
+  ${this.getFilterMethodsCode()}
+}
+`,
     };
   }
+
+  getFilterMethodsCode(): string {
+    return "";
+  }
 }
+
+/*
+Codegening the query shouldn't care what the underlying storage impl is.
+Query layer is storage agnostic.
+
+Thus we should use the `schema` to call into a `factory` which will construct the
+`source query` / `source expression` based on the underlying storage type.
+*/
+
+/*
+Derived query example:
+SlideQuery extends DerivedQuery {
+  static create() {
+    return new SlideQuery(
+      Factory.createSourceQueryFor(schema) // e.g., new SQLSourceQuery(schema),
+      // convert raw db result into model load.
+      // we'd want to move this expression to the end in plan optimizaiton.
+      new ModelLoadExpression(schema),
+    );
+  }
+
+  whereName(predicate: Predicate) {
+    return new SlideQuery(
+      this, // the prior query
+      new ModelFilterExpression(field, predicate)
+    );
+  }
+}
+*/

@@ -84,3 +84,24 @@ export abstract class DerivedQuery<TIn, TOut> extends BaseQuery<TOut> {
     return plan;
   }
 }
+
+/*
+Derived query example:
+SlideQuery extends DerivedQuery {
+  static create() {
+    return new SlideQuery(
+      Factory.createSourceQueryFor(schema) // e.g., new SQLSourceQuery(),
+      // convert raw db result into model load.
+      // we'd want to move this expression to the end in plan optimizaiton.
+      new ModelLoadExpression(schema),
+    );
+  }
+
+  whereName(predicate: Predicate) {
+    return new SlideQuery(
+      this, // the prior query
+      new ModelFilterExpression(field, predicate)
+    );
+  }
+}
+*/

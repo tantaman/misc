@@ -53,7 +53,7 @@ export default class ${this.schema.getModelTypeName()}
       .map(
         ([key, field]) =>
           `  ${field.decorators.join("\n  ")}
-  get${upcaseAt(key, 0)}(): ${fieldToTsType(field)} {
+  get ${key}(): ${fieldToTsType(field)} {
     return this.data${isValidPropertyAccessor(key) ? `.${key}` : `['${key}']`};
   }
 `
@@ -85,9 +85,9 @@ export default class ${this.schema.getModelTypeName()}
 
   private getIdGetter(key, edge: Edge): string {
     if (edge instanceof ForeignKeyEdge) {
-      return `this.getId(), '${edge.inverse.name}'`;
+      return `this.id, '${edge.inverse.name}'`;
     } else {
-      return `this.get${upcaseAt(key, 0)}Id()`;
+      return `this.${key}Id`;
     }
   }
 }

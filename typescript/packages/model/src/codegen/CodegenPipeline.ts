@@ -5,6 +5,7 @@ import * as fs from "fs";
 import GenTypescriptQuery from "./GenTypescriptQuery.js";
 // @ts-ignore
 import prettier from "prettier";
+import { ALGOL_TEMPLATE, sign } from "./CodegenFile.js";
 
 const defaultSteps: Array<{ new (Schema): CodegenStep }> = [
   GenTypescriptModel,
@@ -26,7 +27,10 @@ export default class CodegenPipleine {
         async (f) =>
           await fs.promises.writeFile(
             dest + "/" + f.name,
-            prettier.format(f.contents, { parser: "typescript" })
+            sign(
+              prettier.format(f.contents, { parser: "typescript" }),
+              ALGOL_TEMPLATE
+            )
           )
       )
     );
