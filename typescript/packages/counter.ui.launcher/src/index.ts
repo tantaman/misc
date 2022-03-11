@@ -51,7 +51,7 @@ export default function launch(uiURI: URL) {
   window.addEventListener("message", wndListener);
 
   function processNewData(batch: Map<string, Measurement[]>) {
-    wnd.postMessage({
+    wnd?.postMessage({
       source: myId,
       event: "update",
       payload: batch,
