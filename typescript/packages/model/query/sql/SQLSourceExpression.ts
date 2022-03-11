@@ -2,7 +2,7 @@ import { after, before, DerivedExpression, Expression, filter, hop, HopExpressio
 import SQLSourceChunkIterable from './SQLSourceChunkIterable';
 import Plan from "../Plan";
 import { ChunkIterable } from "../ChunkIterable";
-import { Schema } from "../../schema/Schema";
+import Schema from "../../schema/Schema";
 import HopPlan from "../HopPlan";
 export type HoistedOperations<T> = {
   filters?: readonly ReturnType<typeof filter<T, any>>[];

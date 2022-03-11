@@ -3,12 +3,14 @@
   "version": "0.0.1",
   "main": "index.ts",
   "dependencies": {
-    "@strut/utils": "workspace:*",
-    "@strut/events": "workspace:*",
     "@strut/counter": "workspace:*",
-    "@strut/sid": "workspace:*"
+    "@strut/events": "workspace:*",
+    "@strut/sid": "workspace:*",
+    "@strut/utils": "workspace:*"
   },
   "devDependencies": {
+    "command-line-args": "^5.2.1",
+    "command-line-usage": "^6.1.1",
     "jest": "^27.4.7"
   }
 }
