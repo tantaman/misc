@@ -9,7 +9,7 @@ interface TypeGraphQLOptions {
   description: string;
 }
 
-class TypeGraphQL implements AphroditeIntegration {
+export class TypeGraphQL implements AphroditeIntegration {
   private fieldsOrEdges: string[] = [];
 
   expose(fieldsOrEdges: string[]) {

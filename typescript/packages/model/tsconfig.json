@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/", // path to output directory
+    "outDir": "./lib/", // path to output directory
     "sourceMap": true, // allow sourcemap support
     "strictNullChecks": true, // enable strict null checks as a best practice
     "module": "esnext", // specify module code generation
@@ -9,8 +9,8 @@
     "moduleResolution": "Node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "baseUrl": "./"
+    "baseUrl": "./src/",
+    "declaration": true
   },
-  "include": ["./"],
-  "exclude": ["./node_modules/"]
+  "include": ["./src/"]
 }

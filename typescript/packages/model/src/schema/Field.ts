@@ -19,7 +19,7 @@ export class Field<T extends FieldType> extends FieldAndEdgeBase {
   }
 }
 
-class StringOfField extends Field<"string"> {
+export class StringOfField extends Field<"string"> {
   constructor(private of: string) {
     super("string");
   }

@@ -1,4 +1,4 @@
-import {notEmpty} from "@strut/utils";
+import { notEmpty } from "@strut/utils";
 import Model, { IModel } from "./Model";
 import ModelMap from "./ModelMap";
 import type { Task } from "./NotifyQueue";
