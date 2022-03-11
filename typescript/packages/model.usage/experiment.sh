@@ -2,4 +2,4 @@
 # first one is relative to cli.js location
 # second is relative to where script is invoked
 # both should be relative to script invoke location
-node lib/cli.js gen ./example/SlideSchema.js --dest ./src/example/generated
+node ./node_modules/@strut/model/lib/cli.js gen ./lib/example/SlideSchema.js --dest ./src/example/generated

@@ -1,10 +1,10 @@
-import Schema from "../schema/Schema.js";
-import Edge from "../schema/Edge.js";
+import Schema from "@strut/model/schema/Schema.js";
+import Edge from "@strut/model/schema/Edge.js";
 import ComponentSchema from "./ComponentSchema.js";
-import Field from "../schema/Field.js";
+import Field from "@strut/model/schema/Field.js";
 import DeckSchema from "./DeckSchema.js";
-import TypeGraphQL from "../integrations/type_graphql/TypeGraphQL.js";
-import SchemaConfig from "../schema/SchemaConfig.js";
+import TypeGraphQL from "@strut/model/integrations/type_graphql/TypeGraphQL.js";
+import SchemaConfig from "@strut/model/schema/SchemaConfig.js";
 
 export default class SlideSchema extends Schema {
   config(config: SchemaConfig) {

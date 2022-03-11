@@ -1,8 +1,8 @@
-import Field from "../schema/Field.js";
-import Edge from "../schema/Edge.js";
-import Schema from "../schema/Schema.js";
+import Field from "@strut/model/schema/Field.js";
+import Edge from "@strut/model/schema/Edge.js";
+import Schema from "@strut/model/schema/Schema.js";
 import SlideSchema from "./SlideSchema.js";
-import SchemaConfig from "../schema/SchemaConfig.js";
+import SchemaConfig from "@strut/model/schema/SchemaConfig.js";
 
 export default class DeckSchema extends Schema {
   config(config: SchemaConfig) {
