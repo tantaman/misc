@@ -2,6 +2,7 @@
   "name": "@strut/counter",
   "version": "0.0.1",
   "main": "lib/index.js",
+  "type": "module",
   "dependencies": {
     "@strut/utils": "0.0.1"
   },

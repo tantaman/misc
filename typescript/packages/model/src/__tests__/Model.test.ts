@@ -1,7 +1,7 @@
 jest.useFakeTimers();
-import Model from "../Model";
-import { commit } from "../Changeset";
-import TransactionLog from "../TransactionLog";
+import Model from "../Model.js";
+import { commit } from "../Changeset.js";
+import TransactionLog from "../TransactionLog.js";
 
 const testLog = new TransactionLog(5);
 

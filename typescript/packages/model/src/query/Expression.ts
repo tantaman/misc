@@ -1,14 +1,14 @@
 // If you make this a module you can allow other files to extend the type
 
-import Plan, { IPlan } from "./Plan";
+import Plan, { IPlan } from "./Plan.js";
 import {
   ChunkIterable,
   FilteredChunkIterable,
   TakeChunkIterable,
-} from "./ChunkIterable";
-import { Predicate } from "./Predicate";
-import { FieldGetter } from "./Field";
-import HopPlan from "./HopPlan";
+} from "./ChunkIterable.js";
+import { Predicate } from "./Predicate.js";
+import { FieldGetter } from "./Field.js";
+import HopPlan from "./HopPlan.js";
 
 export type ExpressionType =
   | "take"

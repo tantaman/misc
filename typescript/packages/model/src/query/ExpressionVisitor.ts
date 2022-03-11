@@ -1,4 +1,4 @@
-import { filter, hop, orderBy, take } from "./Expression";
+import { filter, hop, orderBy, take } from "./Expression.js";
 
 export interface ExpressionVisitor<TRet> {
   filter(f: ReturnType<typeof filter>): TRet;

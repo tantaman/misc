@@ -1,4 +1,4 @@
-import Schema from "../schema/Schema";
+import Schema from "../schema/Schema.js";
 
 export interface FieldGetter<Tm, Tv> {
   readonly get: (Tm) => Tv;

@@ -1,12 +1,12 @@
-import { BaseChunkIterable, ChunkIterable } from "../ChunkIterable";
+import { BaseChunkIterable, ChunkIterable } from "../ChunkIterable.js";
 import {
   DerivedExpression,
   SourceExpression,
   filter,
   orderBy,
   take,
-} from "../Expression";
-import Plan from "../Plan";
+} from "../Expression.js";
+import Plan from "../Plan.js";
 
 /*
 Just do a full integration test.

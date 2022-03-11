@@ -7,7 +7,7 @@ Require all models to have ids? We could just generate ones...
 */
 
 import { SID_of } from "@strut/sid";
-import { IModel, isHasId } from "./Model";
+import { IModel, isHasId } from "./Model.js";
 
 /**
  * ModelMap will key based on id (if present) otherwise based on object identity.

@@ -1,4 +1,4 @@
-import { Field, FieldType, MapField } from "../schema/Field";
+import { Field, FieldType, MapField } from "../schema/Field.js";
 
 function fieldToTsType(field: Field<FieldType>): string {
   switch (field.type) {

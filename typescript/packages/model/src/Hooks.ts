@@ -1,5 +1,5 @@
 import { useEffect, useReducer } from "react";
-import { IModel } from "./Model";
+import { IModel } from "./Model.js";
 import counter from "@strut/counter";
 
 // TODO: use the new react18 external state hook thinger.

@@ -1,6 +1,6 @@
-import { ChunkIterable } from "./ChunkIterable";
-import { Expression, HopExpression } from "./Expression";
-import { IPlan } from "./Plan";
+import { ChunkIterable } from "./ChunkIterable.js";
+import { Expression, HopExpression } from "./Expression.js";
+import { IPlan } from "./Plan.js";
 
 export default class HopPlan implements IPlan {
   #sourcePlan: IPlan;

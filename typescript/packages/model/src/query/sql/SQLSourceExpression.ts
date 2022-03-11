@@ -9,12 +9,12 @@ import {
   orderBy,
   SourceExpression,
   take,
-} from "../Expression";
-import SQLSourceChunkIterable from "./SQLSourceChunkIterable";
-import Plan from "../Plan";
-import { ChunkIterable } from "../ChunkIterable";
-import Schema from "../../schema/Schema";
-import HopPlan from "../HopPlan";
+} from "../Expression.js";
+import SQLSourceChunkIterable from "./SQLSourceChunkIterable.js";
+import Plan from "../Plan.js";
+import { ChunkIterable } from "../ChunkIterable.js";
+import Schema from "../../schema/Schema.js";
+import HopPlan from "../HopPlan.js";
 export type HoistedOperations = {
   filters?: readonly ReturnType<typeof filter>[];
   orderBy?: ReturnType<typeof orderBy>;
@@ -28,7 +28,7 @@ export type HoistedOperations = {
   // the next hop. Could be based on what the caller asked for (count / ids / edges / models).
   what: "model" | "ids" | "edges" | "count";
 };
-import { ModelFieldGetter } from "../Field";
+import { ModelFieldGetter } from "../Field.js";
 
 interface SQLResult {}
 

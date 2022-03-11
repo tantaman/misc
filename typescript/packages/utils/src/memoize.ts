@@ -1,4 +1,4 @@
-import nullthrows from "./nullthrows";
+import nullthrows from "./nullthrows.js";
 
 export interface MemoizedFn<T> {
   (): T;

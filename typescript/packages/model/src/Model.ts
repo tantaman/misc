@@ -1,7 +1,7 @@
 type Disposer = () => void;
 import { SID_of } from "@strut/sid";
 import { typedKeys } from "@strut/utils";
-import { Changeset } from "./Changeset";
+import { Changeset } from "./Changeset.js";
 
 export interface IModel<T extends Object> {
   change(newData: Partial<T>): Changeset<this, T> | null;

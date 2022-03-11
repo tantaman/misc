@@ -1,18 +1,18 @@
-import invariant from "./invariant";
-import * as math from "./math";
-import notEmpty from "./notEmpty";
-import nullthrows from "./nullthrows";
-import typedKeys from "./typedKeys_UNSAFE";
-import memoize from "./memoize";
-import asString from "./asString";
-import debounce from "./debounce";
-import keyById from "./keyById";
-import readAndParse from "./readAndParse";
-import stripSuffix from "./stripSuffix";
-import select from "./select";
-import upcaseAt from "./upcaseAt";
-import assertUnreahable from "./assertUnreachable";
-import only from "./only";
+import invariant from "./invariant.js";
+import * as math from "./math.js";
+import notEmpty from "./notEmpty.js";
+import nullthrows from "./nullthrows.js";
+import typedKeys from "./typedKeys_UNSAFE.js";
+import memoize from "./memoize.js";
+import asString from "./asString.js";
+import debounce from "./debounce.js";
+import keyById from "./keyById.js";
+import readAndParse from "./readAndParse.js";
+import stripSuffix from "./stripSuffix.js";
+import select from "./select.js";
+import upcaseAt from "./upcaseAt.js";
+import assertUnreahable from "./assertUnreachable.js";
+import only from "./only.js";
 
 export type Concat<T, S, V> = string;
 

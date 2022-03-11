@@ -1,6 +1,6 @@
 import Observable from "@strut/events";
-import type { MergedChangesets, Transaction } from "./Changeset";
-import { Task } from "./NotifyQueue";
+import type { MergedChangesets, Transaction } from "./Changeset.js";
+import { Task } from "./NotifyQueue.js";
 
 type Node = {
   transaction: Transaction;

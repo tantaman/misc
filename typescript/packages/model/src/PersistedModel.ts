@@ -1,7 +1,7 @@
-import deviceId from "@strut/sid/deviceId";
+import { deviceId } from "@strut/sid";
 import sid, { SID_of } from "@strut/sid";
-import Model, { HasId } from "./Model";
-import { changeset, Changeset } from "./Changeset";
+import Model, { HasId } from "./Model.js";
+import { changeset, Changeset } from "./Changeset.js";
 import { invariant } from "@strut/utils";
 
 // TODO: sid_of<child> ...

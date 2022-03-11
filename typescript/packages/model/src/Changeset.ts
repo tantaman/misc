@@ -1,8 +1,8 @@
 import { notEmpty } from "@strut/utils";
-import Model, { IModel } from "./Model";
-import ModelMap from "./ModelMap";
-import type { Task } from "./NotifyQueue";
-import TransactionLog from "./TransactionLog";
+import Model, { IModel } from "./Model.js";
+import ModelMap from "./ModelMap.js";
+import type { Task } from "./NotifyQueue.js";
+import TransactionLog from "./TransactionLog.js";
 
 export type Changeset<M extends IModel<T>, T> =
   | CreateChangeset<M, T>

@@ -4,7 +4,6 @@ import commandLineArgs from "command-line-args";
 import commandLineUsage from "command-line-usage";
 import CodegenPipleine from "./codegen/CodegenPipeline.js";
 import Schema from "./schema/Schema.js";
-import * as Path from "path";
 
 type SchemaModule = { default: { get(): Schema } };
 

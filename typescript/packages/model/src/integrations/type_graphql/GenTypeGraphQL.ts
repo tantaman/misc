@@ -1,5 +1,5 @@
-import { CodegenFile } from "../../codegen/CodegenFile";
-import CodegenStep from "../../codegen/CodegenStep";
+import { CodegenFile } from "../../codegen/CodegenFile.js";
+import CodegenStep from "../../codegen/CodegenStep.js";
 
 export default class GenTypeGraphQL extends CodegenStep {
   gen(): CodegenFile {

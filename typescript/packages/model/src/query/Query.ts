@@ -3,9 +3,9 @@ import {
   Expression,
   HopExpression,
   SourceExpression,
-} from "./Expression";
-import HopPlan from "./HopPlan";
-import Plan, { IPlan } from "./Plan";
+} from "./Expression.js";
+import HopPlan from "./HopPlan.js";
+import Plan, { IPlan } from "./Plan.js";
 
 export interface Query<T> {
   plan(): IPlan;

@@ -1,4 +1,4 @@
-import Schema from "../schema/Schema";
+import Schema from "../schema/Schema.js";
 import CodegenStep from "./CodegenStep.js";
 import GenTypescriptModel from "./GenTypescriptModel.js";
 import * as fs from "fs";

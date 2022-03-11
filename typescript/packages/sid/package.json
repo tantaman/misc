@@ -2,6 +2,7 @@
   "name": "@strut/sid",
   "version": "0.0.1",
   "main": "lib/index.js",
+  "type": "module",
   "dependencies": {
     "@strut/utils": "workspace:*",
     "@fingerprintjs/fingerprintjs": "^3.3.2"

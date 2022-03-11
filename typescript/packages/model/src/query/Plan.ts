@@ -1,6 +1,6 @@
-import { ChunkIterable } from "./ChunkIterable";
-import { Expression, SourceExpression } from "./Expression";
-import HopPlan from "./HopPlan";
+import { ChunkIterable } from "./ChunkIterable.js";
+import { Expression, SourceExpression } from "./Expression.js";
+import HopPlan from "./HopPlan.js";
 
 export interface IPlan {
   get derivations(): readonly Expression[];

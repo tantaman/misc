@@ -1,6 +1,7 @@
 {
   "name": "@strut/events",
   "version": "0.0.1",
+  "type": "module",
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc"
