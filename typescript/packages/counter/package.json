@@ -5,7 +5,8 @@
   "dependencies": {
     "@strut/utils": "0.0.1"
   },
-  "script": {
-    "build": "tsc"
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w"
   }
 }

@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "main": "index.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "watch": "tsc -w"
   },
   "dependencies": {
     "@strut/counter": "workspace:*"
