@@ -60,6 +60,21 @@ export class MappedChunkIterable<TIn, TOut> extends BaseChunkIterable<TOut> {
   }
 }
 
+export class SyncMappedChunkIterable<
+  TIn,
+  TOut
+> extends BaseChunkIterable<TOut> {
+  constructor(private source: ChunkIterable<TIn>, private fn: (TIn) => TOut) {
+    super();
+  }
+
+  async *[Symbol.asyncIterator](): AsyncIterator<readonly TOut[]> {
+    for await (const chunk of this.source) {
+      yield chunk.map(this.fn);
+    }
+  }
+}
+
 export class FilteredChunkIterable<T> extends BaseChunkIterable<T> {
   constructor(
     private source: ChunkIterable<T>,

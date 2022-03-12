@@ -50,7 +50,7 @@ SlideQuery extends DerivedQuery {
       Factory.createSourceQueryFor(schema) // e.g., new SQLSourceQuery(schema),
       // convert raw db result into model load.
       // we'd want to move this expression to the end in plan optimizaiton.
-      new ModelLoadExpression(schema),
+      new ModelLoadExpression(Slide.createFromData)
     );
   }
 

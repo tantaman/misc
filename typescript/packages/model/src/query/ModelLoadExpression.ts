@@ -1,16 +1,14 @@
-import Model from "../Model";
-import Schema from "../schema/Schema";
+import { IModel } from "../Model";
+import { ChunkIterable, SyncMappedChunkIterable } from "./ChunkIterable";
 import { DerivedExpression } from "./Expression";
 
-export class ModelLoadExpression
-  implements DerivedExpression<StorageResult, Model>
+export class ModelLoadExpression<TData, TModel extends IModel<TData>>
+  implements DerivedExpression<TData, TModel>
 {
   readonly type = "modelLoad";
-  // converts from a raw payload (e.g., dict) and schema to a model instance.
-  constructor(private schema: Schema) {}
+  constructor(private factory: (TData) => TModel) {}
 
-  chainAfter() {
-    // find the model class from the schema
-    // instantiate it with our dict of stuff
+  chainAfter(iterable: ChunkIterable<TData>) {
+    return new SyncMappedChunkIterable(iterable, this.factory);
   }
 }
