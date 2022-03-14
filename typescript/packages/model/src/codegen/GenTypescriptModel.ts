@@ -16,9 +16,12 @@ export default class GenTypescriptModel extends CodegenStep {
       name: this.schema.getModelTypeName() + ".ts",
       contents: `import Model from '@strut/model/Model.js';
 ${this.getImportCode()}
+
+export type Data = ${this.getDataShape()};
+
 ${this.schema.getConfig().class.decorators.join("\n")}
 export default class ${this.schema.getModelTypeName()}
-  extends Model<${this.getDataShape()}> {
+  extends Model<Data> {
   ${this.getFieldCode()}
   ${this.getEdgeCode()}
 }

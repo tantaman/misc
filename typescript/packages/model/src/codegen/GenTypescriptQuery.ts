@@ -16,8 +16,9 @@ export default class GenTypescriptQuery extends CodegenStep {
       name: this.schema.getQueryTypeName() + ".ts",
       contents: `import {DerivedQuery} from '@strut/model/query/Query';
 import SourceQueryFactory from '@strut/model/query/SourceQueryFactory';
-import ${this.schema.getModelTypeName()} from './${this.schema.getModelTypeName()}';
-export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<T, ${this.schema.getModelTypeName()}> {
+import ${this.schema.getModelTypeName()}, { Data } from './${this.schema.getModelTypeName()}';
+
+export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<Data, ${this.schema.getModelTypeName()}> {
   static create() {
     return new ${this.schema.getQueryTypeName()}(
       SourceQueryFactory.createSourceQueryFor(schema),

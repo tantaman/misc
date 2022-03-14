@@ -1,6 +1,7 @@
 type Disposer = () => void;
 import { SID_of } from "@strut/sid";
 import { typedKeys } from "@strut/utils";
+import { StorageProviderType } from "schema/StorageConfig.js";
 import { Changeset } from "./Changeset.js";
 
 export interface IModel<T extends Object> {
@@ -12,6 +13,11 @@ export interface IModel<T extends Object> {
 
   _merge(newData: Partial<T> | undefined): [Partial<T>, Set<() => void>] | null;
 }
+
+export type Spec<T extends Object> = {
+  createFromData(data: T): IModel<T>;
+  getNativeStorageType(): StorageProviderType;
+};
 
 export interface HasId {
   readonly id: SID_of<this>;

@@ -1,6 +1,16 @@
-// SIGNED-SOURCE: <11ed15c7908575d4a71f7fe9ad113ea2>
+// SIGNED-SOURCE: <f4e7519ae454918a37c12d1bae4693aa>
 import Model from "@strut/model/Model.js";
 import { Field, ObjectType, Int, Float, ID } from "type-graphql";
+
+export type Data = {
+  id: string;
+  selected: boolean;
+  focused: boolean;
+  classes: string;
+  style: ReadonlyMap<string, string>;
+  deckId: string;
+};
+
 @ObjectType({ description: "Represents a single slide within a deck" })
 export default class Slide extends Model<{
   id: string;

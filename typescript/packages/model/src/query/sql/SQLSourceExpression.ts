@@ -29,21 +29,20 @@ export type HoistedOperations = {
   what: "model" | "ids" | "edges" | "count";
 };
 import { ModelFieldGetter } from "../Field.js";
+import { Spec } from "../../Model.js";
 
 export interface SQLResult {}
 
-export default class SQLSourceExpression
-  implements SourceExpression<SQLResult>
-{
+export default class SQLSourceExpression<T> implements SourceExpression<T> {
   constructor(
     // we should take a schema instead of db
     // we'd need the schema to know if we can hoist certain fields or not
-    private schema: Schema,
+    private spec: Spec<T>,
     private hoistedOperations: HoistedOperations
   ) {}
 
-  get iterable(): ChunkIterable<SQLResult> {
-    return new SQLSourceChunkIterable(this.schema, this.hoistedOperations);
+  get iterable(): ChunkIterable<T> {
+    return new SQLSourceChunkIterable(this.spec, this.hoistedOperations);
   }
 
   optimize(plan: Plan, nextHop?: HopPlan): Plan {
@@ -108,7 +107,7 @@ export default class SQLSourceExpression
     }
 
     return new Plan(
-      new SQLSourceExpression(this.schema, {
+      new SQLSourceExpression(this.spec, {
         filters,
         orderBy,
         limit,
@@ -125,7 +124,7 @@ export default class SQLSourceExpression
     if (
       expression.getter instanceof ModelFieldGetter &&
       expression.getter.fieldName !== null &&
-      expression.getter.schema === this.schema
+      expression.getter.spec === this.spec
     ) {
       return true;
     }

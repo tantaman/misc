@@ -1,11 +1,11 @@
-import Schema from "../schema/Schema";
+import { Spec } from "../Model";
 import SQLSourceQuery from "./sql/SQLSourceQuery";
 
 const factory = {
-  createSourceQueryFor(schema: Schema) {
-    switch (schema.getConfig().storage.providerType) {
+  createSourceQueryFor<T>(spec: Spec<T>) {
+    switch (spec.getNativeStorageType()) {
       case "MySQL":
-        return new SQLSourceQuery(schema);
+        return new SQLSourceQuery(spec);
       case "Neo4j":
         throw new Error("Neo4j is not yet supported");
       case "Wire":

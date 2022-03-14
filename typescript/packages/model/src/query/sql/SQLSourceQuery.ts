@@ -1,9 +1,9 @@
-import Schema from "schema/Schema";
-import { SourceQuery } from "../Query";
-import SQLSourceExpression, { SQLResult } from "./SQLSourceExpression";
+import { Spec } from "../../Model.js";
+import { SourceQuery } from "../Query.js";
+import SQLSourceExpression, { SQLResult } from "./SQLSourceExpression.js";
 
-export default class SQLSourceQuery extends SourceQuery<SQLResult> {
-  constructor(schema: Schema) {
-    super(new SQLSourceExpression(schema, { what: "model" }));
+export default class SQLSourceQuery<T> extends SourceQuery<T> {
+  constructor(spec: Spec<T>) {
+    super(new SQLSourceExpression(spec, { what: "model" }));
   }
 }
