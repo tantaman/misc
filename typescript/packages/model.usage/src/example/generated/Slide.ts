@@ -1,4 +1,4 @@
-// SIGNED-SOURCE: <f4e7519ae454918a37c12d1bae4693aa>
+// SIGNED-SOURCE: <b00e53d34ff8b9a865592ee0d930d8cf>
 import Model from "@strut/model/Model.js";
 import { Field, ObjectType, Int, Float, ID } from "type-graphql";
 
@@ -12,14 +12,7 @@ export type Data = {
 };
 
 @ObjectType({ description: "Represents a single slide within a deck" })
-export default class Slide extends Model<{
-  id: string;
-  selected: boolean;
-  focused: boolean;
-  classes: string;
-  style: ReadonlyMap<string, string>;
-  deckId: string;
-}> {
+export default class Slide extends Model<Data> {
   @Field((_) => ID)
   get id(): string {
     return this.data.id;
@@ -56,3 +49,11 @@ export default class Slide extends Model<{
     return DeckQuery.fromId(this.deckId);
   }
 }
+
+export const spec = {
+  createFrom(data: Data) {
+    return new Slide(data);
+  },
+
+  nativeStorageType: "MySQL",
+};

@@ -9,6 +9,8 @@ import {
 import { Predicate } from "./Predicate.js";
 import { FieldGetter } from "./Field.js";
 import HopPlan from "./HopPlan.js";
+import ModelLoadExpression from "./ModelLoadExpression.js";
+import Model, { IModel } from "Model.js";
 
 export type ExpressionType =
   | "take"
@@ -25,7 +27,8 @@ export type Expression =
   | ReturnType<typeof after>
   | ReturnType<typeof filter>
   | ReturnType<typeof orderBy>
-  | ReturnType<typeof hop>;
+  | ReturnType<typeof hop>
+  | ReturnType<typeof modelLoad>;
 /*
 declare module '@mono/model/query' {
   interface Expressions<ReturnType> {
@@ -111,6 +114,12 @@ export function hop<TIn, TOut>(): HopExpression<TIn, TOut> {
   // We'd have to determine this by taking in the edge information from
   // the schema.
   throw new Error();
+}
+
+export function modelLoad<TData, TModel extends IModel<TData>>(
+  factory: (TData) => TModel
+): ModelLoadExpression<TData, TModel> {
+  return new ModelLoadExpression(factory);
 }
 
 /*

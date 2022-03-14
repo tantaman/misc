@@ -25,6 +25,8 @@ export default class ${this.schema.getModelTypeName()}
   ${this.getFieldCode()}
   ${this.getEdgeCode()}
 }
+
+${this.getSpecCode()}
 `,
     };
   }
@@ -76,6 +78,18 @@ export default class ${this.schema.getModelTypeName()}
 `
       )
       .join("\n");
+  }
+
+  private getSpecCode(): string {
+    return `
+export const spec = {
+  createFrom(data: Data) {
+    return new ${this.schema.getModelTypeName()}(data);
+  },
+
+  nativeStorageType: "${this.schema.getConfig().storage.providerType}",
+}
+`;
   }
 
   private getFromMethodName(edge: Edge): string {

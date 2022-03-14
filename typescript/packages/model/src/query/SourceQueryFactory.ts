@@ -1,9 +1,11 @@
 import { Spec } from "../Model";
 import SQLSourceQuery from "./sql/SQLSourceQuery";
 
+// Runtime factory so we can swap to `Wire` when running on a client vs
+// the native platform.
 const factory = {
   createSourceQueryFor<T>(spec: Spec<T>) {
-    switch (spec.getNativeStorageType()) {
+    switch (spec.nativeStorageType) {
       case "MySQL":
         return new SQLSourceQuery(spec);
       case "Neo4j":

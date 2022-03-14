@@ -15,8 +15,8 @@ export interface IModel<T extends Object> {
 }
 
 export type Spec<T extends Object> = {
-  createFromData(data: T): IModel<T>;
-  getNativeStorageType(): StorageProviderType;
+  createFrom(data: T): IModel<T>;
+  readonly nativeStorageType: StorageProviderType;
 };
 
 export interface HasId {

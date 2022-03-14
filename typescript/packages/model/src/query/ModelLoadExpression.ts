@@ -2,7 +2,7 @@ import { IModel } from "../Model";
 import { ChunkIterable, SyncMappedChunkIterable } from "./ChunkIterable";
 import { DerivedExpression } from "./Expression";
 
-export class ModelLoadExpression<TData, TModel extends IModel<TData>>
+export default class ModelLoadExpression<TData, TModel extends IModel<TData>>
   implements DerivedExpression<TData, TModel>
 {
   readonly type = "modelLoad";
