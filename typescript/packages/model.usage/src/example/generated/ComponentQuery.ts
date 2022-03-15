@@ -1,12 +1,12 @@
-// SIGNED-SOURCE: <21e56a38d5f856e11327a4d18c64f72e>
-import { DerivedQuery } from "@strut/model/query/Query";
-import SourceQueryFactory from "@strut/model/query/SourceQueryFactory";
-import { modelLoad, filter } from "@strut/model/query/Expression";
-import { Predicate, default as P } from "@strut/model/query/Predicate";
-import { ModelFieldGetter } from "@strut/model/query/Field";
+// SIGNED-SOURCE: <6221ef2153fb35443bfbd1bc83718dbd>
+import { DerivedQuery } from "@strut/model/query/Query.js";
+import SourceQueryFactory from "@strut/model/query/SourceQueryFactory.js";
+import { modelLoad, filter } from "@strut/model/query/Expression.js";
+import { Predicate, default as P } from "@strut/model/query/Predicate.js";
+import { ModelFieldGetter } from "@strut/model/query/Field.js";
 import { SID_of } from "@strut/sid";
-import Component, { Data, spec } from "./Component";
-import Slide from "./Slide";
+import Component, { Data, spec } from "./Component.js";
+import Slide from "./Slide.js";
 
 export default class ComponentQuery extends DerivedQuery<Component> {
   static create() {

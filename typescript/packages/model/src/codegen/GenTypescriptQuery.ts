@@ -19,13 +19,13 @@ export default class GenTypescriptQuery extends CodegenStep {
   gen(): CodegenFile {
     return {
       name: this.schema.getQueryTypeName() + ".ts",
-      contents: `import {DerivedQuery} from '@strut/model/query/Query';
-import SourceQueryFactory from '@strut/model/query/SourceQueryFactory';
-import {modelLoad, filter} from '@strut/model/query/Expression';
-import {Predicate, default as P} from '@strut/model/query/Predicate';
-import {ModelFieldGetter} from '@strut/model/query/Field';
+      contents: `import {DerivedQuery} from '@strut/model/query/Query.js';
+import SourceQueryFactory from '@strut/model/query/SourceQueryFactory.js';
+import {modelLoad, filter} from '@strut/model/query/Expression.js';
+import {Predicate, default as P} from '@strut/model/query/Predicate.js';
+import {ModelFieldGetter} from '@strut/model/query/Field.js';
 import { SID_of } from '@strut/sid';
-import ${this.schema.getModelTypeName()}, { Data, spec } from './${this.schema.getModelTypeName()}';
+import ${this.schema.getModelTypeName()}, { Data, spec } from './${this.schema.getModelTypeName()}.js';
 ${this.getForeignKeyEdgeImports()}
 
 export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<${this.schema.getModelTypeName()}> {
@@ -107,7 +107,7 @@ static from${upcaseAt(edge.fieldName, 0)}(id: SID_of<${edge
         ([_, edge]) =>
           `import ${edge.getDest().getModelTypeName()} from "./${edge
             .getDest()
-            .getModelTypeName()}"`
+            .getModelTypeName()}.js"`
       )
       .join("\n");
   }

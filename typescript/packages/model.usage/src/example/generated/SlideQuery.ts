@@ -1,12 +1,12 @@
-// SIGNED-SOURCE: <3b29ce40fe997d1ea0e82f950cbfafd9>
-import { DerivedQuery } from "@strut/model/query/Query";
-import SourceQueryFactory from "@strut/model/query/SourceQueryFactory";
-import { modelLoad, filter } from "@strut/model/query/Expression";
-import { Predicate, default as P } from "@strut/model/query/Predicate";
-import { ModelFieldGetter } from "@strut/model/query/Field";
+// SIGNED-SOURCE: <1fd53cfb6a219d60ae11140dcdf93bd5>
+import { DerivedQuery } from "@strut/model/query/Query.js";
+import SourceQueryFactory from "@strut/model/query/SourceQueryFactory.js";
+import { modelLoad, filter } from "@strut/model/query/Expression.js";
+import { Predicate, default as P } from "@strut/model/query/Predicate.js";
+import { ModelFieldGetter } from "@strut/model/query/Field.js";
 import { SID_of } from "@strut/sid";
-import Slide, { Data, spec } from "./Slide";
-import Deck from "./Deck";
+import Slide, { Data, spec } from "./Slide.js";
+import Deck from "./Deck.js";
 
 export default class SlideQuery extends DerivedQuery<Slide> {
   static create() {

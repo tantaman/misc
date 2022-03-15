@@ -57,7 +57,11 @@ ${this.getSpecCode()}
     for (const val of this.schema.getConfig().module.imports.values()) {
       const name = val.name != null ? val.name + " " : "";
       const as = val.as != null ? "as " + val.as + " " : "";
-      ret.push(`import ${name}${as}from '${val.from}'`);
+      if (name === "") {
+        ret.push(`import "${val.from}";`);
+      } else {
+        ret.push(`import ${name}${as}from '${val.from}';`);
+      }
     }
     for (const [_, edge] of Object.entries(this.schema.getEdges())) {
       ret.push(

@@ -1,7 +1,8 @@
-// SIGNED-SOURCE: <e49250780acbe7046c425af4843b8fbd>
+// SIGNED-SOURCE: <2aa8fb64e1c505ddf7e57fdb46249093>
 import Model from "@strut/model/Model.js";
 import { SID_of } from "@strut/sid";
 import { Field, ObjectType, Int, Float, ID } from "type-graphql";
+import "reflect-metadata";
 import ComponentQuery from "./ComponentQuery.js";
 import Component from "./Component.js";
 import DeckQuery from "./DeckQuery.js";
