@@ -1,22 +1,25 @@
-// SIGNED-SOURCE: <d46ce9451fe7c68595ea910c58441f31>
+// SIGNED-SOURCE: <e49250780acbe7046c425af4843b8fbd>
 import Model from "@strut/model/Model.js";
+import { SID_of } from "@strut/sid";
 import { Field, ObjectType, Int, Float, ID } from "type-graphql";
 import ComponentQuery from "./ComponentQuery.js";
+import Component from "./Component.js";
 import DeckQuery from "./DeckQuery.js";
+import Deck from "./Deck.js";
 
 export type Data = {
-  id: string;
+  id: SID_of<any>;
   selected: boolean;
   focused: boolean;
   classes: string;
   style: ReadonlyMap<string, string>;
-  deckId: string;
+  deckId: SID_of<Deck>;
 };
 
 @ObjectType({ description: "Represents a single slide within a deck" })
 export default class Slide extends Model<Data> {
   @Field((_) => ID)
-  get id(): string {
+  get id(): SID_of<any> {
     return this.data.id;
   }
 
@@ -39,16 +42,12 @@ export default class Slide extends Model<Data> {
     return this.data.style;
   }
 
-  get deckId(): string {
-    return this.data.deckId;
-  }
-
   queryComponents(): ComponentQuery {
-    return ComponentQuery.fromSlide(this.id);
+    return ComponentQuery.fromSlideId(this.id);
   }
 
   queryDeck(): DeckQuery {
-    return DeckQuery.fromId(this.deckId);
+    return DeckQuery.fromId(this.id);
   }
 }
 

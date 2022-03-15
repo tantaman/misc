@@ -5,6 +5,7 @@ import CodegenStep from "./CodegenStep.js";
 import { isValidPropertyAccessor } from "@strut/utils";
 import { fieldToTsType } from "./tsUtils.js";
 import { CodegenFile } from "./CodegenFile.js";
+import { getEdgeProps } from "../schema/schemaUtils.js";
 
 export default class GenTypescriptModel extends CodegenStep {
   constructor(private schema: Schema) {
@@ -15,6 +16,7 @@ export default class GenTypescriptModel extends CodegenStep {
     return {
       name: this.schema.getModelTypeName() + ".ts",
       contents: `import Model from '@strut/model/Model.js';
+import {SID_of} from '@strut/sid';
 ${this.getImportCode()}
 
 export type Data = ${this.getDataShape()};
@@ -32,14 +34,21 @@ ${this.getSpecCode()}
   }
 
   private getDataShape(): string {
-    const props = Object.entries(this.schema.getFields()).map(
+    const fieldProps = Object.entries(this.schema.getFields()).map(
       ([key, field]) =>
         `${isValidPropertyAccessor(key) ? key : `'${key}'`}: ${fieldToTsType(
           field
         )}`
     );
+    const edgeProps = getEdgeProps(this.schema.getEdges()).map(
+      ([key, edge]) =>
+        `${
+          isValidPropertyAccessor(key) ? key + "Id" : `'${key}Id'`
+        }: SID_of<${edge.getDest().getModelTypeName()}>
+      `
+    );
     return `{
-  ${props.join(",\n  ")}
+  ${fieldProps.concat(edgeProps).join(",\n  ")}
 }`;
   }
 
@@ -53,6 +62,11 @@ ${this.getSpecCode()}
     for (const [_, edge] of Object.entries(this.schema.getEdges())) {
       ret.push(
         `import ${edge.getQueryTypeName()} from "./${edge.getQueryTypeName()}.js"`
+      );
+      ret.push(
+        `import ${edge.getDest().getModelTypeName()} from "./${edge
+          .getDest()
+          .getModelTypeName()}.js"`
       );
     }
     return ret.join("\n");
@@ -77,7 +91,7 @@ ${this.getSpecCode()}
         ([key, edge]) =>
           `  query${upcaseAt(key, 0)}(): ${edge.getQueryTypeName()} {
     return ${edge.getQueryTypeName()}.${this.getFromMethodName(edge)}(
-      ${this.getIdGetter(key, edge)}
+      this.id
     );
   }
 `
@@ -100,17 +114,9 @@ export const spec = {
   // TODO: not `fromFroeignId` but `fromForiegnKeyEdgeName` e.g., `fromSlideId`
   private getFromMethodName(edge: Edge): string {
     if (edge instanceof ForeignKeyEdge) {
-      return "fromForeignId";
+      return `from${upcaseAt(edge.fieldName, 0)}`;
     }
     // Junction edges could be foreign id depending on what side of the junction we are
     return "fromId";
-  }
-
-  private getIdGetter(key, edge: Edge): string {
-    if (edge instanceof ForeignKeyEdge) {
-      return `this.id, '${edge.inverse.name}'`;
-    } else {
-      return `this.${key}Id`;
-    }
   }
 }

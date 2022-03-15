@@ -45,6 +45,10 @@ export class FieldEdge extends Edge {
   constructor(dest: Schema) {
     super(dest);
   }
+
+  get fieldName() {
+    return this.name + "Id";
+  }
 }
 
 export class JunctionEdge extends Edge {
@@ -62,9 +66,13 @@ export class JunctionEdge extends Edge {
 }
 
 export class ForeignKeyEdge extends Edge {
-  constructor(dest: Schema) {
+  constructor(dest: Schema, private inverseEdgeName: string) {
     super(dest);
     // this.inverse(inverse);
+  }
+
+  get fieldName() {
+    return this.inverseEdgeName + "Id";
   }
 }
 
@@ -78,7 +86,7 @@ export default {
     inverseEdgeName: string
   ): ForeignKeyEdge {
     const s = otherSchema.get();
-    return new ForeignKeyEdge(s);
+    return new ForeignKeyEdge(s, inverseEdgeName);
   },
 
   junction<T extends Schema>(otherSchema: typeof Schema): JunctionEdge {

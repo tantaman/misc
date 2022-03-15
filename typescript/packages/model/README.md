@@ -1,6 +1,10 @@
 TODO:
 1. Put field edge ids into `Data`
 2. Generate call `fromForiegnKey` (fromSlideId) in methods like `queryComponents` on `Slide`
+3. Use ID types...
+4. Validation step...
+   1. To ensure foreign key edges have an appropriate inverse field edge
+      1. on the other schema.
 
 Are the synthetic transactions not good enough / not doing it?
 

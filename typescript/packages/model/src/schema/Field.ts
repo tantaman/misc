@@ -1,9 +1,11 @@
 import FieldAndEdgeBase from "./FieldAndEdgeBase.js";
+import Schema from "./Schema.js";
 
 export type FieldType = "id" | "boolean" | "string" | "map" | "int";
 
 export class Field<T extends FieldType> extends FieldAndEdgeBase {
   isRequired: boolean = true;
+  source: Schema;
 
   constructor(public readonly type: T) {
     super();

@@ -77,6 +77,9 @@ export default class Schema {
       edge.name = key;
       edge.setSource(this);
     });
+    Object.entries(this._fields).forEach(([key, field]) => {
+      field.source = this;
+    });
 
     this.integrations().forEach((i) => {
       i.applyTo(this);

@@ -1,16 +1,19 @@
-// SIGNED-SOURCE: <b5d396309f805af13c2d0f463e66c888>
+// SIGNED-SOURCE: <404e045f2095e8d53170e1a80745a9a2>
 import Model from "@strut/model/Model.js";
+import { SID_of } from "@strut/sid";
 import SlideQuery from "./SlideQuery.js";
+import Slide from "./Slide.js";
 
 export type Data = {
-  id: string;
+  id: SID_of<any>;
   selected: boolean;
   classes: string;
   style: ReadonlyMap<string, string>;
+  slideId: SID_of<Slide>;
 };
 
 export default class Component extends Model<Data> {
-  get id(): string {
+  get id(): SID_of<any> {
     return this.data.id;
   }
 
@@ -27,7 +30,7 @@ export default class Component extends Model<Data> {
   }
 
   querySlide(): SlideQuery {
-    return SlideQuery.fromId(this.slideId);
+    return SlideQuery.fromId(this.id);
   }
 }
 

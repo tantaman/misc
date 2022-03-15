@@ -1,4 +1,4 @@
-// SIGNED-SOURCE: <4ddb469318d83ccc9f8ff478d52b5115>
+// SIGNED-SOURCE: <48e140a17287985e9fb7f0a0e46f192e>
 import { DerivedQuery } from "@strut/model/query/Query";
 import SourceQueryFactory from "@strut/model/query/SourceQueryFactory";
 import { modelLoad, filter } from "@strut/model/query/Expression";
@@ -6,6 +6,7 @@ import { Predicate, default as P } from "@strut/model/query/Predicate";
 import { ModelFieldGetter } from "@strut/model/query/Field";
 import { SID_of } from "@strut/sid";
 import Component, { Data, spec } from "./Component";
+import Slide from "./Slide";
 
 export default class ComponentQuery extends DerivedQuery<Data, Component> {
   static create() {
@@ -19,8 +20,8 @@ export default class ComponentQuery extends DerivedQuery<Data, Component> {
     return this.create().whereId(P.equals(id));
   }
 
-  static fromSlide(id: SID_of<Slide>) {
-    return this.create().whereSlide(P.equals(id));
+  static fromSlideId(id: SID_of<Slide>) {
+    return this.create().whereSlideId(P.equals(id));
   }
 
   whereId(p: Predicate<Data["id"]>) {

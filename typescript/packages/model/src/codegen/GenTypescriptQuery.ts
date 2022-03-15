@@ -1,4 +1,5 @@
 import { upcaseAt } from "@strut/utils";
+import { getInverseForeignEdges } from "../schema/schemaUtils.js";
 import { ForeignKeyEdge } from "../schema/Edge.js";
 import { Field, FieldType } from "../schema/Field.js";
 import Schema from "../schema/Schema.js";
@@ -24,6 +25,7 @@ import {Predicate, default as P} from '@strut/model/query/Predicate';
 import {ModelFieldGetter} from '@strut/model/query/Field';
 import { SID_of } from '@strut/sid';
 import ${this.schema.getModelTypeName()}, { Data, spec } from './${this.schema.getModelTypeName()}';
+${this.getForeignKeyEdgeImports()}
 
 export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<Data, ${this.schema.getModelTypeName()}> {
   static create() {
@@ -71,10 +73,7 @@ static fromId(id: SID_of<${this.schema.getModelTypeName()}>) {
   }
 
   private getFromForeignIdMethods(): string {
-    const foreign = Object.entries(this.schema.getEdges()).filter(
-      ([_, edge]) =>
-        edge.getInverse() != null && edge.getInverse() instanceof ForeignKeyEdge
-    );
+    const foreign = getInverseForeignEdges(this.schema.getEdges());
 
     return foreign.map(this.getFromForeignIdMethod).join("\n");
   }
@@ -84,12 +83,25 @@ static fromId(id: SID_of<${this.schema.getModelTypeName()}>) {
     ForeignKeyEdge
   ]): string {
     return `
-static from${upcaseAt(key, 0)}(id: SID_of<${edge
+static from${upcaseAt(edge.fieldName, 0)}(id: SID_of<${edge
       .getDest()
       .getModelTypeName()}>) {
-  return this.create().where${upcaseAt(key, 0)}(P.equals(id));
+  return this.create().where${upcaseAt(edge.fieldName, 0)}(P.equals(id));
 }
 `;
+  }
+
+  private getForeignKeyEdgeImports(): string {
+    const foreign = getInverseForeignEdges(this.schema.getEdges());
+
+    return foreign
+      .map(
+        ([_, edge]) =>
+          `import ${edge.getDest().getModelTypeName()} from "./${edge
+            .getDest()
+            .getModelTypeName()}"`
+      )
+      .join("\n");
   }
 }
 

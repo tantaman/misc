@@ -30,7 +30,6 @@ export default class SlideSchema extends Schema {
         Field.stringOf("CssAttribute"),
         Field.stringOf("CssValue")
       ),
-      deckId: Field.id.int(),
     };
   }
 
