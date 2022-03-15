@@ -65,11 +65,11 @@ export abstract class HopQuery<TIn, TOut> extends BaseQuery<TOut> {
   }
 }
 
-export abstract class DerivedQuery<TIn, TOut> extends BaseQuery<TOut> {
-  #priorQuery: Query<TIn>;
+export abstract class DerivedQuery<TOut> extends BaseQuery<TOut> {
+  #priorQuery: Query<TOut>;
   #expression?: Expression;
 
-  constructor(priorQuery: Query<TIn>, expression?: Expression) {
+  constructor(priorQuery: Query<TOut>, expression?: Expression) {
     super();
     this.#priorQuery = priorQuery;
     this.#expression = expression;

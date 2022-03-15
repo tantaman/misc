@@ -27,7 +27,7 @@ import { SID_of } from '@strut/sid';
 import ${this.schema.getModelTypeName()}, { Data, spec } from './${this.schema.getModelTypeName()}';
 ${this.getForeignKeyEdgeImports()}
 
-export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<Data, ${this.schema.getModelTypeName()}> {
+export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<${this.schema.getModelTypeName()}> {
   static create() {
     return new ${this.schema.getQueryTypeName()}(
       SourceQueryFactory.createSourceQueryFor(spec),

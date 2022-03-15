@@ -1,4 +1,4 @@
-// SIGNED-SOURCE: <bddcea7ebf66e792d1d1689765682cae>
+// SIGNED-SOURCE: <f21633207a1e300adfdd35ec612c45e8>
 import { DerivedQuery } from "@strut/model/query/Query";
 import SourceQueryFactory from "@strut/model/query/SourceQueryFactory";
 import { modelLoad, filter } from "@strut/model/query/Expression";
@@ -8,7 +8,7 @@ import { SID_of } from "@strut/sid";
 import Slide, { Data, spec } from "./Slide";
 import Deck from "./Deck";
 
-export default class SlideQuery extends DerivedQuery<Data, Slide> {
+export default class SlideQuery extends DerivedQuery<Slide> {
   static create() {
     return new SlideQuery(
       SourceQueryFactory.createSourceQueryFor(spec),
