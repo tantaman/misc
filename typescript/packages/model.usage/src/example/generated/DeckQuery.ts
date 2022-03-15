@@ -1,8 +1,9 @@
-// SIGNED-SOURCE: <b5c02c801a3f08ace178d2d636654246>
+// SIGNED-SOURCE: <a0b3e2ade94a9e142767b55c1da44416>
 import { DerivedQuery } from "@strut/model/query/Query";
 import SourceQueryFactory from "@strut/model/query/SourceQueryFactory";
-import { modelLoad } from "@strut/model/query/Expression";
+import { modelLoad, filter } from "@strut/model/query/Expression";
 import { Predicate } from "@strut/model/query/Predicate";
+import { ModelFieldGetter } from "@strut/model/query/Field";
 import Deck, { Data, spec } from "./Deck";
 
 export default class DeckQuery extends DerivedQuery<Data, Deck> {
@@ -13,6 +14,16 @@ export default class DeckQuery extends DerivedQuery<Data, Deck> {
     );
   }
 
-  whereId(p: Predicate<Data["id"]>) {}
-  whereTitle(p: Predicate<Data["title"]>) {}
+  whereId(p: Predicate<Data["id"]>) {
+    return new DeckQuery(
+      this,
+      filter(new ModelFieldGetter<"id", Data, Deck>("id"), p)
+    );
+  }
+  whereTitle(p: Predicate<Data["title"]>) {
+    return new DeckQuery(
+      this,
+      filter(new ModelFieldGetter<"title", Data, Deck>("title"), p)
+    );
+  }
 }

@@ -18,8 +18,9 @@ export default class GenTypescriptQuery extends CodegenStep {
       name: this.schema.getQueryTypeName() + ".ts",
       contents: `import {DerivedQuery} from '@strut/model/query/Query';
 import SourceQueryFactory from '@strut/model/query/SourceQueryFactory';
-import {modelLoad} from '@strut/model/query/Expression';
+import {modelLoad, filter} from '@strut/model/query/Expression';
 import {Predicate} from '@strut/model/query/Predicate';
+import {ModelFieldGetter} from '@strut/model/query/Field';
 import ${this.schema.getModelTypeName()}, { Data, spec } from './${this.schema.getModelTypeName()}';
 
 export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<Data, ${this.schema.getModelTypeName()}> {
@@ -47,7 +48,13 @@ export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<Data
   }
 
   private getFilterMethodBody(key: string, field: Field<FieldType>): string {
-    return "";
+    return `return new ${this.schema.getQueryTypeName()}(
+      this,
+      filter(
+        new ModelFieldGetter<"${key}", Data, ${this.schema.getModelTypeName()}>("${key}"),
+        p,
+      ), 
+    )`;
   }
 }
 
