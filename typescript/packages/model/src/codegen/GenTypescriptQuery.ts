@@ -1,4 +1,5 @@
 import { upcaseAt } from "@strut/utils";
+import { ForeignKeyEdge } from "../schema/Edge.js";
 import { Field, FieldType } from "../schema/Field.js";
 import Schema from "../schema/Schema.js";
 import { CodegenFile } from "./CodegenFile.js";
@@ -19,8 +20,9 @@ export default class GenTypescriptQuery extends CodegenStep {
       contents: `import {DerivedQuery} from '@strut/model/query/Query';
 import SourceQueryFactory from '@strut/model/query/SourceQueryFactory';
 import {modelLoad, filter} from '@strut/model/query/Expression';
-import {Predicate} from '@strut/model/query/Predicate';
+import {Predicate, default as P} from '@strut/model/query/Predicate';
 import {ModelFieldGetter} from '@strut/model/query/Field';
+import { SID_of } from '@strut/sid';
 import ${this.schema.getModelTypeName()}, { Data, spec } from './${this.schema.getModelTypeName()}';
 
 export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<Data, ${this.schema.getModelTypeName()}> {
@@ -30,6 +32,8 @@ export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<Data
       modelLoad(spec.createFrom),
     );
   }
+  ${this.getFromIdMethod()}
+  ${this.getFromForeignIdMethods()}
 
   ${this.getFilterMethodsCode()}
 }
@@ -40,9 +44,10 @@ export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<Data
   private getFilterMethodsCode(): string {
     const ret: string[] = [];
     for (const [key, field] of Object.entries(this.schema.getFields())) {
-      ret.push(`where${upcaseAt(key, 0)}(p: Predicate<Data["${key}"]>) {
-  ${this.getFilterMethodBody(key, field)}
-}`);
+      ret.push(`
+      where${upcaseAt(key, 0)}(p: Predicate<Data["${key}"]>) {
+        ${this.getFilterMethodBody(key, field)}
+      }`);
     }
     return ret.join("\n");
   }
@@ -55,6 +60,36 @@ export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<Data
         p,
       ), 
     )`;
+  }
+
+  private getFromIdMethod(): string {
+    return `
+static fromId(id: SID_of<${this.schema.getModelTypeName()}>) {
+  return this.create().whereId(P.equals(id));
+}
+`;
+  }
+
+  private getFromForeignIdMethods(): string {
+    const foreign = Object.entries(this.schema.getEdges()).filter(
+      ([_, edge]) =>
+        edge.getInverse() != null && edge.getInverse() instanceof ForeignKeyEdge
+    );
+
+    return foreign.map(this.getFromForeignIdMethod).join("\n");
+  }
+
+  private getFromForeignIdMethod([key, edge]: [
+    string,
+    ForeignKeyEdge
+  ]): string {
+    return `
+static from${upcaseAt(key, 0)}(id: SID_of<${edge
+      .getDest()
+      .getModelTypeName()}>) {
+  return this.create().where${upcaseAt(key, 0)}(P.equals(id));
+}
+`;
   }
 }
 

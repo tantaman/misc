@@ -23,7 +23,9 @@ export default class ComponentSchema extends Schema {
 
   edges() {
     return {
-      slide: Edge.field(SlideSchema),
+      slide: Edge.field(SlideSchema).inverse(
+        Edge.foreignKey(ComponentSchema, "slide")
+      ),
     };
   }
 }

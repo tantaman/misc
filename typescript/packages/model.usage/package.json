@@ -4,6 +4,7 @@
   "type": "module",
   "dependencies": {
     "@strut/model": "workspace:*",
+    "@strut/sid": "workspace:*",
     "class-validator": "^0.13.2",
     "graphql": "^16.3.0",
     "type-graphql": "^1.1.1"

@@ -97,6 +97,7 @@ export const spec = {
 `;
   }
 
+  // TODO: not `fromFroeignId` but `fromForiegnKeyEdgeName` e.g., `fromSlideId`
   private getFromMethodName(edge: Edge): string {
     if (edge instanceof ForeignKeyEdge) {
       return "fromForeignId";

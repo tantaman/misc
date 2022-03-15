@@ -73,7 +73,10 @@ export default class Schema {
     this.config(this._config);
     this._fields = this.fields();
     this._edges = this.edges();
-    Object.entries(this._edges).forEach(([key, edge]) => (edge.name = key));
+    Object.entries(this._edges).forEach(([key, edge]) => {
+      edge.name = key;
+      edge.setSource(this);
+    });
 
     this.integrations().forEach((i) => {
       i.applyTo(this);

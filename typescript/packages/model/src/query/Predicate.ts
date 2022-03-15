@@ -30,3 +30,15 @@ export class NotEqual<Tv> implements Predicate<Tv> {
     return new Equal(this.value);
   }
 }
+
+const P = {
+  equals<Tv>(value: Tv) {
+    return new Equal(value);
+  },
+
+  notEqual<Tv>(value: Tv) {
+    return new NotEqual(value);
+  },
+};
+
+export default P;

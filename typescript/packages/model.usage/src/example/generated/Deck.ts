@@ -1,4 +1,4 @@
-// SIGNED-SOURCE: <a2c32f98eb91c620b744445088d81b08>
+// SIGNED-SOURCE: <e0a30e329a801abe639c2fedd0469c56>
 import Model from "@strut/model/Model.js";
 import SlideQuery from "./SlideQuery.js";
 
@@ -17,7 +17,7 @@ export default class Deck extends Model<Data> {
   }
 
   querySlides(): SlideQuery {
-    return SlideQuery.fromForeignId(this.id, "deck");
+    return SlideQuery.fromForeignId(this.id, "inverse");
   }
 }
 

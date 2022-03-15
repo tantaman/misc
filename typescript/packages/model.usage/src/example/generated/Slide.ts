@@ -1,4 +1,4 @@
-// SIGNED-SOURCE: <806ec3498aab376405736c0702a370d9>
+// SIGNED-SOURCE: <d46ce9451fe7c68595ea910c58441f31>
 import Model from "@strut/model/Model.js";
 import { Field, ObjectType, Int, Float, ID } from "type-graphql";
 import ComponentQuery from "./ComponentQuery.js";
@@ -44,7 +44,7 @@ export default class Slide extends Model<Data> {
   }
 
   queryComponents(): ComponentQuery {
-    return ComponentQuery.fromForeignId(this.id, "slide");
+    return ComponentQuery.fromSlide(this.id);
   }
 
   queryDeck(): DeckQuery {

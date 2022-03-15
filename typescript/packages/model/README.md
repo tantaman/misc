@@ -1,3 +1,7 @@
+TODO:
+1. Put field edge ids into `Data`
+2. Generate call `fromForiegnKey` (fromSlideId) in methods like `queryComponents` on `Slide`
+
 Are the synthetic transactions not good enough / not doing it?
 
 What does a non synth tx look like?

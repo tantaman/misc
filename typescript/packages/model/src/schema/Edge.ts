@@ -6,7 +6,7 @@ export type QueriesWith = "id" | "foreign_id";
 
 export abstract class Edge extends FieldAndEdgeBase {
   private src?: Schema;
-  private uniq: boolean = false;
+  private theInverse?: Edge;
 
   constructor(private readonly dest: Schema) {
     super();
@@ -24,11 +24,20 @@ export abstract class Edge extends FieldAndEdgeBase {
     return nullthrows(this.src);
   }
 
+  getInverse(): Edge | undefined {
+    return this.theInverse;
+  }
+
   getQueryTypeName(): string {
     // TODO: this won't always be the case.
     // Some query types will vary based on source schema as well or
     // presesnce of edge data.
     return this.dest.getQueryTypeName();
+  }
+
+  inverse(inbound: Edge) {
+    this.theInverse = inbound;
+    return this;
   }
 }
 
@@ -53,8 +62,9 @@ export class JunctionEdge extends Edge {
 }
 
 export class ForeignKeyEdge extends Edge {
-  constructor(dest: Schema, public inverse: FieldEdge) {
+  constructor(dest: Schema) {
     super(dest);
+    // this.inverse(inverse);
   }
 }
 
@@ -68,7 +78,7 @@ export default {
     inverseEdgeName: string
   ): ForeignKeyEdge {
     const s = otherSchema.get();
-    return new ForeignKeyEdge(s, s.getEdges()[inverseEdgeName]);
+    return new ForeignKeyEdge(s);
   },
 
   junction<T extends Schema>(otherSchema: typeof Schema): JunctionEdge {
