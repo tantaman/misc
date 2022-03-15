@@ -13,7 +13,6 @@ import {
 import SQLSourceChunkIterable from "./SQLSourceChunkIterable.js";
 import Plan from "../Plan.js";
 import { ChunkIterable } from "../ChunkIterable.js";
-import Schema from "../../schema/Schema.js";
 import HopPlan from "../HopPlan.js";
 export type HoistedOperations = {
   filters?: readonly ReturnType<typeof filter>[];
@@ -159,9 +158,24 @@ export default class SQLSourceExpression<T> implements SourceExpression<T> {
     // If there are expressions that couldn't be rolled into source
     // then we can't roll the hop in too! We'd be hopping before
     // applying all expressions.
+    // Nit: -- this isn't quite true...
+    // we currently stick in a model load expression immediately when
+    // creating a query.
+    // We can drop the model load expression when we are hopping
+    // because we obvisouly no longer want the model from
+    // the first query.
+    // Note: we could also just never stick in a model load expression
+    // until calling `gen` or what have you.
+    // ModelLoadExpression vs IDLoad vs EdgeLoad would determine our `what`
+    // parameter which has thus far been indeterminate.
     if (thisHasRemainingExpressions) {
       return false;
     }
+
+    // Check if the hop is:
+    // 1. the same backend (e.g., SQL)
+    // 2. on the same logical database
+    // 3. has a corresponding backend operator (e.g., join) to perform the hop
     return false;
   }
 }
