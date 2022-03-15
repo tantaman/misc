@@ -1,19 +1,15 @@
-import { Spec, IModel } from "../Model.js";
-import Schema from "../schema/Schema.js";
+import { IModel } from "../Model.js";
 
 export interface FieldGetter<Tm, Tv> {
   readonly get: (Tm) => Tv;
 }
 
-export class ModelFieldGetter<Td, Tm extends IModel<Td>, Tv>
-  implements FieldGetter<Tm, Tv>
+export class ModelFieldGetter<Tk extends keyof Td, Td, Tm extends IModel<Td>>
+  implements FieldGetter<Tm, Td[Tk]>
 {
-  constructor(
-    public readonly spec: Spec<Td>,
-    public readonly fieldName: string | null
-  ) {}
+  constructor(public readonly fieldName: Tk) {}
 
-  get(model: Tm): Tv {
-    throw new Error();
+  get(model: Tm): Td[Tk] {
+    return model._get(this.fieldName);
   }
 }

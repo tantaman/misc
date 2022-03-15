@@ -12,6 +12,7 @@ export interface IModel<T extends Object> {
   subscribeTo(keys: (keyof T)[], c: () => void): Disposer;
 
   _merge(newData: Partial<T> | undefined): [Partial<T>, Set<() => void>] | null;
+  _get<K extends keyof T>(key: K): T[K];
 }
 
 export type Spec<T extends Object> = {
@@ -119,6 +120,10 @@ export default class Model<T extends Object, E extends Object = {}>
         : undefined
     );
     return [lastData, notifications];
+  }
+
+  _get<K extends keyof T>(key: K): T[K] {
+    return this.data[key];
   }
 
   isNoop(newData: Partial<T>): boolean {

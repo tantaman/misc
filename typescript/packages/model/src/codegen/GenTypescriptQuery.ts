@@ -1,3 +1,4 @@
+import { Field, FieldType } from "../schema/Field.js";
 import Schema from "../schema/Schema.js";
 import { CodegenFile } from "./CodegenFile.js";
 import CodegenStep from "./CodegenStep.js";
@@ -33,7 +34,15 @@ export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<Data
     };
   }
 
-  getFilterMethodsCode(): string {
+  private getFilterMethodsCode(): string {
+    const ret: string[] = [];
+    for (const [key, field] of Object.entries(this.schema.getFields())) {
+      ret.push(`${this.getFilterMethodBody(key, field)}`);
+    }
+    return ret.join("\n");
+  }
+
+  private getFilterMethodBody(key: string, field: Field<FieldType>): string {
     return "";
   }
 }

@@ -121,11 +121,7 @@ export default class SQLSourceExpression<T> implements SourceExpression<T> {
   }
 
   #optimizeFilter(expression: ReturnType<typeof filter>): boolean {
-    if (
-      expression.getter instanceof ModelFieldGetter &&
-      expression.getter.fieldName !== null &&
-      expression.getter.spec === this.spec
-    ) {
+    if (expression.getter instanceof ModelFieldGetter) {
       return true;
     }
     return false;
