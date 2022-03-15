@@ -53,18 +53,21 @@ export class TypeGraphQL implements AphroditeIntegration {
   }
 
   private getGraphQLType(field: Field<FieldType>): string {
-    switch (field.type) {
+    switch (field.storageType) {
       case "id":
         return "ID";
       case "boolean":
         return "Boolean";
       case "string":
         return "String";
-      case "int":
+      case "int32":
+      // TODO: does typegraphql convert > 53 bit ints to strings for js?
+      case "int64":
+      case "uint64":
         return "Int";
       default:
         throw new Error(
-          `${field.type} is not yet support by the TypeGraphQL integration`
+          `${field.storageType} is not yet support by the TypeGraphQL integration`
         );
     }
   }

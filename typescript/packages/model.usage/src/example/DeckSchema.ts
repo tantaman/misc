@@ -11,7 +11,7 @@ export default class DeckSchema extends Schema {
 
   fields() {
     return {
-      id: Field.id.guid(),
+      id: Field.id.sid(),
       title: Field.stringOf("string"),
     };
   }

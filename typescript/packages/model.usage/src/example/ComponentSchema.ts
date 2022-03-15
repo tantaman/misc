@@ -11,7 +11,7 @@ export default class ComponentSchema extends Schema {
 
   fields() {
     return {
-      id: Field.id.guid(),
+      id: Field.id.sid(),
       selected: Field.bool(),
       classes: Field.stringOf("CssClass"),
       style: Field.map(
