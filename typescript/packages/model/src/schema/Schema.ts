@@ -78,6 +78,7 @@ export default class Schema {
       edge.setSource(this);
     });
     Object.entries(this._fields).forEach(([key, field]) => {
+      field.name = key;
       field.source = this;
     });
 

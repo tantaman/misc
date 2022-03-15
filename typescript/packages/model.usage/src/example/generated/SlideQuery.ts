@@ -1,4 +1,4 @@
-// SIGNED-SOURCE: <f21633207a1e300adfdd35ec612c45e8>
+// SIGNED-SOURCE: <3b29ce40fe997d1ea0e82f950cbfafd9>
 import { DerivedQuery } from "@strut/model/query/Query";
 import SourceQueryFactory from "@strut/model/query/SourceQueryFactory";
 import { modelLoad, filter } from "@strut/model/query/Expression";
@@ -56,6 +56,13 @@ export default class SlideQuery extends DerivedQuery<Slide> {
     return new SlideQuery(
       this,
       filter(new ModelFieldGetter<"style", Data, Slide>("style"), p)
+    );
+  }
+
+  whereDeckId(p: Predicate<Data["deckId"]>) {
+    return new SlideQuery(
+      this,
+      filter(new ModelFieldGetter<"deckId", Data, Slide>("deckId"), p)
     );
   }
 }

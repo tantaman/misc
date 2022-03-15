@@ -5,6 +5,7 @@ import { Field, FieldType } from "../schema/Field.js";
 import Schema from "../schema/Schema.js";
 import { CodegenFile } from "./CodegenFile.js";
 import CodegenStep from "./CodegenStep.js";
+import FieldAndEdgeBase from "schema/FieldAndEdgeBase.js";
 
 export default class GenTypescriptQuery extends CodegenStep {
   constructor(private schema: Schema) {
@@ -45,20 +46,27 @@ export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<${th
 
   private getFilterMethodsCode(): string {
     const ret: string[] = [];
-    for (const [key, field] of Object.entries(this.schema.getFields())) {
+    const fields = Object.entries(this.schema.getFields());
+    const edges = getInverseForeignEdges(this.schema.getEdges());
+    const combined: [string, FieldAndEdgeBase][] = [...fields, ...edges];
+    for (const [key, field] of combined) {
       ret.push(`
-      where${upcaseAt(key, 0)}(p: Predicate<Data["${key}"]>) {
+      where${upcaseAt(field.fieldName, 0)}(p: Predicate<Data["${
+        field.fieldName
+      }"]>) {
         ${this.getFilterMethodBody(key, field)}
       }`);
     }
     return ret.join("\n");
   }
 
-  private getFilterMethodBody(key: string, field: Field<FieldType>): string {
+  private getFilterMethodBody(key: string, field: FieldAndEdgeBase): string {
     return `return new ${this.schema.getQueryTypeName()}(
       this,
       filter(
-        new ModelFieldGetter<"${key}", Data, ${this.schema.getModelTypeName()}>("${key}"),
+        new ModelFieldGetter<"${
+          field.fieldName
+        }", Data, ${this.schema.getModelTypeName()}>("${field.fieldName}"),
         p,
       ), 
     )`;

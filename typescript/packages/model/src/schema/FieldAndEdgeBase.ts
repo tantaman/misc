@@ -13,4 +13,8 @@ export default class FieldAndEdgeBase {
     this.isUnique = true;
     return this;
   }
+
+  get fieldName(): string {
+    return this.name;
+  }
 }
