@@ -1,6 +1,8 @@
-// SIGNED-SOURCE: <b00e53d34ff8b9a865592ee0d930d8cf>
+// SIGNED-SOURCE: <806ec3498aab376405736c0702a370d9>
 import Model from "@strut/model/Model.js";
 import { Field, ObjectType, Int, Float, ID } from "type-graphql";
+import ComponentQuery from "./ComponentQuery.js";
+import DeckQuery from "./DeckQuery.js";
 
 export type Data = {
   id: string;

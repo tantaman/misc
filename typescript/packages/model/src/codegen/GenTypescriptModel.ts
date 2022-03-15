@@ -50,6 +50,11 @@ ${this.getSpecCode()}
       const as = val.as != null ? "as " + val.as + " " : "";
       ret.push(`import ${name}${as}from '${val.from}'`);
     }
+    for (const [_, edge] of Object.entries(this.schema.getEdges())) {
+      ret.push(
+        `import ${edge.getQueryTypeName()} from "./${edge.getQueryTypeName()}.js"`
+      );
+    }
     return ret.join("\n");
   }
 

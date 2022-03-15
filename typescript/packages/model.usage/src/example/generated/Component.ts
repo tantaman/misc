@@ -1,5 +1,6 @@
-// SIGNED-SOURCE: <9b8dc9cb92d1b196588646b2156271e5>
+// SIGNED-SOURCE: <b5d396309f805af13c2d0f463e66c888>
 import Model from "@strut/model/Model.js";
+import SlideQuery from "./SlideQuery.js";
 
 export type Data = {
   id: string;
