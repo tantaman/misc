@@ -1,3 +1,4 @@
+import { upcaseAt } from "@strut/utils";
 import { Field, FieldType } from "../schema/Field.js";
 import Schema from "../schema/Schema.js";
 import { CodegenFile } from "./CodegenFile.js";
@@ -18,6 +19,7 @@ export default class GenTypescriptQuery extends CodegenStep {
       contents: `import {DerivedQuery} from '@strut/model/query/Query';
 import SourceQueryFactory from '@strut/model/query/SourceQueryFactory';
 import {modelLoad} from '@strut/model/query/Expression';
+import {Predicate} from '@strut/model/query/Predicate';
 import ${this.schema.getModelTypeName()}, { Data, spec } from './${this.schema.getModelTypeName()}';
 
 export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<Data, ${this.schema.getModelTypeName()}> {
@@ -37,7 +39,9 @@ export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<Data
   private getFilterMethodsCode(): string {
     const ret: string[] = [];
     for (const [key, field] of Object.entries(this.schema.getFields())) {
-      ret.push(`${this.getFilterMethodBody(key, field)}`);
+      ret.push(`where${upcaseAt(key, 0)}(p: Predicate<Data["${key}"]>) {
+  ${this.getFilterMethodBody(key, field)}
+}`);
     }
     return ret.join("\n");
   }

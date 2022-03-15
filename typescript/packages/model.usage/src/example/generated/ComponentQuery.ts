@@ -1,7 +1,8 @@
-// SIGNED-SOURCE: <8f1acca7e86bc3f7f6e33c726f6382ce>
+// SIGNED-SOURCE: <ee20425f98fc7f4dbacf6c293a60f83a>
 import { DerivedQuery } from "@strut/model/query/Query";
 import SourceQueryFactory from "@strut/model/query/SourceQueryFactory";
 import { modelLoad } from "@strut/model/query/Expression";
+import { Predicate } from "@strut/model/query/Predicate";
 import Component, { Data, spec } from "./Component";
 
 export default class ComponentQuery extends DerivedQuery<Data, Component> {
@@ -11,4 +12,9 @@ export default class ComponentQuery extends DerivedQuery<Data, Component> {
       modelLoad(spec.createFrom)
     );
   }
+
+  whereId(p: Predicate<Data["id"]>) {}
+  whereSelected(p: Predicate<Data["selected"]>) {}
+  whereClasses(p: Predicate<Data["classes"]>) {}
+  whereStyle(p: Predicate<Data["style"]>) {}
 }
