@@ -6,6 +6,7 @@ function fieldToTsType(field: Field<FieldType>): string {
       // TODO: pull in the correct id type.
       return "SID_of<any>";
     case "int32":
+    case "float32":
       return "number";
     case "int64":
     case "uint64":

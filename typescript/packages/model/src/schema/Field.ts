@@ -9,7 +9,8 @@ export type FieldType =
   | "array"
   | "int32"
   | "int64"
-  | "uint64";
+  | "uint64"
+  | "float32";
 
 export class Field<T extends FieldType> extends FieldAndEdgeBase {
   isRequired: boolean = true;
@@ -74,6 +75,10 @@ export default {
 
   uint64(): Field<"uint64"> {
     return new Field("uint64");
+  },
+
+  float32(): Field<"float32"> {
+    return new Field("float32");
   },
 
   stringOf(type: string): StringOfField {
