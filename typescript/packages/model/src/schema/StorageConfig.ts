@@ -1,5 +1,3 @@
-export type StorageProviderType = "MySQL" | "Neo4j" | "Wire";
-
 export default class StorageConfig {
   #providerType: StorageProviderType = "MySQL";
 
@@ -14,3 +12,17 @@ export default class StorageConfig {
     return this.#providerType;
   }
 }
+
+export type StorageDescriptor =
+  | {
+      nativeStorageType: "MySQL";
+      dbName: string;
+      tableName: string;
+    }
+  | {
+      nativeStorageType: "Neo4j";
+      dbName: string;
+      labelName: string;
+    };
+
+export type StorageProviderType = StorageDescriptor["nativeStorageType"];

@@ -42,7 +42,7 @@ export default class Plan implements IPlan {
   }
 
   optimize(nextHop?: HopPlan) {
-    return this.#source.optimize(this);
+    return this.#source.optimize(this, nextHop);
   }
 
   // partition(): [Plan, ...HopPlan] {

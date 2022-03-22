@@ -110,7 +110,9 @@ export const spec = {
     return new ${this.schema.getModelTypeName()}(data);
   },
 
-  nativeStorageType: "${this.schema.getConfig().storage.providerType}",
+  storageDescriptor: {
+    nativeStorageType: "${this.schema.getConfig().storage.providerType}",
+  },
 }
 `;
   }
