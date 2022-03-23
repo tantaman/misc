@@ -36,11 +36,11 @@ export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<${th
       modelLoad(spec.createFrom),
     );
   }
-  ${this.getFromIdMethod()}
-  ${this.getFromForeignIdMethods()}
+  ${this.getFromIdMethodCode()}
+  ${this.getFromForeignIdMethodsCode()}
 
   ${this.getFilterMethodsCode()}
-  ${this.getHopMethods()}
+  ${this.getHopMethodsCode()}
 }
 `,
     };
@@ -74,7 +74,7 @@ export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<${th
     )`;
   }
 
-  private getFromIdMethod(): string {
+  private getFromIdMethodCode(): string {
     return `
 static fromId(id: SID_of<${this.schema.getModelTypeName()}>) {
   return this.create().whereId(P.equals(id));
@@ -82,13 +82,13 @@ static fromId(id: SID_of<${this.schema.getModelTypeName()}>) {
 `;
   }
 
-  private getFromForeignIdMethods(): string {
+  private getFromForeignIdMethodsCode(): string {
     const foreign = getInverseForeignEdges(this.schema.getEdges());
 
-    return foreign.map(this.getFromForeignIdMethod).join("\n");
+    return foreign.map(this.getFromForeignIdMethodCode).join("\n");
   }
 
-  private getFromForeignIdMethod([key, edge]: [
+  private getFromForeignIdMethodCode([key, edge]: [
     string,
     ForeignKeyEdge
   ]): string {
@@ -128,7 +128,7 @@ static from${upcaseAt(edge.fieldName, 0)}(id: SID_of<${edge
       .join("\n");
   }
 
-  private getHopMethods(): string {
+  private getHopMethodsCode(): string {
     // hop methods are edges
     // e.g., Deck.querySlides().queryComponents()
     return Object.values(this.schema.getEdges())

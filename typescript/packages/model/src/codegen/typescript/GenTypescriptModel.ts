@@ -19,7 +19,7 @@ export default class GenTypescriptModel extends CodegenStep {
 import {SID_of} from '@strut/sid';
 ${this.getImportCode()}
 
-export type Data = ${this.getDataShape()};
+export type Data = ${this.getDataShapeCode()};
 
 ${this.schema.getConfig().class.decorators.join("\n")}
 export default class ${this.schema.getModelTypeName()}
@@ -33,7 +33,7 @@ ${this.getSpecCode()}
     };
   }
 
-  private getDataShape(): string {
+  private getDataShapeCode(): string {
     const fieldProps = Object.entries(this.schema.getFields()).map(
       ([key, field]) =>
         `${isValidPropertyAccessor(key) ? key : `'${key}'`}: ${fieldToTsType(
