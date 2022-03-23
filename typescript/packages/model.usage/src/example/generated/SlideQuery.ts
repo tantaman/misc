@@ -1,17 +1,21 @@
-// SIGNED-SOURCE: <1fd53cfb6a219d60ae11140dcdf93bd5>
+// SIGNED-SOURCE: <8ad698f31c8cbf5ea797f1f7bcfafc70>
 import { DerivedQuery } from "@strut/model/query/Query.js";
-import SourceQueryFactory from "@strut/model/query/SourceQueryFactory.js";
+import QueryFactory from "@strut/model/query/QueryFactory.js";
 import { modelLoad, filter } from "@strut/model/query/Expression.js";
 import { Predicate, default as P } from "@strut/model/query/Predicate.js";
 import { ModelFieldGetter } from "@strut/model/query/Field.js";
 import { SID_of } from "@strut/sid";
 import Slide, { Data, spec } from "./Slide.js";
 import Deck from "./Deck.js";
+import { spec as ComponentSpec } from "./Component.js";
+import ComponentQuery from "./ComponentQuery";
+import { spec as DeckSpec } from "./Deck.js";
+import DeckQuery from "./DeckQuery";
 
 export default class SlideQuery extends DerivedQuery<Slide> {
   static create() {
     return new SlideQuery(
-      SourceQueryFactory.createSourceQueryFor(spec),
+      QueryFactory.createSourceQueryFor(spec),
       modelLoad(spec.createFrom)
     );
   }
@@ -63,6 +67,18 @@ export default class SlideQuery extends DerivedQuery<Slide> {
     return new SlideQuery(
       this,
       filter(new ModelFieldGetter<"deckId", Data, Slide>("deckId"), p)
+    );
+  }
+  queryComponents(): ComponentQuery {
+    return new ComponentQuery(
+      QueryFactory.createHopQueryFor(this, spec, ComponentSpec),
+      modelLoad(ComponentSpec.createFrom)
+    );
+  }
+  queryDeck(): DeckQuery {
+    return new DeckQuery(
+      QueryFactory.createHopQueryFor(this, spec, DeckSpec),
+      modelLoad(DeckSpec.createFrom)
     );
   }
 }

@@ -15,7 +15,7 @@ export default class GenTypescriptModel extends CodegenStep {
   gen(): CodegenFile {
     return {
       name: this.schema.getModelTypeName() + ".ts",
-      contents: `import Model from '@strut/model/Model.js';
+      contents: `import Model, {Spec} from '@strut/model/Model.js';
 import {SID_of} from '@strut/sid';
 ${this.getImportCode()}
 
@@ -105,7 +105,7 @@ ${this.getSpecCode()}
 
   private getSpecCode(): string {
     return `
-export const spec = {
+export const spec: Spec<Data> = {
   createFrom(data: Data) {
     return new ${this.schema.getModelTypeName()}(data);
   },

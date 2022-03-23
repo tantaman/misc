@@ -1,5 +1,5 @@
-// SIGNED-SOURCE: <3fe1cfd15acf210e8d90b6694c8e1af1>
-import Model from "@strut/model/Model.js";
+// SIGNED-SOURCE: <ab581fce9214af7fe78db3c11f46e7e5>
+import Model, { Spec } from "@strut/model/Model.js";
 import { SID_of } from "@strut/sid";
 import SlideQuery from "./SlideQuery.js";
 import Slide from "./Slide.js";
@@ -23,10 +23,12 @@ export default class Deck extends Model<Data> {
   }
 }
 
-export const spec = {
+export const spec: Spec<Data> = {
   createFrom(data: Data) {
     return new Deck(data);
   },
 
-  nativeStorageType: "MySQL",
+  storageDescriptor: {
+    nativeStorageType: "MySQL",
+  },
 };

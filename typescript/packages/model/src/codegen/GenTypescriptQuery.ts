@@ -1,6 +1,6 @@
 import { upcaseAt } from "@strut/utils";
 import { getInverseForeignEdges } from "../schema/schemaUtils.js";
-import { ForeignKeyEdge } from "../schema/Edge.js";
+import { Edge, ForeignKeyEdge } from "../schema/Edge.js";
 import { Field, FieldType } from "../schema/Field.js";
 import Schema from "../schema/Schema.js";
 import { CodegenFile } from "./CodegenFile.js";
@@ -16,22 +16,24 @@ export default class GenTypescriptQuery extends CodegenStep {
   // we can technically return an array of files.
   // Since we can have edge data... so we'd need edge queries rather than a query per schema.
   // b/c structure on the edges...
+  // TODO: de-duplicate imports by storing imports in an intermediate structure.
   gen(): CodegenFile {
     return {
       name: this.schema.getQueryTypeName() + ".ts",
       contents: `import {DerivedQuery} from '@strut/model/query/Query.js';
-import SourceQueryFactory from '@strut/model/query/SourceQueryFactory.js';
+import QueryFactory from '@strut/model/query/QueryFactory.js';
 import {modelLoad, filter} from '@strut/model/query/Expression.js';
 import {Predicate, default as P} from '@strut/model/query/Predicate.js';
 import {ModelFieldGetter} from '@strut/model/query/Field.js';
 import { SID_of } from '@strut/sid';
 import ${this.schema.getModelTypeName()}, { Data, spec } from './${this.schema.getModelTypeName()}.js';
 ${this.getForeignKeyEdgeImports()}
+${this.getEdgeImports()}
 
 export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<${this.schema.getModelTypeName()}> {
   static create() {
     return new ${this.schema.getQueryTypeName()}(
-      SourceQueryFactory.createSourceQueryFor(spec),
+      QueryFactory.createSourceQueryFor(spec),
       modelLoad(spec.createFrom),
     );
   }
@@ -39,6 +41,7 @@ export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<${th
   ${this.getFromForeignIdMethods()}
 
   ${this.getFilterMethodsCode()}
+  ${this.getHopMethods()}
 }
 `,
     };
@@ -110,6 +113,38 @@ static from${upcaseAt(edge.fieldName, 0)}(id: SID_of<${edge
             .getModelTypeName()}.js"`
       )
       .join("\n");
+  }
+
+  private getEdgeImports(): string {
+    return Object.values(this.schema.getEdges())
+      .map(
+        (edge) =>
+          `import {spec as ${edge
+            .getDest()
+            .getModelTypeName()}Spec} from "./${edge
+            .getDest()
+            .getModelTypeName()}.js"
+          import ${edge.getQueryTypeName()} from "./${edge.getQueryTypeName()}"`
+      )
+      .join("\n");
+  }
+
+  private getHopMethods(): string {
+    // hop methods are edges
+    // e.g., Deck.querySlides().queryComponents()
+    return Object.values(this.schema.getEdges())
+      .map((edge) => this.getHopMethod(edge))
+      .join("\n");
+  }
+
+  private getHopMethod(edge: Edge): string {
+    return `query${upcaseAt(edge.name, 0)}(): ${edge.getQueryTypeName()} {
+      return new ${edge.getQueryTypeName()}(QueryFactory.createHopQueryFor(this, spec, ${edge
+      .getDest()
+      .getModelTypeName()}Spec),
+      modelLoad(${edge.getDest().getModelTypeName()}Spec.createFrom),
+      );
+    }`;
   }
 }
 

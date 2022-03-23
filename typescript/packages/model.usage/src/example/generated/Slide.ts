@@ -1,5 +1,5 @@
-// SIGNED-SOURCE: <2aa8fb64e1c505ddf7e57fdb46249093>
-import Model from "@strut/model/Model.js";
+// SIGNED-SOURCE: <b701af6de3366a560f2a5f851ebac035>
+import Model, { Spec } from "@strut/model/Model.js";
 import { SID_of } from "@strut/sid";
 import { Field, ObjectType, Int, Float, ID } from "type-graphql";
 import "reflect-metadata";
@@ -52,10 +52,12 @@ export default class Slide extends Model<Data> {
   }
 }
 
-export const spec = {
+export const spec: Spec<Data> = {
   createFrom(data: Data) {
     return new Slide(data);
   },
 
-  nativeStorageType: "MySQL",
+  storageDescriptor: {
+    nativeStorageType: "MySQL",
+  },
 };

@@ -1,5 +1,5 @@
-// SIGNED-SOURCE: <404e045f2095e8d53170e1a80745a9a2>
-import Model from "@strut/model/Model.js";
+// SIGNED-SOURCE: <34d1e3da32a71ea0767b0b3b15bef358>
+import Model, { Spec } from "@strut/model/Model.js";
 import { SID_of } from "@strut/sid";
 import SlideQuery from "./SlideQuery.js";
 import Slide from "./Slide.js";
@@ -34,10 +34,12 @@ export default class Component extends Model<Data> {
   }
 }
 
-export const spec = {
+export const spec: Spec<Data> = {
   createFrom(data: Data) {
     return new Component(data);
   },
 
-  nativeStorageType: "MySQL",
+  storageDescriptor: {
+    nativeStorageType: "MySQL",
+  },
 };

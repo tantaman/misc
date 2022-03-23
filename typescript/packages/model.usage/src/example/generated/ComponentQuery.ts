@@ -1,17 +1,19 @@
-// SIGNED-SOURCE: <6221ef2153fb35443bfbd1bc83718dbd>
+// SIGNED-SOURCE: <23f7913979571baf790a3f4333d19035>
 import { DerivedQuery } from "@strut/model/query/Query.js";
-import SourceQueryFactory from "@strut/model/query/SourceQueryFactory.js";
+import QueryFactory from "@strut/model/query/QueryFactory.js";
 import { modelLoad, filter } from "@strut/model/query/Expression.js";
 import { Predicate, default as P } from "@strut/model/query/Predicate.js";
 import { ModelFieldGetter } from "@strut/model/query/Field.js";
 import { SID_of } from "@strut/sid";
 import Component, { Data, spec } from "./Component.js";
 import Slide from "./Slide.js";
+import { spec as SlideSpec } from "./Slide.js";
+import SlideQuery from "./SlideQuery";
 
 export default class ComponentQuery extends DerivedQuery<Component> {
   static create() {
     return new ComponentQuery(
-      SourceQueryFactory.createSourceQueryFor(spec),
+      QueryFactory.createSourceQueryFor(spec),
       modelLoad(spec.createFrom)
     );
   }
@@ -56,6 +58,12 @@ export default class ComponentQuery extends DerivedQuery<Component> {
     return new ComponentQuery(
       this,
       filter(new ModelFieldGetter<"slideId", Data, Component>("slideId"), p)
+    );
+  }
+  querySlide(): SlideQuery {
+    return new SlideQuery(
+      QueryFactory.createHopQueryFor(this, spec, SlideSpec),
+      modelLoad(SlideSpec.createFrom)
     );
   }
 }

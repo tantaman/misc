@@ -16,30 +16,35 @@ export default class SQLHopQuery<TIn, TOut> extends HopQuery<TIn, TOut> {
     destSpec: Spec<TOut>
   ) {
     // based on source and dest spec, determine the appropriate hop expression
-    return new SQLHopQuery(
-      sourceQuery,
-      createExpression(sourceSpec.storageDescriptor, destSpec.storageDescriptor)
-    );
+    return new SQLHopQuery(sourceQuery, createExpression(sourceSpec, destSpec));
   }
 }
 
 function createExpression<TIn, TOut>(
-  sourceDescriptor: StorageDescriptor,
-  destDescriptor: StorageDescriptor
+  sourceSpec: Spec<TIn>,
+  destSpec: Spec<TOut>
 ): HopExpression<TIn, TOut> {
-  if (sourceDescriptor.nativeStorageType === "MySQL") {
+  if (sourceSpec.storageDescriptor.nativeStorageType === "MySQL") {
     invariant(
-      destDescriptor.nativeStorageType === "MySQL",
+      destSpec.storageDescriptor.nativeStorageType === "MySQL",
       "SQLHopQuery created for non-sql destination"
     );
 
     // If we're the same storage on the same DB, we can use a join expression
-    if (sourceDescriptor.dbName === destDescriptor.dbName) {
-      return createJoinExpression(sourceDescriptor, destDescriptor);
+    if (
+      sourceSpec.storageDescriptor.dbName === destSpec.storageDescriptor.dbName
+    ) {
+      return createJoinExpression(
+        sourceSpec.storageDescriptor,
+        destSpec.storageDescriptor
+      );
     }
   }
 
-  return createChainedHopExpression(sourceDescriptor, destDescriptor);
+  return createChainedHopExpression(
+    sourceSpec.storageDescriptor,
+    destSpec.storageDescriptor
+  );
 }
 
 function createJoinExpression<TIn, TOut>(
