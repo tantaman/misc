@@ -1,4 +1,4 @@
-// SIGNED-SOURCE: <ab581fce9214af7fe78db3c11f46e7e5>
+// SIGNED-SOURCE: <dae33a40ba37bb89a362749e55ec9c0d>
 import Model, { Spec } from "@strut/model/Model.js";
 import { SID_of } from "@strut/sid";
 import SlideQuery from "./SlideQuery.js";
@@ -29,6 +29,6 @@ export const spec: Spec<Data> = {
   },
 
   storageDescriptor: {
-    nativeStorageType: "MySQL",
+    nativeStorageType: "Postgres",
   },
 };

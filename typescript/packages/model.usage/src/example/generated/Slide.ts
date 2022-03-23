@@ -1,4 +1,4 @@
-// SIGNED-SOURCE: <7440d1ae11f6a718800664db7f2c3967>
+// SIGNED-SOURCE: <0fde34be20cf5f87723e904d5cf9b0bc>
 import Model, { Spec } from "@strut/model/Model.js";
 import { SID_of } from "@strut/sid";
 import { Field, ObjectType, Int, Float, ID } from "type-graphql";
@@ -14,7 +14,7 @@ export type Data = {
   focused: boolean;
   classes: string;
   style: ReadonlyMap<string, string>;
-  deckIdId: SID_of<Deck>;
+  deckId: SID_of<Deck>;
 };
 
 @ObjectType({ description: "Represents a single slide within a deck" })
@@ -58,6 +58,6 @@ export const spec: Spec<Data> = {
   },
 
   storageDescriptor: {
-    nativeStorageType: "MySQL",
+    nativeStorageType: "Postgres",
   },
 };

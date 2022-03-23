@@ -1,5 +1,5 @@
 import { Field, FieldType } from "./Field.js";
-import { Edge, FieldEdge } from "./Edge.js";
+import { Edge, FieldEdge, ForeignKeyEdge } from "./Edge.js";
 import { stripSuffix } from "@strut/utils";
 import AphroditeIntegration from "../integrations/AphroditeIntegration.js";
 import SchemaConfig from "./SchemaConfig.js";
@@ -95,6 +95,18 @@ export default class Schema {
   getEdges(): { [key: string]: Edge } {
     this.integrate();
     return this._edges;
+  }
+
+  getFieldsDefinedThroughEdges(): FieldEdge[] {
+    return Object.values(this.getEdges()).filter(
+      (edge) => edge instanceof FieldEdge
+    ) as FieldEdge[];
+  }
+
+  getInverseForeignKeyEdges(): ForeignKeyEdge[] {
+    return Object.values(this.getEdges()).filter(
+      (edge) => edge.getInverse() instanceof ForeignKeyEdge
+    ) as ForeignKeyEdge[];
   }
 
   getConfig(): SchemaConfig {

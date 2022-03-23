@@ -1,4 +1,4 @@
-import { FieldEdge } from "schema/Edge.js";
+import { FieldEdge } from "../../schema/Edge.js";
 import { Field, FieldType } from "../../schema/Field.js";
 
 export function fieldToMySqlType(field: Field<FieldType> | FieldEdge): string {

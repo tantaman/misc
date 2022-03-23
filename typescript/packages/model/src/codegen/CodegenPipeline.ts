@@ -5,11 +5,17 @@ import GenTypescriptModel from "./typescript/GenTypescriptModel.js";
 import * as fs from "fs";
 import GenTypescriptQuery from "./typescript/GenTypescriptQuery.js";
 import GenMySqlTableSchema from "./mysql/GenMySQLTableSchema.js";
+import GenPostgresTableSchema from "./postgres/GenPostgresTableSchema.js";
 
 const defaultSteps: Array<{
   new (Schema): CodegenStep;
   accepts: (Schema) => boolean;
-}> = [GenTypescriptModel, GenTypescriptQuery, GenMySqlTableSchema];
+}> = [
+  GenTypescriptModel,
+  GenTypescriptQuery,
+  GenMySqlTableSchema,
+  GenPostgresTableSchema,
+];
 
 export default class CodegenPipleine {
   constructor(
@@ -18,9 +24,8 @@ export default class CodegenPipleine {
 
   async gen(schemas: Array<Schema>, dest: string) {
     const files = schemas.flatMap((schema) =>
-      maybeMap(
-        this.steps,
-        (step) => step.accepts(schema) && new step(schema).gen()
+      maybeMap(this.steps, (step) =>
+        !step.accepts(schema) ? null : new step(schema).gen()
       )
     );
 

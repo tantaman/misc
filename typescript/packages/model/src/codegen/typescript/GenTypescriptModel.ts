@@ -5,7 +5,6 @@ import CodegenStep from "../CodegenStep.js";
 import { isValidPropertyAccessor } from "@strut/utils";
 import { fieldToTsType } from "./tsUtils.js";
 import { CodegenFile } from "../CodegenFile.js";
-import { getEdgeProps } from "../../schema/schemaUtils.js";
 import TypescriptFile from "./TypescriptFile.js";
 
 export default class GenTypescriptModel extends CodegenStep {
@@ -45,9 +44,9 @@ ${this.getSpecCode()}
           field
         )}`
     );
-    const edgeProps = getEdgeProps(this.schema.getEdges()).map(
+    const edgeProps = this.schema.getFieldsDefinedThroughEdges().map(
       (edge) =>
-        `${edge.fieldName}Id: SID_of<${edge.getDest().getModelTypeName()}>
+        `${edge.fieldName}: SID_of<${edge.getDest().getModelTypeName()}>
       `
     );
     return `{

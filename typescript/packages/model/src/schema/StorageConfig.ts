@@ -1,5 +1,5 @@
 export default class StorageConfig {
-  #providerType: StorageProviderType = "MySQL";
+  #providerType: StorageProviderType = "Postgres";
 
   constructor() {}
 
@@ -23,6 +23,11 @@ export type StorageDescriptor =
       nativeStorageType: "Neo4j";
       dbName: string;
       labelName: string;
+    }
+  | {
+      nativeStorageType: "Postgres";
+      dbName: string;
+      tableName: string;
     };
 
 export type StorageProviderType = StorageDescriptor["nativeStorageType"];

@@ -1,0 +1,2 @@
+-- SIGNED-SOURCE: <8875ffeac6f42e579b8095f1070ceccc>
+CREATE TABLE Deck (id BIGINT, title TEXT);

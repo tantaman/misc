@@ -1,5 +1,4 @@
 import { upcaseAt } from "@strut/utils";
-import { getInverseForeignEdges } from "../../schema/schemaUtils.js";
 import { Edge, ForeignKeyEdge } from "../../schema/Edge.js";
 import Schema from "../../schema/Schema.js";
 import { CodegenFile } from "../CodegenFile.js";
@@ -53,21 +52,21 @@ export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<${th
 
   private getFilterMethodsCode(): string {
     const ret: string[] = [];
-    const fields = Object.entries(this.schema.getFields());
-    const edges = getInverseForeignEdges(this.schema.getEdges());
-    const combined: [string, FieldAndEdgeBase][] = [...fields, ...edges];
-    for (const [key, field] of combined) {
+    const fields = Object.values(this.schema.getFields());
+    const edges = this.schema.getInverseForeignKeyEdges();
+    const combined: FieldAndEdgeBase[] = [...fields, ...edges];
+    for (const field of combined) {
       ret.push(`
       where${upcaseAt(field.fieldName, 0)}(p: Predicate<Data["${
         field.fieldName
       }"]>) {
-        ${this.getFilterMethodBody(key, field)}
+        ${this.getFilterMethodBody(field)}
       }`);
     }
     return ret.join("\n");
   }
 
-  private getFilterMethodBody(key: string, field: FieldAndEdgeBase): string {
+  private getFilterMethodBody(field: FieldAndEdgeBase): string {
     return `return new ${this.schema.getQueryTypeName()}(
       this,
       filter(
@@ -88,15 +87,12 @@ static fromId(id: SID_of<${this.schema.getModelTypeName()}>) {
   }
 
   private getFromForeignIdMethodsCode(): string {
-    const foreign = getInverseForeignEdges(this.schema.getEdges());
+    const foreign = this.schema.getInverseForeignKeyEdges();
 
     return foreign.map(this.getFromForeignIdMethodCode).join("\n");
   }
 
-  private getFromForeignIdMethodCode([key, edge]: [
-    string,
-    ForeignKeyEdge
-  ]): string {
+  private getFromForeignIdMethodCode(edge: ForeignKeyEdge): string {
     return `
 static from${upcaseAt(edge.fieldName, 0)}(id: SID_of<${edge
       .getDest()
@@ -107,11 +103,11 @@ static from${upcaseAt(edge.fieldName, 0)}(id: SID_of<${edge
   }
 
   private getForeignKeyEdgeImports(): string {
-    const foreign = getInverseForeignEdges(this.schema.getEdges());
+    const foreign = this.schema.getInverseForeignKeyEdges();
 
     return foreign
       .map(
-        ([_, edge]) =>
+        (edge) =>
           `import ${edge.getDest().getModelTypeName()} from "./${edge
             .getDest()
             .getModelTypeName()}.js"`

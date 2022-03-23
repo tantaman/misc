@@ -1,12 +1,12 @@
 import { CodegenFile } from "../CodegenFile.js";
-import CodegenStep from "../CodegenStep.js";
 import Schema from "../../schema/Schema.js";
-import { fieldToMySqlType } from "./mysqlField.js";
-import SqlFile from "../SqlFile.js";
+import CodegenStep from "../CodegenStep.js";
+import SqlFile from "..//SqlFile.js";
+import { fieldToPostgresType } from "./postgresField.js";
 
-export default class GenMySqlTableSchema extends CodegenStep {
+export default class GenPostgresTableSchema extends CodegenStep {
   static accepts(schema: Schema): boolean {
-    return schema.getConfig().storage.providerType === "MySQL";
+    return schema.getConfig().storage.providerType === "Postgres";
   }
 
   constructor(private schema: Schema) {
@@ -15,7 +15,7 @@ export default class GenMySqlTableSchema extends CodegenStep {
 
   gen(): CodegenFile {
     return new SqlFile(
-      this.schema.getModelTypeName() + ".my.sql",
+      this.schema.getModelTypeName() + ".pg.sql",
       `CREATE TABLE ${this.schema.getModelTypeName()} (
         ${this.getColumnDefinitionsCode()}
         ${this.getPrimaryKeyCode()}
@@ -30,7 +30,7 @@ export default class GenMySqlTableSchema extends CodegenStep {
       ...this.schema.getFieldsDefinedThroughEdges(),
     ];
 
-    return fields.map((f) => `${f.name} ${fieldToMySqlType(f)}`).join(",\n");
+    return fields.map((f) => `${f.name} ${fieldToPostgresType(f)}`).join(",\n");
   }
 
   private getPrimaryKeyCode(): string {
