@@ -1,3 +1,4 @@
+// TODO: this should be in a separate package from the core model code.
 import { useEffect, useReducer } from "react";
 import { IModel } from "./Model.js";
 import counter from "@strut/counter";

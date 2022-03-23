@@ -1,15 +1,16 @@
-import { Spec } from "../Model";
-import { DerivedQuery, HopQuery } from "./Query";
-import SQLHopExpression from "./sql/SqlHopExpression";
-import SQLHopQuery from "./sql/SqlHopQuery";
-import SQLSourceQuery from "./sql/SqlSourceQuery";
+import assertUnreachable from "@strut/utils/lib/assertUnreachable";
+import { Spec } from "../Model.js";
+import { DerivedQuery, HopQuery, Query } from "./Query.js";
+import SQLHopQuery from "./sql/SqlHopQuery.js";
+import SQLSourceQuery from "./sql/SqlSourceQuery.js";
 
 // Runtime factory so we can swap to `Wire` when running on a client vs
 // the native platform.
 const factory = {
-  createSourceQueryFor<T>(spec: Spec<T>) {
+  createSourceQueryFor<T>(spec: Spec<T>): Query<T> {
     switch (spec.storageDescriptor.nativeStorageType) {
       case "MySQL":
+      case "Postgres":
         return new SQLSourceQuery(spec);
       case "Neo4j":
         throw new Error("Neo4j is not yet supported");
