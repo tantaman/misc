@@ -3,6 +3,7 @@ import CodegenStep from "../CodegenStep.js";
 import Schema from "../../schema/Schema.js";
 import { getEdgeProps } from "../../schema/schemaUtils.js";
 import { fieldToMySqlType } from "./mysqlUtils.js";
+import MySqlFile from "./MySqlFile.js";
 
 export default class GenMySqlTableSchema extends CodegenStep {
   static accepts(schema: Schema): boolean {
@@ -16,14 +17,14 @@ export default class GenMySqlTableSchema extends CodegenStep {
   }
 
   gen(): CodegenFile {
-    return {
-      name: this.schema.getModelTypeName() + ".sql",
-      contents: `CREATE TABLE ${this.schema.getModelTypeName()} (
+    return new MySqlFile(
+      this.schema.getModelTypeName() + ".sql",
+      `CREATE TABLE ${this.schema.getModelTypeName()} (
         ${this.getColumnDefinitionsCode()}
         ${this.getPrimaryKeyCode()}
         ${this.getIndexDefinitionsCode()}
-      );`,
-    };
+      );`
+    );
   }
 
   private getColumnDefinitionsCode(): string {

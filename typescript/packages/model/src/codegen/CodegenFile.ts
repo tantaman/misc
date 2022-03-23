@@ -6,6 +6,8 @@ export interface CodegenFile {
 }
 
 export const ALGOL_TEMPLATE = "// SIGNED-SOURCE: <>";
+export const SQL_TEMPLATE = "-- SIGNED-SOURCE: <>";
+export const HASH_TEMPLATE = "# SIGNED-SOURCE: <>";
 
 export function sign(content: string, template: string) {
   return `${template.replace("<>", "<" + md5(content) + ">\n")}${content}`;
