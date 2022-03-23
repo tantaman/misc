@@ -1,4 +1,4 @@
-// SIGNED-SOURCE: <b701af6de3366a560f2a5f851ebac035>
+// SIGNED-SOURCE: <7440d1ae11f6a718800664db7f2c3967>
 import Model, { Spec } from "@strut/model/Model.js";
 import { SID_of } from "@strut/sid";
 import { Field, ObjectType, Int, Float, ID } from "type-graphql";
@@ -14,7 +14,7 @@ export type Data = {
   focused: boolean;
   classes: string;
   style: ReadonlyMap<string, string>;
-  deckId: SID_of<Deck>;
+  deckIdId: SID_of<Deck>;
 };
 
 @ObjectType({ description: "Represents a single slide within a deck" })

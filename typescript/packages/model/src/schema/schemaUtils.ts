@@ -6,6 +6,8 @@ export function getInverseForeignEdges(edges: { [key: string]: Edge }) {
   );
 }
 
-export function getEdgeProps(edges: { [key: string]: Edge }) {
-  return Object.entries(edges).filter(([_, edge]) => edge instanceof FieldEdge);
+export function getEdgeProps(edges: { [key: string]: Edge }): FieldEdge[] {
+  return Object.values(edges).filter(
+    (edge) => edge instanceof FieldEdge
+  ) as FieldEdge[];
 }

@@ -1,5 +1,9 @@
 CREATE TABLE Component (
-        undefined
-        undefined
-        undefined
+        id BIGINT UNSIGNED NOT NULL,
+selected BOOLEAN,
+classes TEXT,
+style JSON,
+slide BIGINT UNSIGNED NOT NULL
+        
+        
       );

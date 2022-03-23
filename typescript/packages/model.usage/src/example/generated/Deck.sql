@@ -1,5 +1,6 @@
 CREATE TABLE Deck (
-        undefined
-        undefined
-        undefined
+        id BIGINT UNSIGNED NOT NULL,
+title TEXT
+        
+        
       );

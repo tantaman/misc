@@ -1,6 +1,7 @@
 import Schema from "./Schema.js";
 import { nullthrows } from "@strut/utils";
 import FieldAndEdgeBase from "./FieldAndEdgeBase.js";
+import { FieldType } from "./Field.js";
 
 export type QueriesWith = "id" | "foreign_id";
 
@@ -48,6 +49,10 @@ export class FieldEdge extends Edge {
 
   get fieldName() {
     return this.name + "Id";
+  }
+
+  get storageType(): FieldType {
+    return "id";
   }
 }
 

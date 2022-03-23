@@ -3,7 +3,7 @@ import { Edge, ForeignKeyEdge } from "../../schema/Edge.js";
 import { upcaseAt } from "@strut/utils";
 import CodegenStep from "../CodegenStep.js";
 import { isValidPropertyAccessor } from "@strut/utils";
-import { fieldToTsType } from "../tsUtils.js";
+import { fieldToTsType } from "./tsUtils.js";
 import { CodegenFile } from "../CodegenFile.js";
 import { getEdgeProps } from "../../schema/schemaUtils.js";
 import TypescriptFile from "./TypescriptFile.js";
@@ -46,10 +46,8 @@ ${this.getSpecCode()}
         )}`
     );
     const edgeProps = getEdgeProps(this.schema.getEdges()).map(
-      ([key, edge]) =>
-        `${
-          isValidPropertyAccessor(key) ? key + "Id" : `'${key}Id'`
-        }: SID_of<${edge.getDest().getModelTypeName()}>
+      (edge) =>
+        `${edge.fieldName}Id: SID_of<${edge.getDest().getModelTypeName()}>
       `
     );
     return `{

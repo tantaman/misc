@@ -2,9 +2,12 @@ TODO:
 1. Validation step...
    1. To ensure foreign key edges have an appropriate inverse field edge
       1. on the other schema.
-2. Generate MySQL Table Schemas
-3. Generate queryAll methods
-4. Enable model interfaces
+2. Enable model superclasses / traits
+3. IDL
+4. Stop using keys from edges / fields
+5. Docs
+6. Edge queries and edge data
+7. Semantic types
 
 Are the synthetic transactions not good enough / not doing it?
 

@@ -1,4 +1,4 @@
-// SIGNED-SOURCE: <34d1e3da32a71ea0767b0b3b15bef358>
+// SIGNED-SOURCE: <369465ca9704bed79fc4637ea9cf7bf3>
 import Model, { Spec } from "@strut/model/Model.js";
 import { SID_of } from "@strut/sid";
 import SlideQuery from "./SlideQuery.js";
@@ -9,7 +9,7 @@ export type Data = {
   selected: boolean;
   classes: string;
   style: ReadonlyMap<string, string>;
-  slideId: SID_of<Slide>;
+  slideIdId: SID_of<Slide>;
 };
 
 export default class Component extends Model<Data> {

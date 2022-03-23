@@ -20,7 +20,8 @@ export type HoistedOperations = {
   limit?: ReturnType<typeof take>;
   before?: ReturnType<typeof before>;
   after?: ReturnType<typeof after>;
-  // Points to the fully optimized hop expression.
+  // Points to the fully optimized hop expression
+  // which can be hoisted
   hop?: ReturnType<typeof hop>;
   // What we're actually selecting.
   // Could be IDs if we can't hoist the next hop and need to load them into the server for
