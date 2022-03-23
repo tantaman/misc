@@ -13,6 +13,7 @@ import select from "./select.js";
 import upcaseAt from "./upcaseAt.js";
 import assertUnreahable from "./assertUnreachable.js";
 import only from "./only.js";
+import maybeMap from "./maybeMap.js";
 
 export type Concat<T, S, V> = string;
 
@@ -47,4 +48,5 @@ export {
   isValidPropertyAccessor,
   not,
   only,
+  maybeMap,
 };

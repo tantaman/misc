@@ -5,8 +5,13 @@ import Schema from "../../schema/Schema.js";
 import { CodegenFile } from "../CodegenFile.js";
 import CodegenStep from "../CodegenStep.js";
 import FieldAndEdgeBase from "schema/FieldAndEdgeBase.js";
+import TypescriptFile from "./TypescriptFile.js";
 
 export default class GenTypescriptQuery extends CodegenStep {
+  static accepts(_schema: Schema): boolean {
+    return true;
+  }
+
   constructor(private schema: Schema) {
     super();
   }
@@ -17,9 +22,9 @@ export default class GenTypescriptQuery extends CodegenStep {
   // b/c structure on the edges...
   // TODO: de-duplicate imports by storing imports in an intermediate structure.
   gen(): CodegenFile {
-    return {
-      name: this.schema.getQueryTypeName() + ".ts",
-      contents: `import {DerivedQuery} from '@strut/model/query/Query.js';
+    return new TypescriptFile(
+      this.schema.getQueryTypeName() + ".ts",
+      `import {DerivedQuery} from '@strut/model/query/Query.js';
 import QueryFactory from '@strut/model/query/QueryFactory.js';
 import {modelLoad, filter} from '@strut/model/query/Expression.js';
 import {Predicate, default as P} from '@strut/model/query/Predicate.js';
@@ -42,8 +47,8 @@ export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<${th
   ${this.getFilterMethodsCode()}
   ${this.getHopMethodsCode()}
 }
-`,
-    };
+`
+    );
   }
 
   private getFilterMethodsCode(): string {

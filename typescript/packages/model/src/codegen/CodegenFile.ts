@@ -1,9 +1,9 @@
 import md5 from "md5";
 
-export type CodegenFile = {
+export interface CodegenFile {
   readonly name: string;
   readonly contents: string;
-};
+}
 
 export const ALGOL_TEMPLATE = "// SIGNED-SOURCE: <>";
 

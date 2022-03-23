@@ -6,16 +6,21 @@ import { isValidPropertyAccessor } from "@strut/utils";
 import { fieldToTsType } from "../tsUtils.js";
 import { CodegenFile } from "../CodegenFile.js";
 import { getEdgeProps } from "../../schema/schemaUtils.js";
+import TypescriptFile from "./TypescriptFile.js";
 
 export default class GenTypescriptModel extends CodegenStep {
+  static accepts(_schema: Schema): boolean {
+    return true;
+  }
+
   constructor(private schema: Schema) {
     super();
   }
 
   gen(): CodegenFile {
-    return {
-      name: this.schema.getModelTypeName() + ".ts",
-      contents: `import Model, {Spec} from '@strut/model/Model.js';
+    return new TypescriptFile(
+      this.schema.getModelTypeName() + ".ts",
+      `import Model, {Spec} from '@strut/model/Model.js';
 import {SID_of} from '@strut/sid';
 ${this.getImportCode()}
 
@@ -29,8 +34,8 @@ export default class ${this.schema.getModelTypeName()}
 }
 
 ${this.getSpecCode()}
-`,
-    };
+`
+    );
   }
 
   private getDataShapeCode(): string {
