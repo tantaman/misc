@@ -1,8 +1,8 @@
 import Schema from "../schema/Schema.js";
 import CodegenStep from "./CodegenStep.js";
-import GenTypescriptModel from "./GenTypescriptModel.js";
+import GenTypescriptModel from "./typescript/GenTypescriptModel.js";
 import * as fs from "fs";
-import GenTypescriptQuery from "./GenTypescriptQuery.js";
+import GenTypescriptQuery from "./typescript/GenTypescriptQuery.js";
 // @ts-ignore
 import prettier from "prettier";
 import { ALGOL_TEMPLATE, sign } from "./CodegenFile.js";

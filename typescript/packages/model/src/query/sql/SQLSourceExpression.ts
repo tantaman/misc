@@ -10,7 +10,7 @@ import {
   SourceExpression,
   take,
 } from "../Expression.js";
-import SQLSourceChunkIterable from "./SQLSourceChunkIterable.js";
+import SQLSourceChunkIterable from "./SqlSourceChunkIterable.js";
 import Plan from "../Plan.js";
 import { ChunkIterable } from "../ChunkIterable.js";
 import HopPlan from "../HopPlan.js";

@@ -1,10 +1,9 @@
 import { upcaseAt } from "@strut/utils";
-import { getInverseForeignEdges } from "../schema/schemaUtils.js";
-import { Edge, ForeignKeyEdge } from "../schema/Edge.js";
-import { Field, FieldType } from "../schema/Field.js";
-import Schema from "../schema/Schema.js";
-import { CodegenFile } from "./CodegenFile.js";
-import CodegenStep from "./CodegenStep.js";
+import { getInverseForeignEdges } from "../../schema/schemaUtils.js";
+import { Edge, ForeignKeyEdge } from "../../schema/Edge.js";
+import Schema from "../../schema/Schema.js";
+import { CodegenFile } from "../CodegenFile.js";
+import CodegenStep from "../CodegenStep.js";
 import FieldAndEdgeBase from "schema/FieldAndEdgeBase.js";
 
 export default class GenTypescriptQuery extends CodegenStep {

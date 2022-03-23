@@ -1,8 +1,8 @@
 import { Spec } from "../Model";
 import { DerivedQuery, HopQuery } from "./Query";
-import SQLHopExpression from "./sql/SQLHopExpression";
-import SQLHopQuery from "./sql/SQLHopQuery";
-import SQLSourceQuery from "./sql/SQLSourceQuery";
+import SQLHopExpression from "./sql/SqlHopExpression";
+import SQLHopQuery from "./sql/SqlHopQuery";
+import SQLSourceQuery from "./sql/SqlSourceQuery";
 
 // Runtime factory so we can swap to `Wire` when running on a client vs
 // the native platform.

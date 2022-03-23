@@ -1,4 +1,4 @@
-import GenTypescriptModel from "../../codegen/GenTypescriptModel.js";
+import GenTypescriptModel from "../typescript/GenTypescriptModel.js";
 import Field from "../../schema/Field.js";
 import Schema from "../../schema/Schema.js";
 

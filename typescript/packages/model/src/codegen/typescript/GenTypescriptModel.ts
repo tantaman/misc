@@ -1,11 +1,11 @@
-import Schema from "../schema/Schema.js";
-import { Edge, ForeignKeyEdge } from "../schema/Edge.js";
+import Schema from "../../schema/Schema.js";
+import { Edge, ForeignKeyEdge } from "../../schema/Edge.js";
 import { upcaseAt } from "@strut/utils";
-import CodegenStep from "./CodegenStep.js";
+import CodegenStep from "../CodegenStep.js";
 import { isValidPropertyAccessor } from "@strut/utils";
-import { fieldToTsType } from "./tsUtils.js";
-import { CodegenFile } from "./CodegenFile.js";
-import { getEdgeProps } from "../schema/schemaUtils.js";
+import { fieldToTsType } from "../tsUtils.js";
+import { CodegenFile } from "../CodegenFile.js";
+import { getEdgeProps } from "../../schema/schemaUtils.js";
 
 export default class GenTypescriptModel extends CodegenStep {
   constructor(private schema: Schema) {
