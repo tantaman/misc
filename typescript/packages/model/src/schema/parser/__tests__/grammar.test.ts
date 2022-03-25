@@ -17,20 +17,41 @@ test("parsing a small schema", () => {
 storageEngine: postgres
 dbName: test
 
-Node<User> {
-  id: ID<User>
+Node<Person> {
+  id: ID<Person>
   name: NaturalLanguage<string>
+  walletId: ID<Wallet>
+  thing1: string
+  thing2: string
+} | OutboundEdges {
+  wallet: Edge<Person.walletId>
+  friends: Edge<Person, Person>
+  cars: Edge<Car.ownerId>
+  follows: FollowEdge
+  followedBy: FollowerEdge
+} | InboundEdges {
+  fromWallet: Edge<Person.walletId>
+} | Index {
+  walletId: Unique<walletId>
+  compound: thing1, thing2
+  thing2
 }
-Edge<User, User> as FriendEdge {}
+
+Edge<Person, Person> as FollowEdge {
+  when: Timestamp
+} | Invert as FollowerEdge
+
 Node<Wallet> {
   id: ID<Wallet>
   balance: Currency<usd>
   status: Enumeration<Active | Locked>
   alias: NaturalLanguage<string>
 }
+
 Node<Transaction> {
   id: ID<Transaction>
   time: Timestamp
+  blob: Map<string, string>
 }
 `);
 
