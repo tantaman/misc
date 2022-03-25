@@ -17,9 +17,13 @@ test("parsing a small schema", () => {
 storageEngine: postgres
 dbName: test
 
-Node<User>
-Edge<User, Friend>
+Node<User> {}
+Edge<User, User> {}
+Edge<Foo, User> {}
+Node<Foo> {}
 `);
+
+  console.log(JSON.stringify(parser.results[0], null, 2));
 });
 
 function compileGrammar() {
