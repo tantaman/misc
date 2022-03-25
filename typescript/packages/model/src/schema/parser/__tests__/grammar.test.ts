@@ -17,10 +17,21 @@ test("parsing a small schema", () => {
 storageEngine: postgres
 dbName: test
 
-Node<User> {}
-Edge<User, User> {}
-Edge<Foo, User> {}
-Node<Foo> {}
+Node<User> {
+  id: ID<User>
+  name: NaturalLanguage<string>
+}
+Edge<User, User> as FriendEdge {}
+Node<Wallet> {
+  id: ID<Wallet>
+  balance: Currency<usd>
+  status: Enumeration<Active | Locked>
+  alias: NaturalLanguage<string>
+}
+Node<Transaction> {
+  id: ID<Transaction>
+  time: Timestamp
+}
 `);
 
   console.log(JSON.stringify(parser.results[0], null, 2));
