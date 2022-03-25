@@ -32,7 +32,7 @@ Node<Person> {
 } | InboundEdges {
   fromWallet: Edge<Person.walletId>
 } | Index {
-  walletId: Unique<walletId>
+  walletId: unique(walletId)
   compound: thing1, thing2
   thing2
 }
@@ -52,6 +52,8 @@ Node<Transaction> {
   id: ID<Transaction>
   time: Timestamp
   blob: Map<string, string>
+  blobOfBlob: Map<string, Map<string, string>>
+  list: Array<string>
 }
 `);
 
