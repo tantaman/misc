@@ -2,18 +2,20 @@
 @builtin "whitespace.ne"
 @builtin "number.ne"
 
-main -> preamble entities
-preamble -> engineDeclaration | dbDeclaration
-engineDeclaration -> "storageEngine:" _ engine "\n"
-dbDeclaration -> "dbName:" _ dbName "\n"
+main -> _ preamble _ entities _
+preamble -> (engineDeclaration dbDeclaration) | (dbDeclaration engineDeclaration)
+engineDeclaration -> "storageEngine:" inlineSpace engine "\n"
+dbDeclaration -> "dbName:" inlineSpace dbName "\n"
 engine -> "postgres" # | "mysql" | "neo4j" | "redis" | "redis-graph" | "singlestore" | "mariadb" | "gremlin" | "opencypher"
 dbName -> [a-zA-Z0-9]:+
 
 entities -> null | entities node | entities edge
 
-node -> "Node<" nodeTypeName ">"
-edge -> "Edge<" nodeTypeName "," nodeTypeName ">"
-nodeTypeName -> [a-zA-Z_]:{1}[a-zA-Z0-9_-]:*
+node -> "Node<" _ nodeTypeName _ ">" _
+edge -> "Edge<" _ nodeTypeName _ "," _ nodeTypeName _ ">" _
+nodeTypeName -> [a-zA-Z_] [a-zA-Z0-9_-]:*
+
+inlineSpace -> [ \t\v\f]:* {% (_) => null %}
 
 # storageEngine: postgres
 # dbName: mealtrained
