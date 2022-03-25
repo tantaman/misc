@@ -68,18 +68,28 @@ primitiveField -> "bool" | "int32" | "int64" | "float32" | "float64" | "uint32" 
 %}
 
 nodeFunction -> "OutboundEdges" _ "{" _ edgeDeclarations "}"
-  | "InboundEdges" _ "{" _ edgeDeclarations "}"
+  | "InboundEdges" _ "{" edgeDeclarations "}"
   | "Index" _ "{" _ indices "}"
   | "ReadPrivacy" _ "{" _ privacyPolicy "}"
 
 edgeDeclarations -> null | edgeDeclaration | edgeDeclarations edgeDeclaration
-edgeDeclaration -> name ":" _ (inlineEdgeDefinition | name)
+edgeDeclaration -> _ name ":" _ (inlineEdgeDefinition | (name "\n"))
 inlineEdgeDefinition -> "Edge<" _ nameOrResolution _ ("," _ nameOrResolution _):? ">\n" _
+
+nameOrResolution -> name | (name "." name)
+
+indices -> null | indexDeclaration | indices indexDeclaration
+indexDeclaration -> _ ((name ":" _ index) | name) "\n"
+index -> ("Unique<" _ name _ ">") | nameList
+
+nameList -> name | nameList _ "," _ name
+
+privacyPolicy -> null
 
 edgeFields -> "{" _  fieldDeclarations "}" {% () => [] %}
 edgeFunctions -> null | edgeFunctions "|" _ edgeFunction _
 
-edgeFunction -> "Index" | "Invert"
+edgeFunction -> "Index" _ "{" _ indices "}" | "Invert" _ "as" _ name
 
 
 inlineSpace -> [ \t\v\f]:* {% (_) => null %}
