@@ -45,7 +45,7 @@ nodeFunctions -> null | nodeFunctions "|" _ nodeFunction _ {% ([e, _kw, _ws, fun
 fieldDeclarations -> null | fieldDeclaration | fieldDeclarations fieldDeclaration {% ([e, declaration]) => e.concat(declaration) %}
 fieldDeclaration -> name ":" _ fieldType "\n" _ {% ([name, _kw, _ws, [[definition]]]) => ({
   name,
-  definition
+  ...definition
 }) %}
 
 fieldType -> nonCompositeFieldType | compositeFieldType
@@ -75,10 +75,10 @@ nodeFunction -> "OutboundEdges" _ "{" _ edgeDeclarations "}" {% ([_kw, _ws, _kw2
 edgeDeclarations -> null | edgeDeclaration | edgeDeclarations edgeDeclaration {% ([e, decl]) => e.concat(decl) %}
 edgeDeclaration -> _ name ":" _ (
   inlineEdgeDefinition {% ([definition]) => definition %}
-  | name "\n" {% ([name]) => ({type: "edgeReference", name}) %}
+  | name "\n" {% ([reference]) => ({type: "edgeReference", reference}) %}
 ) {% ([_ws, name, _kw, _ws2, definition]) => ({
   name,
-  definition
+  ...definition
 }) %}
 
 inlineEdgeDefinition -> "Edge<" _ nameOrResolution _ ("," _ nameOrResolution _):? ">\n" _ {%
@@ -94,11 +94,11 @@ nameOrResolution -> name {% ([type]) => ({type}) %} | name "." name {% ([type, _
 indices -> null | indexDeclaration | indices indexDeclaration {% ([e, index]) => e.concat(index) %}
 indexDeclaration -> _ (name ":" _ index | name) "\n" {% ([_ws, [name, _kw, _ws2, index, shortDef]]) => ({
   name,
-  definition: index == null
+  ...(index == null
     ? {type: "nonUnique", columns: [name]}
     : shortDef != null
       ? {type: "nonUnique", columns: shortDef}
-      : index
+      : index)
 }) %}
 index -> "unique(" _ nameList _ ")" {% ([_kw, _ws, columns]) => ({type: "unique", columns}) %}
   | nameList {% ([columns]) => ({type: "nonUnique", columns}) %}
@@ -114,3 +114,18 @@ edgeFunction -> "Index" _ "{" _ indices "}" | "Invert" _ "as" _ name
 
 
 inlineSpace -> [ \t\v\f]:* {% (_) => null %}
+
+# DSL Alternative
+# const Person = node('Person');
+# Person.fields({
+#   id: ID(Person),
+#   name: NaturalLanguage('string'),
+#   walletId: ID(Wallet)
+# }).outboundEdges({
+#   wallet: Edge<Person.walletId>,
+#   friends: Edge<Person, Person>
+# }).inboundEdges({
+#   ...
+# }).index({
+#   ...
+# }).storageOverrides({})
