@@ -29,7 +29,7 @@
     "typescript": "^4.6.2"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "node ./node_modules/nearley/bin/nearleyc.js ./src/schema/parser/Grammar.ne -o ./src/schema/parser/Grammar.js && tsc",
     "watch": "tsc -w",
     "test": "node ./node_modules/jest/bin/jest.js"
   },

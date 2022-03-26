@@ -6,6 +6,45 @@ export type SchemaFile = {
   entities: (Node | Edge)[];
 };
 
+export type ValidatedSchemaFile = {
+  nodes: {
+    [key: NodeReference]: ValidatedNode;
+  };
+  edges: {
+    [key: EdgeReference]: ValidatedEdge;
+  };
+};
+
+type ValidatedNode = {
+  name: Node["name"];
+  fields: {
+    [key: UnqalifiedFieldReference]: Field;
+  };
+  extensions: {
+    [Property in NodeExtension["name"]]: NodeExtension;
+  };
+  storage: StorageConfig;
+};
+
+type StorageConfig = {
+  type: "sql";
+  db: string;
+  table: string;
+  engine: "postgres"; //| "mysql" | "maria";
+}; // | { type: "opencypher" } ...;
+
+type ValidatedEdge = {
+  name: Edge["name"];
+  src: NodeReference;
+  dest: NodeReference;
+  fields: {
+    [key: UnqalifiedFieldReference]: Field;
+  };
+  extensions: {
+    [Property in EdgeExtension["name"]]: EdgeExtension;
+  };
+};
+
 type RemoveNameField<Type> = {
   [Property in keyof Type as Exclude<Property, "name">]: Type[Property];
 };
@@ -25,30 +64,34 @@ type NonComplexField =
 type ComplexField = Map | Array;
 
 type Field = NonComplexField | ComplexField;
+type NodeExtension = OutboundEdges | InboundEdges | Index;
 
 export type Node = {
   type: "node";
   name: string;
   fields: Field[];
-  extensions: (OutboundEdges | InboundEdges | Index)[];
+  extensions: NodeExtension[];
 };
+
+type EdgeExtension = Index | Invert | Constrain;
 
 export type Edge = {
   type: "edge";
   name: string;
+  // TODO: src and dest should allow reference of the column...
   src: NodeReference;
   dest: NodeReference;
   fields: Field[];
-  extensions: (Index | Invert | Constrain)[];
+  extensions: EdgeExtension[];
 };
 
 type Invert = {
-  type: "invert";
-  name: string;
+  name: "invert";
+  as: string;
 };
 
 type Constrain = {
-  type: "constrain";
+  name: "constrain";
 };
 
 type EdgeDeclaration = {
@@ -153,20 +196,3 @@ type NonUnique = {
   type: "nonUnique";
   columns: UnqalifiedFieldReference[];
 };
-
-/*
-// DSL alternative (i.e. pure js / ts):
-let Person = node('Person');
-Person.fields({
-  id: ID(Person),
-  name: NaturalLanguage('string'),
-  walletId: ID(Wallet)
-}).outboundEdges({
-  wallet: Edge(Person.walletId),
-  friends: Edge(Person, Person)
-}).inboundEdges({
-  ...
-}).index({
-  ...
-}).storageOverrides({})
-*/
