@@ -143,6 +143,7 @@ Node<Transaction> {
             name: "inboundEdges",
             declarations: [
               {
+                dest: null,
                 name: "fromWallet",
                 type: "edge",
                 src: {
@@ -228,6 +229,37 @@ Node<Transaction> {
               type: "primitive",
               subtype: "string",
             },
+            values: {
+              type: "primitive",
+              subtype: "string",
+            },
+          },
+          {
+            name: "blobOfBlob",
+            type: "map",
+            keys: {
+              type: "primitive",
+              subtype: "string",
+            },
+            values: {
+              type: "map",
+              keys: {
+                type: "primitive",
+                subtype: "string",
+              },
+              values: {
+                type: "primitive",
+                subtype: "string",
+              },
+            },
+          },
+          {
+            name: "list",
+            type: "array",
+            values: {
+              type: "primitive",
+              subtype: "string",
+            },
           },
         ],
         extensions: [],
@@ -235,8 +267,6 @@ Node<Transaction> {
     ],
   };
   expect(schema).toEqual(expected);
-
-  console.log(JSON.stringify(parser.results[0], null, 2));
 });
 
 function compileGrammar() {

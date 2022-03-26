@@ -6,6 +6,10 @@ export type SchemaFile = {
   entities: (Node | Edge)[];
 };
 
+type RemoveNameField<Type> = {
+  [Property in keyof Type as Exclude<Property, "name">]: Type[Property];
+};
+
 type NodeReference = string;
 type UnqalifiedFieldReference = string;
 type EdgeReference = string;
@@ -112,15 +116,15 @@ type Map = {
   name: string;
   type: "map";
   // Ideally we use `Omit` on name but see https://github.com/microsoft/TypeScript/issues/31501
-  keys: NonComplexField;
-  values: Field;
+  keys: RemoveNameField<NonComplexField>;
+  values: RemoveNameField<Field>;
 };
 
 type Array = {
   name: string;
   type: "array";
   // Ideally we use `Omit` on name but see https://github.com/microsoft/TypeScript/issues/31501
-  values: Field;
+  values: RemoveNameField<Field>;
 };
 
 type OutboundEdges = {
