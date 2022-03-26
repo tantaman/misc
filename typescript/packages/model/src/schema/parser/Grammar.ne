@@ -23,8 +23,8 @@ entities -> null | entities node {% ([e, node]) => (e.concat(node)) %} | entitie
 node -> "Node<" _ name _ ">" _ nodeFields _ nodeFunctions {% ([kw, ws, name, ws2, kw2, ws3, fields, ws4, funcs]) => ({
   type: "node",
   name,
-  fields,
-  funcs: funcs || []
+  fields: fields || [],
+  extensions: funcs || []
 }) %}
 
 edge -> "Edge<" _ name _ "," _ name _ ">" _ "as" _ name _ edgeFields _ edgeFunctions {%
@@ -33,8 +33,8 @@ edge -> "Edge<" _ name _ "," _ name _ ">" _ "as" _ name _ edgeFields _ edgeFunct
     src,
     dest,
     name,
-    fields,
-    funcs: funcs || []
+    fields: fields || [],
+    extensions: funcs || []
   })
 %}
 name -> [a-zA-Z_] [a-zA-Z0-9_]:* {% ([pre, post]) => pre + post.join("") %}

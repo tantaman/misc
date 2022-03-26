@@ -3,6 +3,7 @@ import compile from "nearley/lib/compile";
 import generate from "nearley/lib/generate";
 import nearleyGrammar from "nearley/lib/nearley-language-bootstrapped";
 import * as fs from "fs";
+import { InboundEdges, SchemaFile } from "schema/SchemaType";
 
 test("compiling the grammer", () => {
   expect(compileGrammar().ParserStart).toEqual("main");
@@ -56,6 +57,184 @@ Node<Transaction> {
   list: Array<string>
 }
 `);
+
+  const schema = parser.results[0] as SchemaFile;
+
+  const expected: SchemaFile = {
+    preamble: {
+      engine: "postgres",
+      db: "test",
+    },
+    entities: [
+      {
+        type: "node",
+        name: "Person",
+        fields: [
+          {
+            type: "id",
+            name: "id",
+            of: "Person",
+          },
+          {
+            name: "name",
+            type: "naturalLanguage",
+          },
+          {
+            name: "walletId",
+            type: "id",
+            of: "Wallet",
+          },
+          {
+            name: "thing1",
+            type: "primitive",
+            subtype: "string",
+          },
+          {
+            name: "thing2",
+            type: "primitive",
+            subtype: "string",
+          },
+        ],
+        extensions: [
+          {
+            name: "outboundEdges",
+            declarations: [
+              {
+                name: "wallet",
+                type: "edge",
+                src: {
+                  type: "Person",
+                  column: "walletId",
+                },
+                dest: null,
+              },
+              {
+                name: "friends",
+                type: "edge",
+                src: {
+                  type: "Person",
+                },
+                dest: {
+                  type: "Person",
+                },
+              },
+              {
+                name: "cars",
+                type: "edge",
+                src: {
+                  type: "Car",
+                  column: "ownerId",
+                },
+                dest: null,
+              },
+              {
+                name: "follows",
+                type: "edgeReference",
+                reference: "FollowEdge",
+              },
+              {
+                name: "followedBy",
+                type: "edgeReference",
+                reference: "FollowerEdge",
+              },
+            ],
+          },
+          {
+            name: "inboundEdges",
+            declarations: [
+              {
+                name: "fromWallet",
+                type: "edge",
+                src: {
+                  type: "Person",
+                  column: "walletId",
+                },
+              },
+            ],
+          } as InboundEdges,
+          {
+            name: "index",
+            declarations: [
+              {
+                name: "walletId",
+                type: "unique",
+                columns: ["walletId"],
+              },
+              {
+                name: "compound",
+                type: "nonUnique",
+                columns: ["thing1", "thing2"],
+              },
+              {
+                name: "thing2",
+                type: "nonUnique",
+                columns: ["thing2"],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        type: "edge",
+        src: "Person",
+        dest: "Person",
+        name: "FollowEdge",
+        fields: [],
+        extensions: [],
+      },
+      {
+        type: "node",
+        name: "Wallet",
+        fields: [
+          {
+            name: "id",
+            type: "id",
+            of: "Wallet",
+          },
+          {
+            name: "balance",
+            type: "currency",
+            denomination: "usd",
+          },
+          {
+            name: "status",
+            type: "enumeration",
+            keys: ["Active", "Locked"],
+          },
+          {
+            name: "alias",
+            type: "naturalLanguage",
+          },
+        ],
+        extensions: [],
+      },
+      {
+        type: "node",
+        name: "Transaction",
+        fields: [
+          {
+            name: "id",
+            type: "id",
+            of: "Transaction",
+          },
+          {
+            name: "time",
+            type: "timestamp",
+          },
+          {
+            name: "blob",
+            type: "map",
+            keys: {
+              type: "primitive",
+              subtype: "string",
+            },
+          },
+        ],
+        extensions: [],
+      },
+    ],
+  };
+  expect(schema).toEqual(expected);
 
   console.log(JSON.stringify(parser.results[0], null, 2));
 });

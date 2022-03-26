@@ -35,6 +35,16 @@ export type Edge = {
   src: NodeReference;
   dest: NodeReference;
   fields: Field[];
+  extensions: (Index | Invert | Constrain)[];
+};
+
+type Invert = {
+  type: "invert";
+  name: string;
+};
+
+type Constrain = {
+  type: "constrain";
 };
 
 type EdgeDeclaration = {
@@ -42,8 +52,12 @@ type EdgeDeclaration = {
   name: string;
   src: {
     type: NodeReference;
-    column: UnqalifiedFieldReference;
+    column?: UnqalifiedFieldReference;
   };
+  dest: {
+    type: NodeReference;
+    column?: UnqalifiedFieldReference;
+  } | null;
 };
 
 type EdgeReferenceDeclaration = {
@@ -97,6 +111,7 @@ type Primitive = {
 type Map = {
   name: string;
   type: "map";
+  // Ideally we use `Omit` on name but see https://github.com/microsoft/TypeScript/issues/31501
   keys: NonComplexField;
   values: Field;
 };
@@ -104,6 +119,7 @@ type Map = {
 type Array = {
   name: string;
   type: "array";
+  // Ideally we use `Omit` on name but see https://github.com/microsoft/TypeScript/issues/31501
   values: Field;
 };
 
@@ -112,7 +128,7 @@ type OutboundEdges = {
   declarations: (EdgeDeclaration | EdgeReferenceDeclaration)[];
 };
 
-type InboundEdges = {
+export type InboundEdges = {
   name: "inboundEdges";
   declarations: (EdgeDeclaration | EdgeReferenceDeclaration)[];
 };
@@ -123,11 +139,13 @@ type Index = {
 };
 
 type Unique = {
+  name: string;
   type: "unique";
   columns: UnqalifiedFieldReference[];
 };
 
 type NonUnique = {
+  name: string;
   type: "nonUnique";
   columns: UnqalifiedFieldReference[];
 };
