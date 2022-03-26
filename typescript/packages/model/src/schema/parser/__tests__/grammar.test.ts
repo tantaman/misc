@@ -5,10 +5,6 @@ import nearleyGrammar from "nearley/lib/nearley-language-bootstrapped";
 import * as fs from "fs";
 import { InboundEdges, SchemaFile } from "schema/SchemaType";
 
-test("compiling the grammer", () => {
-  expect(compileGrammar().ParserStart).toEqual("main");
-});
-
 test("parsing a small schema", () => {
   const parser = new nearley.Parser(
     nearley.Grammar.fromCompiled(compileGrammar())
