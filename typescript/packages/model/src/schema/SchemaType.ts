@@ -15,7 +15,7 @@ export type ValidatedSchemaFile = {
   };
 };
 
-type ValidatedNode = {
+export type ValidatedNode = {
   name: Node["name"];
   fields: {
     [key: UnqalifiedFieldReference]: Field;
@@ -33,7 +33,7 @@ type StorageConfig = {
   engine: "postgres"; //| "mysql" | "maria";
 }; // | { type: "opencypher" } ...;
 
-type ValidatedEdge = {
+export type ValidatedEdge = {
   name: Edge["name"];
   src: NodeReference;
   dest: NodeReference;
@@ -49,9 +49,9 @@ type RemoveNameField<Type> = {
   [Property in keyof Type as Exclude<Property, "name">]: Type[Property];
 };
 
-type NodeReference = string;
+export type NodeReference = string;
 type UnqalifiedFieldReference = string;
-type EdgeReference = string;
+export type EdgeReference = string;
 
 type NonComplexField =
   | ID

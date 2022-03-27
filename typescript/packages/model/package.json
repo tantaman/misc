@@ -9,7 +9,8 @@
     "@strut/counter": "workspace:*",
     "@strut/events": "workspace:*",
     "@strut/sid": "workspace:*",
-    "@strut/utils": "workspace:*"
+    "@strut/utils": "workspace:*",
+    "purify-ts": "^1.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.17.8",
