@@ -51,7 +51,33 @@ Node<Foo> {
   expect(condensed.nodes["Foo"].fields["bar"]).not.toBeUndefined();
 });
 
-test("Duplicate outbound edges on node", () => {
+test("Duplicate outbound edges on node", () => {});
+
+test("Duplicate inbound edges on node", () => {
+  const ast = parseString(`
+engine: postgres
+db: test
+Node<Foo> {
+  bazId: ID<Baz>
+} | InboundEdges {
+  fromBar: Edge<Foo.barId>
+  fromBar: Edge<Foo.barId>
+}
+`);
+  // const [errors, condensed] = condense(ast);
+  // expect(errors.length).toBe(1);
+  // expect(errors[0].type).toEqual("duplicate-ib-edges");
+  // // we still return data, even when we have errors.
+  // expect(
+  //   condensed.nodes["Foo"].extensions.inboundEdges?.fromBar
+  // ).not.toBeUndefined();
+});
+
+test("Duplicate extensions on node", () => {});
+
+test("Duplicate extensions on edge", () => {});
+
+test("Duplicate fields on edge", () => {
   const ast = parseString(`
 engine: postgres
 db: test
@@ -64,13 +90,5 @@ Edge<Foo, Foo> as Bar {
   expect(errors.length).toBe(1);
   expect(errors[0].type).toEqual("duplicate-fields");
   // we still return data, even when we have errors.
-  expect(condensed.edges["Foo"].fields["bar"]).not.toBeUndefined();
+  expect(condensed.edges["Bar"].fields["bar"]).not.toBeUndefined();
 });
-
-test("Duplicate inbound edges on node", () => {});
-
-test("Duplicate extensions on node", () => {});
-
-test("Duplicate extensions on edge", () => {});
-
-test("Duplicate fields on edge", () => {});

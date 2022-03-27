@@ -482,8 +482,18 @@ export const schemaFile: SchemaFile = {
       dest: {
         type: "Person",
       },
-      fields: {},
-      extensions: {},
+      fields: {
+        when: {
+          type: "timestamp",
+          name: "when",
+        },
+      },
+      extensions: {
+        invert: {
+          name: "invert",
+          as: "FollowerEdge",
+        },
+      },
       storage: {
         type: "sql",
         engine: "postgres",

@@ -239,6 +239,8 @@ function arrayToMap<T extends Object>(
   return [errors, map];
 }
 
+// TODO: we need to condense extensions.
+
 // Iterate over all the things in the schema file
 // set up storage configs with defaults that were defined in the preamble
 // ensure no collisions on node/edge names
