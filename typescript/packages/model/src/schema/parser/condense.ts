@@ -1,3 +1,4 @@
+import P from "query/Predicate.js";
 import {
   EdgeAst,
   EdgeReference,
@@ -78,14 +79,16 @@ export function condense(
     })
   );
 
-  const [nodeErrors, validatedNodes] = condenseNodes(
+  const [nodeErrors, validatedNodes] = condenseEntities(
     nodesByName,
-    schemaFile.preamble
+    schemaFile.preamble,
+    condenseNode
   );
 
-  const [edgeErrors, validatedEdges] = condenseEdges(
+  const [edgeErrors, validatedEdges] = condenseEntities(
     edgesByName,
-    schemaFile.preamble
+    schemaFile.preamble,
+    condenseEdge
   );
 
   return [
@@ -97,25 +100,31 @@ export function condense(
   ];
 }
 
-function condenseNodes(
-  nodes: { [key: NodeReference]: NodeAst },
-  preamble: SchemaFileAst["preamble"]
+function condenseEntities<Tc, Ta>(
+  entities: {
+    [key: string]: Ta;
+  },
+  preamble: SchemaFileAst["preamble"],
+  condensor: (
+    entity: Ta,
+    preamble: SchemaFileAst["preamble"]
+  ) => [ValidationError[], Tc]
 ): [
   ValidationError[],
   {
-    [key: NodeReference]: Node;
+    [key: string]: Tc;
   }
 ] {
   let errors: ValidationError[] = [];
-  const condensedNodes: { [key: NodeReference]: Node } = Object.entries(
-    nodes
-  ).reduce((l, [key, node]) => {
-    const [nodeErrors, condensed] = condenseNode(node, preamble);
-    errors = errors.concat(nodeErrors);
+  const condensedEntities: { [key: NodeReference]: Tc } = Object.entries(
+    entities
+  ).reduce((l, [key, entity]) => {
+    const [entityErrors, condensed] = condensor(entity, preamble);
+    errors = errors.concat(entityErrors);
     l[key] = condensed;
     return l;
   }, {});
-  return [errors, condensedNodes];
+  return [errors, condensedEntities];
 }
 
 function condenseNode(
@@ -135,26 +144,38 @@ function condenseNode(
         type: engineToType(preamble.engine),
         engine: preamble.engine,
         db: preamble.db,
-        table: node.table || node.name.toLocaleLowerCase(),
+        table:
+          (extensions.storage as any)?.table || node.name.toLocaleLowerCase(),
       },
     },
   ];
 }
 
-function condenseEdges(
-  edges: { [key: EdgeReference]: EdgeAst },
+function condenseEdge(
+  edge: EdgeAst,
   preamble: SchemaFileAst["preamble"]
-): [
-  ValidationError[],
-  {
-    [key: EdgeReference]: Edge;
-  }
-] {
-  return [[], {}];
-}
+): [ValidationError[], Edge] {
+  const [fieldErrors, fields] = condenseFieldsFor("Edge", edge);
+  const [extensionErrors, extensions] = condenseExtensionsFor("Edge", edge);
 
-function condenseEdge() {
-  // const [fieldErrors, fields] = condenseFieldsFor("Edge", edge)
+  return [
+    [...fieldErrors, ...extensionErrors],
+    {
+      name: edge.name,
+      src: edge.src,
+      dest: edge.dest,
+      fields,
+      extensions,
+      storage: {
+        type: engineToType(preamble.engine),
+        engine: preamble.engine,
+        db: preamble.db,
+        // maybe we can figure out how to preseve the discrimnated type
+        table:
+          (extensions.storage as any)?.table || edge.name.toLocaleLowerCase(),
+      },
+    },
+  ];
 }
 
 function condenseFieldsFor(

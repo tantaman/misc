@@ -44,7 +44,7 @@ export type Edge = {
     [key: UnqalifiedFieldReference]: Field;
   };
   extensions: {
-    [Property in EdgeExtension["name"]]: EdgeExtension;
+    [Property in EdgeExtension["name"]]?: EdgeExtension;
   };
   storage: StorageConfig;
 };
@@ -68,17 +68,16 @@ type NonComplexField =
 type ComplexField = Map | Array;
 
 export type Field = NonComplexField | ComplexField;
-type NodeExtension = OutboundEdges | InboundEdges | Index;
+type NodeExtension = OutboundEdges | InboundEdges | Index | Storage;
 
 export type NodeAst = {
   type: "node";
   name: string;
   fields: Field[];
   extensions: NodeExtension[];
-  table?: string;
 };
 
-type EdgeExtension = Index | Invert | Constrain;
+type EdgeExtension = Index | Invert | Constrain | Storage;
 
 export type EdgeAst = {
   type: "edge";
@@ -186,6 +185,14 @@ export type InboundEdges = {
 type Index = {
   name: "index";
   declarations: (Unique | NonUnique)[];
+};
+
+type Storage = {
+  name: "storage";
+  type?: StorageType;
+  engine: StorageEngine;
+  db?: string;
+  table?: string;
 };
 
 type Unique = {
