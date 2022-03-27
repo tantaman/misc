@@ -1,22 +1,22 @@
-export type SchemaFile = {
+export type RawSchemaFile = {
   preamble: {
     engine: "postgres";
     db: string;
   };
-  entities: (Node | Edge)[];
+  entities: (RawNode | RawEdge)[];
 };
 
-export type ValidatedSchemaFile = {
+export type SchemaFile = {
   nodes: {
-    [key: NodeReference]: ValidatedNode;
+    [key: NodeReference]: Node;
   };
   edges: {
-    [key: EdgeReference]: ValidatedEdge;
+    [key: EdgeReference]: Edge;
   };
 };
 
-export type ValidatedNode = {
-  name: Node["name"];
+export type Node = {
+  name: RawNode["name"];
   fields: {
     [key: UnqalifiedFieldReference]: Field;
   };
@@ -33,8 +33,8 @@ type StorageConfig = {
   engine: "postgres"; //| "mysql" | "maria";
 }; // | { type: "opencypher" } ...;
 
-export type ValidatedEdge = {
-  name: Edge["name"];
+export type Edge = {
+  name: RawEdge["name"];
   src: NodeReference;
   dest: NodeReference;
   fields: {
@@ -66,7 +66,7 @@ type ComplexField = Map | Array;
 type Field = NonComplexField | ComplexField;
 type NodeExtension = OutboundEdges | InboundEdges | Index;
 
-export type Node = {
+export type RawNode = {
   type: "node";
   name: string;
   fields: Field[];
@@ -75,7 +75,7 @@ export type Node = {
 
 type EdgeExtension = Index | Invert | Constrain;
 
-export type Edge = {
+export type RawEdge = {
   type: "edge";
   name: string;
   // TODO: src and dest should allow reference of the column...

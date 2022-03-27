@@ -1,12 +1,12 @@
 import {
-  Edge,
+  RawEdge,
   EdgeReference,
-  Node,
+  RawNode,
   NodeReference,
+  RawSchemaFile,
+  Edge,
+  Node,
   SchemaFile,
-  ValidatedEdge,
-  ValidatedNode,
-  ValidatedSchemaFile,
 } from "./SchemaType.js";
 import nearley from "nearley";
 import Grammar from "schema/parser/Grammar.js";
@@ -17,7 +17,7 @@ type ValidationError = {
   severity: "warning" | "advice" | "error";
 };
 
-function parse(filePath: string): SchemaFile {
+function parse(filePath: string): RawSchemaFile {
   const parser = new nearley.Parser(nearley.Grammar.fromCompiled(Grammar));
   const schemaFileContents = fs.readFileSync(filePath, {
     encoding: "utf8",
@@ -25,12 +25,10 @@ function parse(filePath: string): SchemaFile {
   });
 
   parser.feed(schemaFileContents);
-  return parser.results[0] as SchemaFile;
+  return parser.results[0] as RawSchemaFile;
 }
 
-function condense(
-  schemaFile: SchemaFile
-): [ValidationError[], ValidatedSchemaFile] {
+function condense(schemaFile: RawSchemaFile): [ValidationError[], SchemaFile] {
   // Iterate over all the things in the schema file
   // set up storage configs with defaults that were defined in the preamble
   // ensure no collisions on node/edge names
@@ -40,13 +38,9 @@ function condense(
   // ...
   // we should probs support imports at some point in time
   // convert edges to field / foreign key / junction / ... types
-  const ret: ValidatedSchemaFile = {
-    nodes: {},
-    edges: {},
-  };
 
   const [nodes, edges] = schemaFile.entities.reduce(
-    (left: [Node[], Edge[]], nodeOrEdge) => {
+    (left: [RawNode[], RawEdge[]], nodeOrEdge) => {
       nodeOrEdge.type === "node"
         ? left[0].push(nodeOrEdge)
         : left[1].push(nodeOrEdge);
@@ -56,7 +50,7 @@ function condense(
   );
 
   let errors: ValidationError[] = [];
-  const nodesByName = nodes.reduce((l, r) => {
+  const nodesByName: { [key: string]: RawNode } = nodes.reduce((l, r) => {
     if (l[r.name] != null) {
       errors.push({
         message: "A node has already been defined with the name " + r.name,
@@ -77,11 +71,17 @@ function condense(
     return l;
   }, {});
 
-  const [nodeValidationErrors, validatedNodes] = validateNodes(nodesByName);
-  errors = errors.concat(nodeValidationErrors);
+  const [nodeErrors, validatedNodes] = condenseNodes(
+    nodesByName,
+    schemaFile.preamble
+  );
+  errors = errors.concat(nodeErrors);
 
-  const [edgeValidationErrors, validatedEdges] = validateEdges(edgesByName);
-  errors = errors.concat(edgeValidationErrors);
+  const [edgeErrors, validatedEdges] = condenseEdges(
+    edgesByName,
+    schemaFile.preamble
+  );
+  errors = errors.concat(edgeErrors);
 
   return [
     errors,
@@ -92,19 +92,44 @@ function condense(
   ];
 }
 
-function validateNodes(nodes: { [key: NodeReference]: Node }): [
+function condenseNodes(
+  nodes: { [key: NodeReference]: RawNode },
+  preamble: RawSchemaFile["preamble"]
+): [
   ValidationError[],
   {
-    [key: NodeReference]: ValidatedNode;
+    [key: NodeReference]: Node;
   }
 ] {
-  return [[], {}];
+  let errors: ValidationError[] = [];
+  // We condense differently based on engine?
+  const condensedNodes: { [key: NodeReference]: Node } = Object.entries(
+    nodes
+  ).reduce((l, [key, node]) => {
+    const [nodeErrors, condensed] = condenseNode(node, preamble);
+    errors = errors.concat(nodeErrors);
+    if (condensed) {
+      l[key] = condensed;
+    }
+    return l;
+  }, {});
+  return [errors, condensedNodes];
 }
 
-function validateEdges(edges: { [key: EdgeReference]: Edge }): [
+function condenseNode(
+  node: RawNode,
+  preamble: RawSchemaFile["preamble"]
+): [ValidationError[], Node | null] {
+  throw new Error();
+}
+
+function condenseEdges(
+  edges: { [key: EdgeReference]: RawEdge },
+  preamble: RawSchemaFile["preamble"]
+): [
   ValidationError[],
   {
-    [key: EdgeReference]: ValidatedEdge;
+    [key: EdgeReference]: Edge;
   }
 ] {
   return [[], {}];

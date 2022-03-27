@@ -3,7 +3,7 @@ import compile from "nearley/lib/compile";
 import generate from "nearley/lib/generate";
 import nearleyGrammar from "nearley/lib/nearley-language-bootstrapped";
 import * as fs from "fs";
-import { InboundEdges, SchemaFile } from "schema/SchemaType";
+import { InboundEdges, RawSchemaFile } from "schema/SchemaType";
 
 test("parsing a small schema", () => {
   const parser = new nearley.Parser(
@@ -54,9 +54,9 @@ Node<Transaction> {
 }
 `);
 
-  const schema = parser.results[0] as SchemaFile;
+  const schema = parser.results[0] as RawSchemaFile;
 
-  const expected: SchemaFile = {
+  const expected: RawSchemaFile = {
     preamble: {
       engine: "postgres",
       db: "test",
