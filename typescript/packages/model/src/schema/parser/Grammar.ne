@@ -30,8 +30,12 @@ node -> "Node<" _ name _ ">" _ nodeFields _ nodeFunctions {% ([kw, ws, name, ws2
 edge -> "Edge<" _ name _ "," _ name _ ">" _ "as" _ name _ edgeFields _ edgeFunctions {%
   ([_kw, _ws, src, _ws2, _kw2, _ws3, dest, _ws4, _kw3, _ws5, _kw4, _ws6, name, fields, ws6, funcs]) => ({
     type: "edge",
-    src,
-    dest,
+    src: {
+      type: src,
+    },
+    dest: {
+      type: dest,
+    },
     name,
     fields: fields || [],
     extensions: funcs || []

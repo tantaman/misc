@@ -1,0 +1,25 @@
+Validation
+
+- Inbound Edges
+  - Inbound on my id
+    - Nonsense. QueryFromID
+  - Inbound on my own column
+    - Fine. Inbound based on what that column is an id of
+  - Inbound on some other type's column
+    - Nonsense. Do: `OtherType.queryFromID(id).queryThing()` instead.
+      - Could work via:
+        - `Self.queryFrom(otherTypeId) ...` which does internal conversion
+  - Inbound on junction edge?
+    - Nonsense. Do: `OtherType.queryFromID(id).queryThing()` instead.
+- Outbound Edges
+  - Outbound on my id
+    - Nonsense. Would need to know the other table column.
+    - Outbound<my id, other type.column> does work though
+      - same as: Outbound<other type.column>
+  - Outbound on one of my fields
+    - Fine. Field edge.
+  - Outbound on the other type's field
+    - Fine. Foreign key.
+  - Outbound on junction edge
+    - Fine. `foo.queryBars()`
+- 
