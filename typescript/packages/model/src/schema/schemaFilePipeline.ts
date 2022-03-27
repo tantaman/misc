@@ -1,12 +1,14 @@
 import {
-  RawEdge,
+  EdgeAst,
   EdgeReference,
-  RawNode,
+  NodeAst,
   NodeReference,
-  RawSchemaFile,
+  SchemaFileAst,
   Edge,
   Node,
   SchemaFile,
+  StorageEngine,
+  StorageType,
 } from "./SchemaType.js";
 import nearley from "nearley";
 import Grammar from "schema/parser/Grammar.js";
@@ -17,7 +19,7 @@ type ValidationError = {
   severity: "warning" | "advice" | "error";
 };
 
-function parse(filePath: string): RawSchemaFile {
+function parse(filePath: string): SchemaFileAst {
   const parser = new nearley.Parser(nearley.Grammar.fromCompiled(Grammar));
   const schemaFileContents = fs.readFileSync(filePath, {
     encoding: "utf8",
@@ -25,10 +27,10 @@ function parse(filePath: string): RawSchemaFile {
   });
 
   parser.feed(schemaFileContents);
-  return parser.results[0] as RawSchemaFile;
+  return parser.results[0] as SchemaFileAst;
 }
 
-function condense(schemaFile: RawSchemaFile): [ValidationError[], SchemaFile] {
+function condense(schemaFile: SchemaFileAst): [ValidationError[], SchemaFile] {
   // Iterate over all the things in the schema file
   // set up storage configs with defaults that were defined in the preamble
   // ensure no collisions on node/edge names
@@ -40,7 +42,7 @@ function condense(schemaFile: RawSchemaFile): [ValidationError[], SchemaFile] {
   // convert edges to field / foreign key / junction / ... types
 
   const [nodes, edges] = schemaFile.entities.reduce(
-    (left: [RawNode[], RawEdge[]], nodeOrEdge) => {
+    (left: [NodeAst[], EdgeAst[]], nodeOrEdge) => {
       nodeOrEdge.type === "node"
         ? left[0].push(nodeOrEdge)
         : left[1].push(nodeOrEdge);
@@ -49,42 +51,35 @@ function condense(schemaFile: RawSchemaFile): [ValidationError[], SchemaFile] {
     [[], []]
   );
 
-  let errors: ValidationError[] = [];
-  const nodesByName: { [key: string]: RawNode } = nodes.reduce((l, r) => {
-    if (l[r.name] != null) {
-      errors.push({
-        message: "A node has already been defined with the name " + r.name,
-        severity: "error",
-      });
-    }
-    l[r.name] = r;
-    return l;
-  }, {});
-  const edgesByName = edges.reduce((l, r) => {
-    if (l[r.name] != null) {
-      errors.push({
-        message: "An edge has already been defined with the name " + r.name,
-        severity: "error",
-      });
-    }
-    l[r.name] = r;
-    return l;
-  }, {});
+  const [nodeMappingErrors, nodesByName] = arrayToMap(
+    nodes,
+    (n) => n.name,
+    (n) => ({
+      message: "A node has already been defined with the name " + n.name,
+      severity: "error",
+    })
+  );
+  const [edgeMappingErrors, edgesByName] = arrayToMap(
+    edges,
+    (e) => e.name,
+    (e) => ({
+      message: "An edge has already been defined with the name " + e.name,
+      severity: "error",
+    })
+  );
 
   const [nodeErrors, validatedNodes] = condenseNodes(
     nodesByName,
     schemaFile.preamble
   );
-  errors = errors.concat(nodeErrors);
 
   const [edgeErrors, validatedEdges] = condenseEdges(
     edgesByName,
     schemaFile.preamble
   );
-  errors = errors.concat(edgeErrors);
 
   return [
-    errors,
+    [...nodeMappingErrors, ...edgeMappingErrors, ...nodeErrors, ...edgeErrors],
     {
       nodes: validatedNodes,
       edges: validatedEdges,
@@ -93,8 +88,8 @@ function condense(schemaFile: RawSchemaFile): [ValidationError[], SchemaFile] {
 }
 
 function condenseNodes(
-  nodes: { [key: NodeReference]: RawNode },
-  preamble: RawSchemaFile["preamble"]
+  nodes: { [key: NodeReference]: NodeAst },
+  preamble: SchemaFileAst["preamble"]
 ): [
   ValidationError[],
   {
@@ -108,7 +103,7 @@ function condenseNodes(
   ).reduce((l, [key, node]) => {
     const [nodeErrors, condensed] = condenseNode(node, preamble);
     errors = errors.concat(nodeErrors);
-    if (condensed) {
+    if (condensed != null) {
       l[key] = condensed;
     }
     return l;
@@ -117,15 +112,45 @@ function condenseNodes(
 }
 
 function condenseNode(
-  node: RawNode,
-  preamble: RawSchemaFile["preamble"]
+  node: NodeAst,
+  preamble: SchemaFileAst["preamble"]
 ): [ValidationError[], Node | null] {
-  throw new Error();
+  const [extensionErrors, extensions] = arrayToMap(
+    node.extensions,
+    (e) => e.name,
+    (e) => ({
+      message: `Node ${node.name} had duplicate extension (${e.name}) defined`,
+      severity: "error",
+    })
+  );
+
+  const [fieldErrors, fields] = arrayToMap(
+    node.fields,
+    (f) => f.name,
+    (f) => ({
+      message: `Node ${node.name} had duplicate fields (${f.name}) defined`,
+      severity: "error",
+    })
+  );
+  return [
+    fieldErrors.concat(extensionErrors),
+    {
+      name: node.name,
+      fields,
+      extensions,
+      storage: {
+        type: engineToType(preamble.engine),
+        engine: preamble.engine,
+        db: preamble.db,
+        table: node.table || node.name.toLocaleLowerCase(),
+      },
+    },
+  ];
 }
 
 function condenseEdges(
-  edges: { [key: EdgeReference]: RawEdge },
-  preamble: RawSchemaFile["preamble"]
+  edges: { [key: EdgeReference]: EdgeAst },
+  preamble: SchemaFileAst["preamble"]
 ): [
   ValidationError[],
   {
@@ -133,4 +158,28 @@ function condenseEdges(
   }
 ] {
   return [[], {}];
+}
+
+function engineToType(engine: StorageEngine): StorageType {
+  switch (engine) {
+    case "postgres":
+      return "sql";
+  }
+}
+
+function arrayToMap<T extends Object>(
+  array: T[],
+  getKey: (T) => string,
+  onDuplicate: (T) => ValidationError
+): [ValidationError[], { [key: string]: T }] {
+  const errors: ValidationError[] = [];
+  const map = array.reduce((l, r) => {
+    const key = getKey(r);
+    if (l[key] !== undefined) {
+      errors.push(onDuplicate(r));
+    }
+    l[key] = r;
+    return l;
+  }, {});
+  return [errors, map];
 }

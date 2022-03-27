@@ -1,9 +1,12 @@
-export type RawSchemaFile = {
+export type StorageEngine = "postgres"; // mysql | maria | neo4j | redis ...
+export type StorageType = "sql"; // opencypher
+
+export type SchemaFileAst = {
   preamble: {
-    engine: "postgres";
+    engine: StorageEngine;
     db: string;
   };
-  entities: (RawNode | RawEdge)[];
+  entities: (NodeAst | EdgeAst)[];
 };
 
 export type SchemaFile = {
@@ -16,12 +19,12 @@ export type SchemaFile = {
 };
 
 export type Node = {
-  name: RawNode["name"];
+  name: NodeAst["name"];
   fields: {
     [key: UnqalifiedFieldReference]: Field;
   };
   extensions: {
-    [Property in NodeExtension["name"]]: NodeExtension;
+    [Property in NodeExtension["name"]]?: NodeExtension;
   };
   storage: StorageConfig;
 };
@@ -30,11 +33,11 @@ type StorageConfig = {
   type: "sql";
   db: string;
   table: string;
-  engine: "postgres"; //| "mysql" | "maria";
+  engine: StorageEngine;
 }; // | { type: "opencypher" } ...;
 
 export type Edge = {
-  name: RawEdge["name"];
+  name: EdgeAst["name"];
   src: NodeReference;
   dest: NodeReference;
   fields: {
@@ -66,16 +69,17 @@ type ComplexField = Map | Array;
 type Field = NonComplexField | ComplexField;
 type NodeExtension = OutboundEdges | InboundEdges | Index;
 
-export type RawNode = {
+export type NodeAst = {
   type: "node";
   name: string;
   fields: Field[];
   extensions: NodeExtension[];
+  table?: string;
 };
 
 type EdgeExtension = Index | Invert | Constrain;
 
-export type RawEdge = {
+export type EdgeAst = {
   type: "edge";
   name: string;
   // TODO: src and dest should allow reference of the column...
