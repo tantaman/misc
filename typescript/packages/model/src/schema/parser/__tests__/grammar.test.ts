@@ -3,7 +3,7 @@ import compile from "nearley/lib/compile";
 import generate from "nearley/lib/generate";
 import nearleyGrammar from "nearley/lib/nearley-language-bootstrapped";
 import * as fs from "fs";
-import { InboundEdges, SchemaFileAst } from "schema/SchemaType";
+import { InboundEdges, SchemaFileAst } from "../SchemaType.js";
 
 test("parsing a small schema", () => {
   const parser = new nearley.Parser(
@@ -173,8 +173,12 @@ Node<Transaction> {
       },
       {
         type: "edge",
-        src: "Person",
-        dest: "Person",
+        src: {
+          type: "Person",
+        },
+        dest: {
+          type: "Person",
+        },
         name: "FollowEdge",
         fields: [],
         extensions: [],

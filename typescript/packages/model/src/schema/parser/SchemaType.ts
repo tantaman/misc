@@ -38,14 +38,15 @@ type StorageConfig = {
 
 export type Edge = {
   name: EdgeAst["name"];
-  src: NodeReference;
-  dest: NodeReference;
+  src: NodeReferenceOrQualifiedColumn;
+  dest: NodeReferenceOrQualifiedColumn | null;
   fields: {
     [key: UnqalifiedFieldReference]: Field;
   };
   extensions: {
     [Property in EdgeExtension["name"]]: EdgeExtension;
   };
+  storage: StorageConfig;
 };
 
 type RemoveNameField<Type> = {
@@ -66,7 +67,7 @@ type NonComplexField =
 
 type ComplexField = Map | Array;
 
-type Field = NonComplexField | ComplexField;
+export type Field = NonComplexField | ComplexField;
 type NodeExtension = OutboundEdges | InboundEdges | Index;
 
 export type NodeAst = {
@@ -82,9 +83,8 @@ type EdgeExtension = Index | Invert | Constrain;
 export type EdgeAst = {
   type: "edge";
   name: string;
-  // TODO: src and dest should allow reference of the column...
-  src: NodeReference;
-  dest: NodeReference;
+  src: NodeReferenceOrQualifiedColumn;
+  dest: NodeReferenceOrQualifiedColumn | null;
   fields: Field[];
   extensions: EdgeExtension[];
 };
@@ -98,17 +98,16 @@ type Constrain = {
   name: "constrain";
 };
 
+type NodeReferenceOrQualifiedColumn = {
+  type: NodeReference;
+  column?: UnqalifiedFieldReference;
+};
+
 type EdgeDeclaration = {
   type: "edge";
   name: string;
-  src: {
-    type: NodeReference;
-    column?: UnqalifiedFieldReference;
-  };
-  dest: {
-    type: NodeReference;
-    column?: UnqalifiedFieldReference;
-  } | null;
+  src: NodeReferenceOrQualifiedColumn;
+  dest: NodeReferenceOrQualifiedColumn | null;
 };
 
 type EdgeReferenceDeclaration = {

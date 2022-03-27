@@ -9,38 +9,48 @@ import {
   SchemaFile,
   StorageEngine,
   StorageType,
+  Field,
 } from "./SchemaType.js";
-import nearley from "nearley";
-import Grammar from "schema/parser/Grammar.js";
-import * as fs from "fs";
 
 type ValidationError = {
   message: string;
   severity: "warning" | "advice" | "error";
 };
 
-function parse(filePath: string): SchemaFileAst {
-  const parser = new nearley.Parser(nearley.Grammar.fromCompiled(Grammar));
-  const schemaFileContents = fs.readFileSync(filePath, {
-    encoding: "utf8",
-    flag: "r",
-  });
-
-  parser.feed(schemaFileContents);
-  return parser.results[0] as SchemaFileAst;
-}
-
-function condense(schemaFile: SchemaFileAst): [ValidationError[], SchemaFile] {
-  // Iterate over all the things in the schema file
-  // set up storage configs with defaults that were defined in the preamble
-  // ensure no collisions on node/edge names
-  // ensure no collisions on field names
-  // suggest indexing of foreign keys
-  // ensure primary keys exist
-  // ...
-  // we should probs support imports at some point in time
-  // convert edges to field / foreign key / junction / ... types
-
+/**
+ * The AST returned by the parser gives us lists of items.
+ * Convert that list of items into maps of items.
+ * E.g.,
+ * ```
+ * {
+ *   nodes: {
+ *     [node.name] => node,
+ *     ...
+ *   }
+ *   edges: {
+ *     [edge.name] => edge,
+ *     ...
+ *   }
+ * }
+ * ```
+ *
+ * Descends into nodes and edges and does the same for their fields
+ * and extensions.
+ *
+ * We do this so we can easily look up nodes and edges when one node/edge refers
+ * to another.
+ *
+ * We also gether up a list of errors that occur in this process, such as
+ * field/edge/node/extension name conflicts.
+ *
+ * These errors are reported to the user further upstream.
+ *
+ * We collect as many as we can, rather than bailing early, so the user
+ * can fix all errors before having to re-run compilation.
+ */
+export function condense(
+  schemaFile: SchemaFileAst
+): [ValidationError[], SchemaFile] {
   const [nodes, edges] = schemaFile.entities.reduce(
     (left: [NodeAst[], EdgeAst[]], nodeOrEdge) => {
       nodeOrEdge.type === "node"
@@ -97,15 +107,12 @@ function condenseNodes(
   }
 ] {
   let errors: ValidationError[] = [];
-  // We condense differently based on engine?
   const condensedNodes: { [key: NodeReference]: Node } = Object.entries(
     nodes
   ).reduce((l, [key, node]) => {
     const [nodeErrors, condensed] = condenseNode(node, preamble);
     errors = errors.concat(nodeErrors);
-    if (condensed != null) {
-      l[key] = condensed;
-    }
+    l[key] = condensed;
     return l;
   }, {});
   return [errors, condensedNodes];
@@ -114,26 +121,12 @@ function condenseNodes(
 function condenseNode(
   node: NodeAst,
   preamble: SchemaFileAst["preamble"]
-): [ValidationError[], Node | null] {
-  const [extensionErrors, extensions] = arrayToMap(
-    node.extensions,
-    (e) => e.name,
-    (e) => ({
-      message: `Node ${node.name} had duplicate extension (${e.name}) defined`,
-      severity: "error",
-    })
-  );
+): [ValidationError[], Node] {
+  const [fieldErrors, fields] = condenseFieldsFor("Node", node);
+  const [extensionErrors, extensions] = condenseExtensionsFor("Node", node);
 
-  const [fieldErrors, fields] = arrayToMap(
-    node.fields,
-    (f) => f.name,
-    (f) => ({
-      message: `Node ${node.name} had duplicate fields (${f.name}) defined`,
-      severity: "error",
-    })
-  );
   return [
-    fieldErrors.concat(extensionErrors),
+    [...fieldErrors, ...extensionErrors],
     {
       name: node.name,
       fields,
@@ -160,6 +153,38 @@ function condenseEdges(
   return [[], {}];
 }
 
+function condenseEdge() {
+  // const [fieldErrors, fields] = condenseFieldsFor("Edge", edge)
+}
+
+function condenseFieldsFor(
+  entityType: string,
+  entity: { name: string; fields: Field[] }
+) {
+  return arrayToMap(
+    entity.fields,
+    (f) => f.name,
+    (f) => ({
+      message: `${entityType} ${entity.name} had duplicate fields (${f.name}) defined`,
+      severity: "error",
+    })
+  );
+}
+
+function condenseExtensionsFor<T>(
+  entityType: string,
+  entity: { name: string; extensions: T[] }
+) {
+  return arrayToMap(
+    entity.extensions,
+    (e) => e.name,
+    (e) => ({
+      message: `${entityType} ${entity.name} had duplicate extension (${e.name}) defined`,
+      severity: "error",
+    })
+  );
+}
+
 function engineToType(engine: StorageEngine): StorageType {
   switch (engine) {
     case "postgres":
@@ -183,3 +208,13 @@ function arrayToMap<T extends Object>(
   }, {});
   return [errors, map];
 }
+
+// Iterate over all the things in the schema file
+// set up storage configs with defaults that were defined in the preamble
+// ensure no collisions on node/edge names
+// ensure no collisions on field names
+// suggest indexing of foreign keys
+// ensure primary keys exist
+// ...
+// we should probs support imports at some point in time
+// convert edges to field / foreign key / junction / ... types
