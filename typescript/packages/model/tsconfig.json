@@ -10,7 +10,8 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "baseUrl": "./src/",
-    "declaration": true
+    "declaration": true,
+    "allowJs": true
   },
   "include": ["./src/"]
 }
