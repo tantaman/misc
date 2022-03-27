@@ -1,8 +1,8 @@
-import { InboundEdges, SchemaFileAst } from "../SchemaType.js";
+import { InboundEdges, SchemaFile, SchemaFileAst } from "../SchemaType.js";
 
 export const contents = `
-storageEngine: postgres
-dbName: test
+engine: postgres
+db: test
 
 Node<Person> {
   id: ID<Person>
@@ -168,8 +168,18 @@ export const ast: SchemaFileAst = {
         type: "Person",
       },
       name: "FollowEdge",
-      fields: [],
-      extensions: [],
+      fields: [
+        {
+          type: "timestamp",
+          name: "when",
+        },
+      ],
+      extensions: [
+        {
+          name: "invert",
+          as: "FollowerEdge",
+        },
+      ],
     },
     {
       type: "node",
@@ -253,4 +263,233 @@ export const ast: SchemaFileAst = {
       extensions: [],
     },
   ],
+};
+
+export const schemaFile: SchemaFile = {
+  nodes: {
+    Person: {
+      name: "Person",
+      fields: {
+        id: {
+          type: "id",
+          name: "id",
+          of: "Person",
+        },
+        name: {
+          name: "name",
+          type: "naturalLanguage",
+        },
+        walletId: {
+          name: "walletId",
+          type: "id",
+          of: "Wallet",
+        },
+        thing1: {
+          name: "thing1",
+          type: "primitive",
+          subtype: "string",
+        },
+        thing2: {
+          name: "thing2",
+          type: "primitive",
+          subtype: "string",
+        },
+      },
+      extensions: {
+        outboundEdges: {
+          name: "outboundEdges",
+          declarations: [
+            {
+              name: "wallet",
+              type: "edge",
+              src: {
+                type: "Person",
+                column: "walletId",
+              },
+              dest: null,
+            },
+            {
+              name: "friends",
+              type: "edge",
+              src: {
+                type: "Person",
+              },
+              dest: {
+                type: "Person",
+              },
+            },
+            {
+              name: "cars",
+              type: "edge",
+              src: {
+                type: "Car",
+                column: "ownerId",
+              },
+              dest: null,
+            },
+            {
+              name: "follows",
+              type: "edgeReference",
+              reference: "FollowEdge",
+            },
+            {
+              name: "followedBy",
+              type: "edgeReference",
+              reference: "FollowerEdge",
+            },
+          ],
+        },
+        inboundEdges: {
+          name: "inboundEdges",
+          declarations: [
+            {
+              dest: null,
+              name: "fromWallet",
+              type: "edge",
+              src: {
+                type: "Person",
+                column: "walletId",
+              },
+            },
+          ],
+        },
+        index: {
+          name: "index",
+          declarations: [
+            {
+              name: "walletId",
+              type: "unique",
+              columns: ["walletId"],
+            },
+            {
+              name: "compound",
+              type: "nonUnique",
+              columns: ["thing1", "thing2"],
+            },
+            {
+              name: "thing2",
+              type: "nonUnique",
+              columns: ["thing2"],
+            },
+          ],
+        },
+      },
+      storage: {
+        type: "sql",
+        engine: "postgres",
+        db: "test",
+        table: "person",
+      },
+    },
+    Wallet: {
+      name: "Wallet",
+      fields: {
+        id: {
+          name: "id",
+          type: "id",
+          of: "Wallet",
+        },
+        balance: {
+          name: "balance",
+          type: "currency",
+          denomination: "usd",
+        },
+        status: {
+          name: "status",
+          type: "enumeration",
+          keys: ["Active", "Locked"],
+        },
+        alias: {
+          name: "alias",
+          type: "naturalLanguage",
+        },
+      },
+      extensions: {},
+      storage: {
+        type: "sql",
+        engine: "postgres",
+        db: "test",
+        table: "wallet",
+      },
+    },
+    Transaction: {
+      name: "Transaction",
+      fields: {
+        id: {
+          name: "id",
+          type: "id",
+          of: "Transaction",
+        },
+        time: {
+          name: "time",
+          type: "timestamp",
+        },
+        blob: {
+          name: "blob",
+          type: "map",
+          keys: {
+            type: "primitive",
+            subtype: "string",
+          },
+          values: {
+            type: "primitive",
+            subtype: "string",
+          },
+        },
+        blobOfBlob: {
+          name: "blobOfBlob",
+          type: "map",
+          keys: {
+            type: "primitive",
+            subtype: "string",
+          },
+          values: {
+            type: "map",
+            keys: {
+              type: "primitive",
+              subtype: "string",
+            },
+            values: {
+              type: "primitive",
+              subtype: "string",
+            },
+          },
+        },
+        list: {
+          name: "list",
+          type: "array",
+          values: {
+            type: "primitive",
+            subtype: "string",
+          },
+        },
+      },
+      extensions: {},
+      storage: {
+        type: "sql",
+        engine: "postgres",
+        db: "test",
+        table: "transaction",
+      },
+    },
+  },
+  edges: {
+    FollowEdge: {
+      name: "FollowEdge",
+      src: {
+        type: "Person",
+      },
+      dest: {
+        type: "Person",
+      },
+      fields: {},
+      extensions: {},
+      storage: {
+        type: "sql",
+        engine: "postgres",
+        db: "test",
+        table: "followedge",
+      },
+    },
+  },
 };

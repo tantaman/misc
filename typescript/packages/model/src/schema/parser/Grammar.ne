@@ -13,8 +13,8 @@ preamble -> ((engineDeclaration dbDeclaration) | (dbDeclaration engineDeclaratio
   db: engineOrDb.type === "db" ? engineOrDb.name : dbOrEngine.name
 }) %}
 
-engineDeclaration -> "storageEngine:" inlineSpace engine "\n" {% ([keyword, ws, [name]]) => ({type: "engine", name}) %}
-dbDeclaration -> "dbName:" inlineSpace dbName "\n" {% ([keyword, ws, name]) => ({type: "db", name}) %}
+engineDeclaration -> "engine:" inlineSpace engine "\n" {% ([keyword, ws, [name]]) => ({type: "engine", name}) %}
+dbDeclaration -> "db:" inlineSpace dbName "\n" {% ([keyword, ws, name]) => ({type: "db", name}) %}
 engine -> "postgres" # | "mysql" | "neo4j" | "redis" | "redis-graph" | "singlestore" | "mariadb" | "gremlin" | "opencypher"
 dbName -> [a-zA-Z0-9]:+ {% d => d[0].join("") %}
 
@@ -28,7 +28,7 @@ node -> "Node<" _ name _ ">" _ nodeFields _ nodeFunctions {% ([kw, ws, name, ws2
 }) %}
 
 edge -> "Edge<" _ name _ "," _ name _ ">" _ "as" _ name _ edgeFields _ edgeFunctions {%
-  ([_kw, _ws, src, _ws2, _kw2, _ws3, dest, _ws4, _kw3, _ws5, _kw4, _ws6, name, fields, ws6, funcs]) => ({
+  ([_kw, _ws, src, _ws2, _kw2, _ws3, dest, _ws4, _kw3, _ws5, _kw4, _ws6, name, _ws7, fields, ws6, funcs]) => ({
     type: "edge",
     src: {
       type: src,
@@ -111,10 +111,11 @@ nameList -> name | nameList _ "," _ name {% ([e, _ws, _kw, _ws2, name]) => e.con
 
 privacyPolicy -> null
 
-edgeFields -> "{" _  fieldDeclarations "}" {% () => [] %}
-edgeFunctions -> null | edgeFunctions "|" _ edgeFunction _
+edgeFields -> "{" _  fieldDeclarations "}" {% ([_kw, _ws, decl]) => decl %}
+edgeFunctions -> null | edgeFunctions "|" _ edgeFunction _ {% ([e, _kw, _ws, func]) => e.concat(func) %}
 
-edgeFunction -> "Index" _ "{" _ indices "}" | "Invert" _ "as" _ name
+edgeFunction -> "Index" _ "{" _ indices "}" {% ([_kw, _ws, _kw2, _ws2, declarations]) => ({name: "index", declarations }) %}
+  | "Invert" _ "as" _ name {% ([_kw, _ws, _kw2, _ws3, as]) => ({name: "invert", as}) %}
 
 
 inlineSpace -> [ \t\v\f]:* {% (_) => null %}

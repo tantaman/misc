@@ -1,7 +1,5 @@
-import P from "query/Predicate.js";
 import {
   EdgeAst,
-  EdgeReference,
   NodeAst,
   NodeReference,
   SchemaFileAst,
@@ -16,6 +14,13 @@ import {
 type ValidationError = {
   message: string;
   severity: "warning" | "advice" | "error";
+  type:
+    | "duplicate-nodes"
+    | "duplicate-edges"
+    | "duplicate-fields"
+    | "duplicate-ob-edges"
+    | "duplicate-ib-edges"
+    | "duplicate-extensions";
 };
 
 /**
@@ -49,7 +54,7 @@ type ValidationError = {
  * We collect as many as we can, rather than bailing early, so the user
  * can fix all errors before having to re-run compilation.
  */
-export function condense(
+export default function condense(
   schemaFile: SchemaFileAst
 ): [ValidationError[], SchemaFile] {
   const [nodes, edges] = schemaFile.entities.reduce(
@@ -68,6 +73,7 @@ export function condense(
     (n) => ({
       message: "A node has already been defined with the name " + n.name,
       severity: "error",
+      type: "duplicate-nodes",
     })
   );
   const [edgeMappingErrors, edgesByName] = arrayToMap(
@@ -76,6 +82,7 @@ export function condense(
     (e) => ({
       message: "An edge has already been defined with the name " + e.name,
       severity: "error",
+      type: "duplicate-edges",
     })
   );
 
@@ -188,6 +195,7 @@ function condenseFieldsFor(
     (f) => ({
       message: `${entityType} ${entity.name} had duplicate fields (${f.name}) defined`,
       severity: "error",
+      type: "duplicate-fields",
     })
   );
 }
@@ -202,6 +210,7 @@ function condenseExtensionsFor<T>(
     (e) => ({
       message: `${entityType} ${entity.name} had duplicate extension (${e.name}) defined`,
       severity: "error",
+      type: "duplicate-fields",
     })
   );
 }
