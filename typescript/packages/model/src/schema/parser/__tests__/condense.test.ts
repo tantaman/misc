@@ -58,19 +58,18 @@ test("Duplicate inbound edges on node", () => {
 engine: postgres
 db: test
 Node<Foo> {
-  bazId: ID<Baz>
+  barId: ID<Bar>
 } | InboundEdges {
   fromBar: Edge<Foo.barId>
   fromBar: Edge<Foo.barId>
 }
 `);
-  // const [errors, condensed] = condense(ast);
-  // expect(errors.length).toBe(1);
-  // expect(errors[0].type).toEqual("duplicate-ib-edges");
-  // // we still return data, even when we have errors.
-  // expect(
-  //   condensed.nodes["Foo"].extensions.inboundEdges?.fromBar
-  // ).not.toBeUndefined();
+  const [errors, condensed] = condense(ast);
+  expect(errors.length).toBe(1);
+  expect(errors[0].type).toEqual("duplicate-ib-edges");
+  expect(
+    (condensed.nodes["Foo"].extensions.inboundEdges || {})["fromBar"]
+  ).not.toBeUndefined();
 });
 
 test("Duplicate extensions on node", () => {});

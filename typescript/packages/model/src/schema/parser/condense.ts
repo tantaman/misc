@@ -1,7 +1,7 @@
+import condenseEntities from "./condenseEntities.js";
 import {
   EdgeAst,
   NodeAst,
-  NodeReference,
   SchemaFileAst,
   Edge,
   Node,
@@ -9,19 +9,11 @@ import {
   StorageEngine,
   StorageType,
   Field,
+  NodeAstExtension,
+  EdgeExtension,
+  NodeExtension,
 } from "./SchemaType.js";
-
-type ValidationError = {
-  message: string;
-  severity: "warning" | "advice" | "error";
-  type:
-    | "duplicate-nodes"
-    | "duplicate-edges"
-    | "duplicate-fields"
-    | "duplicate-ob-edges"
-    | "duplicate-ib-edges"
-    | "duplicate-extensions";
-};
+import { ValidationError } from "../validator/validate.js";
 
 /**
  * The AST returned by the parser gives us lists of items.
@@ -107,39 +99,16 @@ export default function condense(
   ];
 }
 
-function condenseEntities<Tc, Ta>(
-  entities: {
-    [key: string]: Ta;
-  },
-  preamble: SchemaFileAst["preamble"],
-  condensor: (
-    entity: Ta,
-    preamble: SchemaFileAst["preamble"]
-  ) => [ValidationError[], Tc]
-): [
-  ValidationError[],
-  {
-    [key: string]: Tc;
-  }
-] {
-  let errors: ValidationError[] = [];
-  const condensedEntities: { [key: NodeReference]: Tc } = Object.entries(
-    entities
-  ).reduce((l, [key, entity]) => {
-    const [entityErrors, condensed] = condensor(entity, preamble);
-    errors = errors.concat(entityErrors);
-    l[key] = condensed;
-    return l;
-  }, {});
-  return [errors, condensedEntities];
-}
-
 function condenseNode(
   node: NodeAst,
   preamble: SchemaFileAst["preamble"]
 ): [ValidationError[], Node] {
   const [fieldErrors, fields] = condenseFieldsFor("Node", node);
-  const [extensionErrors, extensions] = condenseExtensionsFor("Node", node);
+  const [extensionErrors, extensions] = condenseExtensionsFor(
+    "Node",
+    node,
+    nodeExtensionCondensor
+  );
 
   return [
     [...fieldErrors, ...extensionErrors],
@@ -163,7 +132,11 @@ function condenseEdge(
   preamble: SchemaFileAst["preamble"]
 ): [ValidationError[], Edge] {
   const [fieldErrors, fields] = condenseFieldsFor("Edge", edge);
-  const [extensionErrors, extensions] = condenseExtensionsFor("Edge", edge);
+  const [extensionErrors, extensions] = condenseExtensionsFor(
+    "Edge",
+    edge,
+    edgeExtensionCondensor
+  );
 
   return [
     [...fieldErrors, ...extensionErrors],
@@ -200,12 +173,16 @@ function condenseFieldsFor(
   );
 }
 
-function condenseExtensionsFor<T>(
+function condenseExtensionsFor<T, R>(
   entityType: string,
-  entity: { name: string; extensions: T[] }
-) {
-  return arrayToMap(
-    entity.extensions,
+  entity: { name: string; extensions: T[] },
+  extensionCondensor: (T) => [ValidationError[], R]
+): [ValidationError[], { [key: string]: R }] {
+  const errorsAndExtensions = entity.extensions.map(extensionCondensor);
+  const extensionErrors = errorsAndExtensions.flatMap((e) => e[0]);
+  const condensedExtensions = errorsAndExtensions.map((e) => e[1]);
+  const [extensionConflicts, extensionMap] = arrayToMap(
+    condensedExtensions,
     (e) => e.name,
     (e) => ({
       message: `${entityType} ${entity.name} had duplicate extension (${e.name}) defined`,
@@ -213,12 +190,58 @@ function condenseExtensionsFor<T>(
       type: "duplicate-fields",
     })
   );
+
+  return [[...extensionErrors, ...extensionConflicts], extensionMap];
 }
 
 function engineToType(engine: StorageEngine): StorageType {
   switch (engine) {
     case "postgres":
       return "sql";
+  }
+}
+
+function nodeExtensionCondensor(
+  extension: NodeAstExtension
+): [ValidationError[], NodeExtension] {
+  switch (extension.name) {
+    case "index":
+      return [[], extension];
+    case "inboundEdges":
+    case "outboundEdges":
+      const [errors, edges] = arrayToMap(
+        extension.declarations,
+        (e) => e.name,
+        (e) => ({
+          message: `Duplicate ${extension.name} found for edge ${e.name}`,
+          severity: "error",
+          type:
+            extension.name === "inboundEdges"
+              ? "duplicate-ib-edges"
+              : "duplicate-ob-edges",
+        })
+      );
+      return [
+        errors,
+        {
+          name: extension.name,
+          edges,
+        },
+      ];
+    case "storage":
+      return [[], extension];
+  }
+}
+
+function edgeExtensionCondensor(
+  extension: EdgeExtension
+): [ValidationError[], EdgeExtension] {
+  switch (extension.name) {
+    case "constrain":
+    case "index":
+    case "invert":
+    case "storage":
+      return [[], extension];
   }
 }
 

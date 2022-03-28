@@ -1,4 +1,9 @@
-import { InboundEdges, SchemaFile, SchemaFileAst } from "../SchemaType.js";
+import {
+  InboundEdges,
+  InboundEdgesAst,
+  SchemaFile,
+  SchemaFileAst,
+} from "../SchemaType.js";
 
 export const contents = `
 engine: postgres
@@ -136,7 +141,7 @@ export const ast: SchemaFileAst = {
               },
             },
           ],
-        } as InboundEdges,
+        } as InboundEdgesAst,
         {
           name: "index",
           declarations: [
@@ -298,8 +303,8 @@ export const schemaFile: SchemaFile = {
       extensions: {
         outboundEdges: {
           name: "outboundEdges",
-          declarations: [
-            {
+          edges: {
+            wallet: {
               name: "wallet",
               type: "edge",
               src: {
@@ -308,7 +313,7 @@ export const schemaFile: SchemaFile = {
               },
               dest: null,
             },
-            {
+            friends: {
               name: "friends",
               type: "edge",
               src: {
@@ -318,7 +323,7 @@ export const schemaFile: SchemaFile = {
                 type: "Person",
               },
             },
-            {
+            cars: {
               name: "cars",
               type: "edge",
               src: {
@@ -327,22 +332,22 @@ export const schemaFile: SchemaFile = {
               },
               dest: null,
             },
-            {
+            follows: {
               name: "follows",
               type: "edgeReference",
               reference: "FollowEdge",
             },
-            {
+            followedBy: {
               name: "followedBy",
               type: "edgeReference",
               reference: "FollowerEdge",
             },
-          ],
+          },
         },
         inboundEdges: {
           name: "inboundEdges",
-          declarations: [
-            {
+          edges: {
+            fromWallet: {
               dest: null,
               name: "fromWallet",
               type: "edge",
@@ -351,7 +356,7 @@ export const schemaFile: SchemaFile = {
                 column: "walletId",
               },
             },
-          ],
+          },
         },
         index: {
           name: "index",

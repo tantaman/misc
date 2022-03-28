@@ -68,16 +68,21 @@ type NonComplexField =
 type ComplexField = Map | Array;
 
 export type Field = NonComplexField | ComplexField;
-type NodeExtension = OutboundEdges | InboundEdges | Index | Storage;
+export type NodeAstExtension =
+  | OutboundEdgesAst
+  | InboundEdgesAst
+  | Index
+  | Storage;
+export type NodeExtension = OutboundEdges | InboundEdges | Index | Storage;
 
 export type NodeAst = {
   type: "node";
   name: string;
   fields: Field[];
-  extensions: NodeExtension[];
+  extensions: NodeAstExtension[];
 };
 
-type EdgeExtension = Index | Invert | Constrain | Storage;
+export type EdgeExtension = Index | Invert | Constrain | Storage;
 
 export type EdgeAst = {
   type: "edge";
@@ -172,14 +177,28 @@ type Array = {
   values: RemoveNameField<Field>;
 };
 
-type OutboundEdges = {
+export type OutboundEdgesAst = {
   name: "outboundEdges";
   declarations: (EdgeDeclaration | EdgeReferenceDeclaration)[];
 };
 
-export type InboundEdges = {
+export type OutboundEdges = {
+  name: OutboundEdgesAst["name"];
+  edges: {
+    [key: EdgeReference]: EdgeDeclaration | EdgeReferenceDeclaration;
+  };
+};
+
+export type InboundEdgesAst = {
   name: "inboundEdges";
   declarations: (EdgeDeclaration | EdgeReferenceDeclaration)[];
+};
+
+export type InboundEdges = {
+  name: InboundEdgesAst["name"];
+  edges: {
+    [key: EdgeReference]: EdgeDeclaration | EdgeReferenceDeclaration;
+  };
 };
 
 type Index = {

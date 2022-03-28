@@ -3,7 +3,7 @@ import compile from "nearley/lib/compile";
 import generate from "nearley/lib/generate";
 import nearleyGrammar from "nearley/lib/nearley-language-bootstrapped";
 import * as fs from "fs";
-import { InboundEdges, SchemaFileAst } from "../SchemaType.js";
+import { SchemaFileAst } from "../SchemaType.js";
 import { contents, ast } from "./testSchemaFile.js";
 
 test("parsing a small schema", () => {
