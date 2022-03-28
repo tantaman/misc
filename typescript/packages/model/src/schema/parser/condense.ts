@@ -115,7 +115,7 @@ function condenseNode(
     {
       name: node.name,
       fields,
-      extensions,
+      extensions: extensions as Node["extensions"],
       storage: {
         type: engineToType(preamble.engine),
         engine: preamble.engine,
@@ -187,7 +187,7 @@ function condenseExtensionsFor<T, R>(
     (e) => ({
       message: `${entityType} ${entity.name} had duplicate extension (${e.name}) defined`,
       severity: "error",
-      type: "duplicate-fields",
+      type: "duplicate-extensions",
     })
   );
 

@@ -24,7 +24,10 @@ export type Node = {
     [key: UnqalifiedFieldReference]: Field;
   };
   extensions: {
-    [Property in NodeExtension["name"]]?: NodeExtension;
+    outboundEdges?: OutboundEdges;
+    inboundEdges?: InboundEdges;
+    index?: Index;
+    storage?: Storage;
   };
   storage: StorageConfig;
 };
@@ -73,7 +76,7 @@ export type NodeAstExtension =
   | InboundEdgesAst
   | Index
   | Storage;
-export type NodeExtension = OutboundEdges | InboundEdges | Index | Storage;
+export type NodeExtension = Node["extensions"][keyof Node["extensions"]];
 
 export type NodeAst = {
   type: "node";

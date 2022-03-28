@@ -1,6 +1,7 @@
 import { ast, schemaFile } from "./testSchemaFile.js";
 import condense from "../condense.js";
 import { parseString } from "../parse";
+import { InboundEdges } from "../SchemaType.js";
 
 test("Condensing the AST to proper schema types", () => {
   const [_errors, condensed] = condense(ast);
@@ -51,7 +52,24 @@ Node<Foo> {
   expect(condensed.nodes["Foo"].fields["bar"]).not.toBeUndefined();
 });
 
-test("Duplicate outbound edges on node", () => {});
+test("Duplicate outbound edges on node", () => {
+  const ast = parseString(`
+engine: postgres
+db: test
+Node<Foo> {
+  barId: ID<Bar>
+} | OutboundEdges {
+  bar: Edge<Foo.barId>
+  bar: Edge<Foo.barId>
+}
+`);
+  const [errors, condensed] = condense(ast);
+  expect(errors.length).toBe(1);
+  expect(errors[0].type).toEqual("duplicate-ob-edges");
+  expect(
+    (condensed.nodes["Foo"].extensions.outboundEdges?.edges || {})["bar"]
+  ).not.toBeUndefined();
+});
 
 test("Duplicate inbound edges on node", () => {
   const ast = parseString(`
@@ -68,13 +86,39 @@ Node<Foo> {
   expect(errors.length).toBe(1);
   expect(errors[0].type).toEqual("duplicate-ib-edges");
   expect(
-    (condensed.nodes["Foo"].extensions.inboundEdges || {})["fromBar"]
+    (condensed.nodes["Foo"].extensions.inboundEdges?.edges || {})["fromBar"]
   ).not.toBeUndefined();
 });
 
-test("Duplicate extensions on node", () => {});
+test("Duplicate extensions on node", () => {
+  const ast = parseString(`
+engine: postgres
+db: test
+Node<Foo> {
+  barId: ID<Bar>
+} | InboundEdges {
+} | InboundEdges {}
+`);
+  const [errors, condensed] = condense(ast);
+  expect(errors.length).toBe(1);
+  expect(errors[0].type).toEqual("duplicate-extensions");
+  expect(condensed.nodes["Foo"].extensions.inboundEdges).not.toBeUndefined();
+});
 
-test("Duplicate extensions on edge", () => {});
+test("Duplicate extensions on edge", () => {
+  const ast = parseString(`
+engine: postgres
+db: test
+Edge<Foo, Foo> as FooToFooEdge {
+  barId: ID<Bar>
+} | Index {
+} | Index {}
+`);
+  const [errors, condensed] = condense(ast);
+  expect(errors.length).toBe(1);
+  expect(errors[0].type).toEqual("duplicate-extensions");
+  expect(condensed.edges["FooToFooEdge"].extensions.index).not.toBeUndefined();
+});
 
 test("Duplicate fields on edge", () => {
   const ast = parseString(`
