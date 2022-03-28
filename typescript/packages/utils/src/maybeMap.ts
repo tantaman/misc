@@ -1,6 +1,6 @@
 export default function maybeMap<Tp, Tr>(
   vals: Iterable<Tp>,
-  fn: (Tp) => Tr
+  fn: (x: Tp) => Tr | null
 ): Tr[] {
   const ret: Tr[] = [];
   for (const v of vals) {
