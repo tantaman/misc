@@ -1,4 +1,4 @@
-import { ValidationError } from "../validator/validate.js";
+import { ValidationError } from "../v2/validate.js";
 import { NodeReference, SchemaFileAst } from "./SchemaType.js";
 
 export default function condenseEntities<Tc, Ta>(

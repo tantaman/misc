@@ -13,7 +13,7 @@ import {
   EdgeExtension,
   NodeExtension,
 } from "./SchemaType.js";
-import { ValidationError } from "../validator/validate.js";
+import { ValidationError } from "../v2/validate.js";
 
 /**
  * The AST returned by the parser gives us lists of items.
