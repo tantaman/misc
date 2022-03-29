@@ -26,6 +26,27 @@ Node<PrimitiveFields> {
 }
 `;
 
+const OutboundFieldEdgeSchema = `
+engine: postgres
+db: test
+
+Node<OutboundFieldEdge> {
+  fooId: ID<Foo>
+} | OutboundEdges {
+  foos: Edge<OutboundFieldEdge.fooId>
+}
+`;
+
+const OutboundForeignKeyEdgeSchema = `
+engine: postgres
+db: test
+
+Node<Bar> {
+} | OutboundEdges {
+  foos: Edge<Foo.barId>
+}
+`;
+
 test("Generating an ID only model", () => {
   const contents = genIt(
     compileFromString(IDOnlySchema)[1].nodes.IDOnly
@@ -119,6 +140,80 @@ export const spec: Spec<Data> = {
     db: "test",
     type: "sql",
     tablish: "primitivefields",
+  },
+};
+`);
+});
+
+test("Outbound field edge", () => {
+  const contents = genIt(
+    compileFromString(OutboundFieldEdgeSchema)[1].nodes.OutboundFieldEdge
+  ).contents;
+
+  expect(contents).toEqual(`// SIGNED-SOURCE: <b9f7e92c2b117ddfa448cc4eef5637de>
+import Model, { Spec } from "@strut/model/Model.js";
+import { SID_of } from "@strut/sid";
+import FooQuery from "./FooQuery.js";
+import OutboundFieldEdge from "./OutboundFieldEdge.js";
+
+export type Data = {
+  fooId: SID_of<any>;
+};
+
+export default class OutboundFieldEdge extends Model<Data> {
+  get fooId(): SID_of<any> {
+    return this.data.fooId;
+  }
+
+  queryFoos(): FooQuery {
+    return FooQuery.fromId(this.fooId);
+  }
+}
+
+export const spec: Spec<Data> = {
+  createFrom(data: Data) {
+    return new OutboundFieldEdge(data);
+  },
+
+  storageDescriptor: {
+    engine: "postgres",
+    db: "test",
+    type: "sql",
+    tablish: "outboundfieldedge",
+  },
+};
+`);
+});
+
+test("Outbound foreign key edge", () => {
+  const contents = genIt(
+    compileFromString(OutboundForeignKeyEdgeSchema)[1].nodes.Bar
+  ).contents;
+
+  expect(contents).toEqual(`// SIGNED-SOURCE: <428597b80667f77591dc68d944abb364>
+import Model, { Spec } from "@strut/model/Model.js";
+import { SID_of } from "@strut/sid";
+import FooQuery from "./FooQuery.js";
+import Foo from "./Foo.js";
+
+export type Data = {};
+
+export default class Bar extends Model<Data> {
+  queryFoos(): FooQuery {
+    return FooQuery.fromBarId(this.id);
+  }
+}
+
+export const spec: Spec<Data> = {
+  createFrom(data: Data) {
+    return new Bar(data);
+  },
+
+  storageDescriptor: {
+    engine: "postgres",
+    db: "test",
+    type: "sql",
+    tablish: "bar",
   },
 };
 `);
