@@ -1,6 +1,6 @@
-import GenTypescriptModel from "../typescript/GenTypescriptModel.js";
-import Field from "../../schema/Field.js";
-import Schema from "../../schema/Schema.js";
+import GenTypescriptModel from "../GenTypescriptModel.js";
+import Field from "../../../schema/Field.js";
+import Schema from "../../../schema/Schema.js";
 
 class IDOnlySchema extends Schema {
   fields() {

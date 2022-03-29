@@ -130,30 +130,6 @@ ${this.getSpecCode()}
       .join("\n");
 
     // TODO: static inbound edge defs
-
-    // return Object.values(this.schema.extensions.outboundEdges?.edges || {})
-    //   .concat(Object.values(this.schema.extensions.inboundEdges?.edges || {}))
-    //   .map(
-    //     (edge) => `query${upcaseAt(edge.name, 0)}(): ${edgeFn.queryTypeName(
-    //       edge
-    //     )} {
-    //     return ${edgeFn.queryTypeName(edge)}.${this.getFromMethodName(
-    //       edge
-    //     )}(this.id);
-    //   }`
-    //   )
-    //   .join("\n");
-    // return Object.entries(this.schema.getEdges())
-    //   .map(
-    //     ([key, edge]) =>
-    //       `query${upcaseAt(key, 0)}(): ${edge.getQueryTypeName()} {
-    //     return ${edge.getQueryTypeName()}.${this.getFromMethodName(edge)}(
-    //       this.id
-    //     );
-    //   }
-    // `
-    //   )
-    //   .join("\n");
   }
 
   private getSpecCode(): string {
