@@ -1,6 +1,8 @@
+import { nullthrows } from "@strut/utils";
 import {
   EdgeDeclaration,
   EdgeReferenceDeclaration,
+  ID,
   Node,
 } from "../parser/SchemaType.js";
 import nodeFn from "./node.js";
@@ -42,5 +44,46 @@ export default {
       case "edgeReference":
         return edge.name + "Query";
     }
+  },
+
+  destModelTypeName(src: Node, edge: EdgeDeclaration): string {
+    const column = edge.throughOrTo.column;
+    if (column == null) {
+      return edge.throughOrTo.type;
+    }
+
+    const field = src.fields[column];
+    if (field.type != "id") {
+      throw new Error(
+        `Cannot query through non-id field ${column} for edge ${edge.name} in node ${src.name}`
+      );
+    }
+
+    return field.of;
+  },
+
+  isThrough(node: Node, edge: EdgeDeclaration): boolean {
+    return (
+      edge.throughOrTo.type === node.name && edge.throughOrTo.column != null
+    );
+  },
+
+  isForeignKeyEdge(node: Node, edge: EdgeDeclaration): boolean {
+    // TODO: technically we should be able to verify that the column does indeed point back to
+    // Node type.
+    return (
+      edge.throughOrTo.type !== node.name && edge.throughOrTo.column != null
+    );
+  },
+
+  idField(node: Node, edge: EdgeDeclaration): ID {
+    const field = node.fields[nullthrows(edge.throughOrTo.column)];
+    if (field.type === "id") {
+      return field;
+    }
+
+    throw new Error(
+      `Edge ${edge.name} did not map ${edge.throughOrTo.type}:${edge.throughOrTo.column} to an id field. Got ${field.type}`
+    );
   },
 };

@@ -1,5 +1,4 @@
 import { maybeMap } from "@strut/utils";
-import Schema from "../schema/Schema.js";
 import CodegenStep from "./CodegenStep.js";
 import GenTypescriptModel from "./typescript/GenTypescriptModel.js";
 import * as fs from "fs";
@@ -15,7 +14,7 @@ type Step = {
 
 const defaultSteps: readonly Step[] = [
   GenTypescriptModel,
-  // GenTypescriptQuery,
+  GenTypescriptQuery,
   // GenMySqlTableSchema,
   // GenPostgresTableSchema,
 ];

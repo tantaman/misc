@@ -1,17 +1,22 @@
-import { upcaseAt } from "@strut/utils";
-import { Edge, ForeignKeyEdge } from "../../schema/Edge.js";
-import Schema from "../../schema/Schema.js";
+import { nullthrows, upcaseAt } from "@strut/utils";
 import { CodegenFile } from "../CodegenFile.js";
 import CodegenStep from "../CodegenStep.js";
-import FieldAndEdgeBase from "schema/FieldAndEdgeBase.js";
 import TypescriptFile from "./TypescriptFile.js";
+import {
+  Field,
+  Node,
+  EdgeDeclaration,
+  EdgeReferenceDeclaration,
+} from "../../schema/parser/SchemaType.js";
+import nodeFn from "../../schema/v2/node.js";
+import edgeFn from "../../schema/v2/edge.js";
 
 export default class GenTypescriptQuery extends CodegenStep {
-  static accepts(_schema: Schema): boolean {
+  static accepts(_schema: Node): boolean {
     return true;
   }
 
-  constructor(private schema: Schema) {
+  constructor(private schema: Node) {
     super();
   }
 
@@ -22,26 +27,28 @@ export default class GenTypescriptQuery extends CodegenStep {
   // TODO: de-duplicate imports by storing imports in an intermediate structure.
   gen(): CodegenFile {
     return new TypescriptFile(
-      this.schema.getQueryTypeName() + ".ts",
+      nodeFn.queryTypeName(this.schema.name) + ".ts",
       `import {DerivedQuery} from '@strut/model/query/Query.js';
 import QueryFactory from '@strut/model/query/QueryFactory.js';
 import {modelLoad, filter} from '@strut/model/query/Expression.js';
 import {Predicate, default as P} from '@strut/model/query/Predicate.js';
 import {ModelFieldGetter} from '@strut/model/query/Field.js';
 import { SID_of } from '@strut/sid';
-import ${this.schema.getModelTypeName()}, { Data, spec } from './${this.schema.getModelTypeName()}.js';
-${this.getForeignKeyEdgeImports()}
+import ${this.schema.name}, { Data, spec } from './${this.schema.name}.js';
+${this.getIdFieldImports()}
 ${this.getEdgeImports()}
 
-export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<${this.schema.getModelTypeName()}> {
+export default class ${nodeFn.queryTypeName(
+        this.schema.name
+      )} extends DerivedQuery<${this.schema.name}> {
   static create() {
-    return new ${this.schema.getQueryTypeName()}(
+    return new ${nodeFn.queryTypeName(this.schema.name)}(
       QueryFactory.createSourceQueryFor(spec),
       modelLoad(spec.createFrom),
     );
   }
   ${this.getFromIdMethodCode()}
-  ${this.getFromForeignIdMethodsCode()}
+  ${this.getFromInboundFieldEdgeMethodsCode()}
 
   ${this.getFilterMethodsCode()}
   ${this.getHopMethodsCode()}
@@ -52,27 +59,23 @@ export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<${th
 
   private getFilterMethodsCode(): string {
     const ret: string[] = [];
-    const fields = Object.values(this.schema.getFields());
-    const edges = this.schema.getInverseForeignKeyEdges();
-    const combined: FieldAndEdgeBase[] = [...fields, ...edges];
-    for (const field of combined) {
+    const fields = Object.values(this.schema.fields);
+    for (const field of fields) {
       ret.push(`
-      where${upcaseAt(field.fieldName, 0)}(p: Predicate<Data["${
-        field.fieldName
-      }"]>) {
+      where${upcaseAt(field.name, 0)}(p: Predicate<Data["${field.name}"]>) {
         ${this.getFilterMethodBody(field)}
       }`);
     }
     return ret.join("\n");
   }
 
-  private getFilterMethodBody(field: FieldAndEdgeBase): string {
-    return `return new ${this.schema.getQueryTypeName()}(
+  private getFilterMethodBody(field: Field): string {
+    return `return new ${nodeFn.queryTypeName(this.schema.name)}(
       this,
       filter(
-        new ModelFieldGetter<"${
-          field.fieldName
-        }", Data, ${this.schema.getModelTypeName()}>("${field.fieldName}"),
+        new ModelFieldGetter<"${field.name}", Data, ${this.schema.name}>("${
+      field.name
+    }"),
         p,
       ), 
     )`;
@@ -80,69 +83,100 @@ export default class ${this.schema.getQueryTypeName()} extends DerivedQuery<${th
 
   private getFromIdMethodCode(): string {
     return `
-static fromId(id: SID_of<${this.schema.getModelTypeName()}>) {
+static fromId(id: SID_of<${this.schema.name}>) {
   return this.create().whereId(P.equals(id));
 }
 `;
   }
 
-  private getFromForeignIdMethodsCode(): string {
-    const foreign = this.schema.getInverseForeignKeyEdges();
+  private getFromInboundFieldEdgeMethodsCode(): string {
+    // this would be inbound edges, right?
+    // inbound edges to me based on one of my fields.
+    const inbound: EdgeDeclaration[] = Object.values(
+      this.schema.extensions.inboundEdges?.edges || {}
+    )
+      .filter((edge) => edge.type === "edge")
+      .filter((edge: EdgeDeclaration) =>
+        edgeFn.isThrough(this.schema, edge)
+      ) as EdgeDeclaration[];
 
-    return foreign.map(this.getFromForeignIdMethodCode).join("\n");
+    return inbound.map(this.getFromInboundFieldEdgeMethodCode).join("\n");
   }
 
-  private getFromForeignIdMethodCode(edge: ForeignKeyEdge): string {
+  private getFromInboundFieldEdgeMethodCode(edge: EdgeDeclaration): string {
+    const column = nullthrows(edge.throughOrTo.column);
+    const field = this.schema.fields[column];
+
+    if (field.type !== "id") {
+      throw new Error("fields edges must refer to id fields");
+    }
+
     return `
-static from${upcaseAt(edge.fieldName, 0)}(id: SID_of<${edge
-      .getDest()
-      .getModelTypeName()}>) {
-  return this.create().where${upcaseAt(edge.fieldName, 0)}(P.equals(id));
+static from${upcaseAt(column, 0)}(id: SID_of<${field.of}>) {
+  return this.create().where${upcaseAt(field.name, 0)}(P.equals(id));
 }
 `;
   }
 
-  private getForeignKeyEdgeImports(): string {
-    const foreign = this.schema.getInverseForeignKeyEdges();
-
-    return foreign
-      .map(
-        (edge) =>
-          `import ${edge.getDest().getModelTypeName()} from "./${edge
-            .getDest()
-            .getModelTypeName()}.js"`
-      )
-      .join("\n");
-  }
-
   private getEdgeImports(): string {
-    return Object.values(this.schema.getEdges())
-      .map(
+    const inbound = Object.values(
+      this.schema.extensions.inboundEdges?.edges || {}
+    ).filter((e) => e.type === "edge") as EdgeDeclaration[];
+
+    const outbound = Object.values(
+      this.schema.extensions.outboundEdges?.edges || {}
+    ).filter((e) => e.type === "edge") as EdgeDeclaration[];
+
+    return [...inbound, ...outbound]
+      .filter(
         (edge) =>
-          `import {spec as ${edge
-            .getDest()
-            .getModelTypeName()}Spec} from "./${edge
-            .getDest()
-            .getModelTypeName()}.js"
-          import ${edge.getQueryTypeName()} from "./${edge.getQueryTypeName()}"`
+          edgeFn.queryTypeName(this.schema, edge) !==
+          nodeFn.queryTypeName(this.schema.name)
       )
+      .map((edge) => {
+        return `import {spec as ${edgeFn.destModelTypeName(
+          this.schema,
+          edge
+        )}Spec} from "./${edgeFn.destModelTypeName(this.schema, edge)}"
+        import ${edgeFn.queryTypeName(
+          this.schema,
+          edge
+        )} from "./${edgeFn.queryTypeName(this.schema, edge)}`;
+      })
       .join("\n");
+
+    // import edge reference queries too
   }
 
   private getHopMethodsCode(): string {
     // hop methods are edges
     // e.g., Deck.querySlides().queryComponents()
-    return Object.values(this.schema.getEdges())
-      .map((edge) => this.getHopMethod(edge))
+    const inbound = Object.values(
+      this.schema.extensions.inboundEdges?.edges || {}
+    );
+    const outbound = Object.values(
+      this.schema.extensions.outboundEdges?.edges || {}
+    );
+    return [...inbound, ...outbound]
+      .map((e) => this.getHopMethod(e))
       .join("\n");
   }
 
-  private getHopMethod(edge: Edge): string {
-    return `query${upcaseAt(edge.name, 0)}(): ${edge.getQueryTypeName()} {
-      return new ${edge.getQueryTypeName()}(QueryFactory.createHopQueryFor(this, spec, ${edge
-      .getDest()
-      .getModelTypeName()}Spec),
-      modelLoad(${edge.getDest().getModelTypeName()}Spec.createFrom),
+  private getHopMethod(
+    edge: EdgeDeclaration | EdgeReferenceDeclaration
+  ): string {
+    return `query${upcaseAt(edge.name, 0)}(): ${edgeFn.queryTypeName(
+      this.schema,
+      edge
+    )} {
+      return new ${edgeFn.queryTypeName(
+        this.schema,
+        edge
+      )}(QueryFactory.createHopQueryFor(this, spec, ${edgeFn.destModelTypeName(
+      this.schema,
+      edge
+    )}Spec),
+      modelLoad(${edgeFn.destModelTypeName(this.schema, edge)}Spec.createFrom),
       );
     }`;
   }
