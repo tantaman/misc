@@ -65,9 +65,10 @@ ${this.getSpecCode()}
     }
     for (const edge of nodeFn.allEdges(this.schema)) {
       ret.push(
-        `import ${edgeFn.queryTypeName(edge)} from "./${edgeFn.queryTypeName(
+        `import ${edgeFn.queryTypeName(
+          this.schema,
           edge
-        )}.js"`
+        )} from "./${edgeFn.queryTypeName(this.schema, edge)}.js"`
       );
       if (edge.type === "edge") {
         ret.push(
@@ -114,7 +115,21 @@ ${this.getSpecCode()}
       - see outbound `to other type`
     */
 
-    return "";
+    return Object.values(this.schema.extensions.outboundEdges?.edges || {})
+      .map(
+        (edge) => `query${upcaseAt(edge.name, 0)}(): ${edgeFn.queryTypeName(
+          this.schema,
+          edge
+        )} {
+          return ${edgeFn.queryTypeName(
+            this.schema,
+            edge
+          )}.${this.getFromMethodInvocation("outbound", edge)};
+        }`
+      )
+      .join("\n");
+
+    // TODO: static inbound edge defs
 
     // return Object.values(this.schema.extensions.outboundEdges?.edges || {})
     //   .concat(Object.values(this.schema.extensions.inboundEdges?.edges || {}))
@@ -157,32 +172,42 @@ ${this.getSpecCode()}
   }
 
   // inbound edges would be static methods
-  private getFromMethodName(
+  private getFromMethodInvocation(
     type: "inbound" | "outbound",
     edge: EdgeDeclaration | EdgeReferenceDeclaration
   ): string {
     if (type === "inbound") {
-      // not yet supported
-      return "";
+      throw new Error("inbound edge generation on models not yet supported");
     }
+
+    // outbound edge through a field would be:
+    // outbound foreign key would be: BarQuery.fromFooId(this.id); // Foo | OB { Edge<Bar.fooId> }
+    // outbound field edge would be: BarQuery.fromId(this.barId); // Foo | OB { Edge<Foo.barId> }
 
     switch (edge.type) {
       case "edge":
-        // through a field on self
-        if (edge.throughOrTo.type === this.schema.name) {
-          // resolve our to type
-          edgeFn;
-        }
         const column = edge.throughOrTo.column;
         if (column == null) {
-          return "fromId";
+          // this error should already have been thrown earlier.
+          throw new Error(
+            "Locally declared edge that is not _through_ something is currently unsupported"
+          );
         }
-        return `from${upcaseAt(column, 0)}`;
+
+        // through a field on self is a field edge
+        // a field edge refers to the id of the destination type.
+        if (edge.throughOrTo.type === this.schema.name) {
+          return `fromId(this.${column})`;
+        }
+
+        // through a field on some other type is a foreign key edge
+        // we're thus qurying that type based on some column rather than its id
+        return `from${upcaseAt(column, 0)}(this.id)`;
       case "edgeReference":
         // if (edge.inverted) {
         //   return "fromDst";
         // }
-        return "fromSrc";
+        return "fromSrc(this.id)";
     }
   }
 }
