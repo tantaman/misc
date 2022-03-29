@@ -127,13 +127,13 @@ type NodeReferenceOrQualifiedColumn = {
   column?: UnqalifiedFieldReference;
 };
 
-type EdgeDeclaration = {
+export type EdgeDeclaration = {
   type: "edge";
   name: string;
   throughOrTo: NodeReferenceOrQualifiedColumn;
 };
 
-type EdgeReferenceDeclaration = {
+export type EdgeReferenceDeclaration = {
   type: "edgeReference";
   name: string;
   reference: EdgeReference;
@@ -191,14 +191,14 @@ type Map = {
   // Ideally we use `Omit` on name but see https://github.com/microsoft/TypeScript/issues/31501
   keys: RemoveNameField<NonComplexField>;
   values: RemoveNameField<Field>;
-};
+} & MaybeDecoratored;
 
 type Array = {
   name: string;
   type: "array";
   // Ideally we use `Omit` on name but see https://github.com/microsoft/TypeScript/issues/31501
   values: RemoveNameField<Field>;
-};
+} & MaybeDecoratored;
 
 export type OutboundEdgesAst = {
   name: "outboundEdges";

@@ -5,7 +5,13 @@ import { isValidPropertyAccessor } from "@strut/utils";
 import { fieldToTsType } from "./tsUtils.js";
 import { CodegenFile } from "../CodegenFile.js";
 import TypescriptFile from "./TypescriptFile.js";
-import { Node } from "../../schema/parser/SchemaType.js";
+import {
+  EdgeDeclaration,
+  EdgeReferenceDeclaration,
+  Node,
+} from "../../schema/parser/SchemaType.js";
+import nodeFn from "../../schema/v2/node.js";
+import edgeFn from "../../schema/v2/edge.js";
 
 export default class GenTypescriptModel extends CodegenStep {
   static accepts(_schema: Node): boolean {
@@ -57,46 +63,82 @@ ${this.getSpecCode()}
         ret.push(`import ${name}${as}from '${val.from}';`);
       }
     }
-    // for (const [_, edge] of Object.entries(this.schema.getEdges())) {
-    //   ret.push(
-    //     `import ${edge.getQueryTypeName()} from "./${edge.getQueryTypeName()}.js"`
-    //   );
-    //   ret.push(
-    //     `import ${edge.getDest().getModelTypeName()} from "./${edge
-    //       .getDest()
-    //       .getModelTypeName()}.js"`
-    //   );
-    // }
+    for (const edge of nodeFn.allEdges(this.schema)) {
+      ret.push(
+        `import ${edgeFn.queryTypeName(edge)} from "./${edgeFn.queryTypeName(
+          edge
+        )}.js"`
+      );
+      if (edge.type === "edge") {
+        ret.push(
+          `import ${edge.throughOrTo.type} from "./${edge.throughOrTo.type}.js"`
+        );
+      }
+    }
     return ret.join("\n");
   }
 
   private getFieldCode(): string {
-    return "";
-    //     return Object.entries(this.schema.getFields())
-    //       .map(
-    //         ([key, field]) =>
-    //           `  ${field.decorators.join("\n  ")}
-    //   get ${key}(): ${fieldToTsType(field)} {
-    //     return this.data${isValidPropertyAccessor(key) ? `.${key}` : `['${key}']`};
-    //   }
-    // `
-    //       )
-    //       .join("\n");
+    return Object.values(this.schema.fields)
+      .map(
+        (field) =>
+          `${field.decorators?.join("\n") || ""}
+      get ${field.name}(): ${fieldToTsType(field)} {
+        return this.data.${field.name};
+      }
+    `
+      )
+      .join("\n");
   }
 
   private getEdgeCode(): string {
+    /*
+    outbound edges
+    - through a field on self: field edge
+    - to self type: should have been a junction edge?
+      - not yet supported, ask user to declare a standalone junction
+      - could be an edge stored in a different system or a junction edge.
+    - through a field on other: foreign key edge
+    - to a other type: should have been a junction edge?
+      - not yet supported, ask user to declare a standalone edge
+      - could be an edge stored in a different system or a junction edge.
+
+    inbound edges:
+    - through a field on self
+      - foreign key
+    - through a field on other
+      - foreign key
+    - from self
+      - see outbound `to self type`
+    - from other type
+      - see outbound `to other type`
+    */
+
     return "";
-    //     return Object.entries(this.schema.getEdges())
-    //       .map(
-    //         ([key, edge]) =>
-    //           `  query${upcaseAt(key, 0)}(): ${edge.getQueryTypeName()} {
+
+    // return Object.values(this.schema.extensions.outboundEdges?.edges || {})
+    //   .concat(Object.values(this.schema.extensions.inboundEdges?.edges || {}))
+    //   .map(
+    //     (edge) => `query${upcaseAt(edge.name, 0)}(): ${edgeFn.queryTypeName(
+    //       edge
+    //     )} {
+    //     return ${edgeFn.queryTypeName(edge)}.${this.getFromMethodName(
+    //       edge
+    //     )}(this.id);
+    //   }`
+    //   )
+    //   .join("\n");
+    // return Object.entries(this.schema.getEdges())
+    //   .map(
+    //     ([key, edge]) =>
+    //       `query${upcaseAt(key, 0)}(): ${edge.getQueryTypeName()} {
     //     return ${edge.getQueryTypeName()}.${this.getFromMethodName(edge)}(
     //       this.id
     //     );
     //   }
     // `
-    //       )
-    //       .join("\n");
+    //   )
+    //   .join("\n");
   }
 
   private getSpecCode(): string {
@@ -114,12 +156,33 @@ ${this.getSpecCode()}
     // `;
   }
 
-  // TODO: not `fromFroeignId` but `fromForiegnKeyEdgeName` e.g., `fromSlideId`
-  private getFromMethodName(edge: Edge): string {
-    if (edge instanceof ForeignKeyEdge) {
-      return `from${upcaseAt(edge.fieldName, 0)}`;
+  // inbound edges would be static methods
+  private getFromMethodName(
+    type: "inbound" | "outbound",
+    edge: EdgeDeclaration | EdgeReferenceDeclaration
+  ): string {
+    if (type === "inbound") {
+      // not yet supported
+      return "";
     }
-    // Junction edges could be foreign id depending on what side of the junction we are
-    return "fromId";
+
+    switch (edge.type) {
+      case "edge":
+        // through a field on self
+        if (edge.throughOrTo.type === this.schema.name) {
+          // resolve our to type
+          edgeFn;
+        }
+        const column = edge.throughOrTo.column;
+        if (column == null) {
+          return "fromId";
+        }
+        return `from${upcaseAt(column, 0)}`;
+      case "edgeReference":
+        // if (edge.inverted) {
+        //   return "fromDst";
+        // }
+        return "fromSrc";
+    }
   }
 }
