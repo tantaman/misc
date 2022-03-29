@@ -33,7 +33,11 @@ function fieldToTsType(field: RemoveNameField<Field>): string {
       )}>`;
   }
 
-  throw new Error(`Cannot convert from ${field.type} to a ts type`);
+  throw new Error(
+    `Cannot convert from ${field.type} of ${JSON.stringify(
+      field
+    )} to a typescript type`
+  );
 }
 
 export { fieldToTsType };

@@ -67,8 +67,8 @@ enumField -> "Enumeration<" _ enumKeys _ ">" {% ([_kw, _ws, keys]) => ({type: "e
 enumKeys -> name | enumKeys _ "|" _ name {% ([e, _ws, _kw, _ws2, key]) => (e.concat(key)) %}
 timeField -> "Timestamp" {% () => ({type: "timestamp"}) %}
 currencyField -> "Currency<" _ name _ ">" {% ([_kw, _ws, denomination]) => ({type: "currency", denomination}) %}
-primitiveField -> "bool" | "int32" | "int64" | "float32" | "float64" | "uint32" | "uint64" | "string" {%
-  ([subtype]) => ({type: "primitive", subtype})
+primitiveField -> ("bool" | "int32" | "int64" | "float32" | "float64" | "uint32" | "uint64" | "string") {%
+  ([[subtype]]) => ({type: "primitive", subtype})
 %}
 
 nodeFunction -> "OutboundEdges" _ "{" _ edgeDeclarations "}" {% ([_kw, _ws, _kw2, _ws2, declarations]) => ({name: "outboundEdges", declarations}) %}

@@ -29,7 +29,7 @@ ${this.getImportCode()}
 
 export type Data = ${this.getDataShapeCode()};
 
-${this.schema.extensions.type?.decorators?.join("\n")}
+${this.schema.extensions.type?.decorators?.join("\n") || ""}
 export default class ${this.schema.name}
   extends Model<Data> {
   ${this.getFieldCode()}

@@ -1,32 +1,37 @@
 import GenTypescriptModel from "../GenTypescriptModel.js";
-import Field from "../../../schema/Field.js";
-import Schema from "../../../schema/Schema.js";
+import { Node } from "../../../schema/parser/SchemaType.js";
+import { compileFromString } from "../../../schema/v2/compile.js";
 
-class IDOnlySchema extends Schema {
-  fields() {
-    return {
-      id: Field.id.sid(),
-    };
-  }
-}
+const IDOnlySchema = `
+engine: postgres
+db: test
 
-class PrimitiveFieldsSchema extends Schema {
-  fields() {
-    return {
-      mrBool: Field.bool(),
-      mrString: Field.stringOf("string"),
-      mrInt32: Field.int32(),
-      mrInt64: Field.int64(),
-      mrUint64: Field.uint64(),
-      mrFloat: Field.float32(),
-    };
-  }
+Node<IDOnly> {
+  id: ID<IDOnly>
 }
+`;
+
+const PrimitiveFieldsSchema = `
+engine: postgres
+db: test
+
+Node<PrimitiveFields> {
+  id: ID<PrimitiveFields>
+  mrBool: bool
+  mrInt32: int32
+  mrInt64: int64
+  mrUint: uint64
+  mrFloat: float32
+  mrString: string
+}
+`;
 
 test("Generating an ID only model", () => {
-  // console.log(genIt(IDOnlySchema.get()).contents);
-  expect(genIt(IDOnlySchema.get()).contents).toEqual(
-    `// SIGNED-SOURCE: <0806e7cddeb1155062bad7ac7e9e913f>
+  const contents = genIt(
+    compileFromString(IDOnlySchema)[1].nodes.IDOnly
+  ).contents;
+  expect(contents).toEqual(
+    `// SIGNED-SOURCE: <af8ef89465f19699d3ac1e3cf8a14efb>
 import Model, { Spec } from "@strut/model/Model.js";
 import { SID_of } from "@strut/sid";
 
@@ -46,7 +51,10 @@ export const spec: Spec<Data> = {
   },
 
   storageDescriptor: {
-    nativeStorageType: "Postgres",
+    engine: "postgres",
+    db: "test",
+    type: "sql",
+    tablish: "idonly",
   },
 };
 `
@@ -54,28 +62,30 @@ export const spec: Spec<Data> = {
 });
 
 test("Generating all primitive fields", () => {
-  // console.log(genIt(PrimitiveFieldsSchema.get()).contents);
-  expect(genIt(PrimitiveFieldsSchema.get()).contents)
-    .toEqual(`// SIGNED-SOURCE: <49fd8661bff6f3ce5bf2766ebfb9018b>
+  const contents = genIt(
+    compileFromString(PrimitiveFieldsSchema)[1].nodes.PrimitiveFields
+  ).contents;
+  expect(contents).toEqual(`// SIGNED-SOURCE: <938a3bbdaa7018a4f08e45ebf39dbe59>
 import Model, { Spec } from "@strut/model/Model.js";
 import { SID_of } from "@strut/sid";
 
 export type Data = {
+  id: SID_of<any>;
   mrBool: boolean;
-  mrString: string;
   mrInt32: number;
   mrInt64: string;
-  mrUint64: string;
+  mrUint: string;
   mrFloat: number;
+  mrString: string;
 };
 
 export default class PrimitiveFields extends Model<Data> {
-  get mrBool(): boolean {
-    return this.data.mrBool;
+  get id(): SID_of<any> {
+    return this.data.id;
   }
 
-  get mrString(): string {
-    return this.data.mrString;
+  get mrBool(): boolean {
+    return this.data.mrBool;
   }
 
   get mrInt32(): number {
@@ -86,12 +96,16 @@ export default class PrimitiveFields extends Model<Data> {
     return this.data.mrInt64;
   }
 
-  get mrUint64(): string {
-    return this.data.mrUint64;
+  get mrUint(): string {
+    return this.data.mrUint;
   }
 
   get mrFloat(): number {
     return this.data.mrFloat;
+  }
+
+  get mrString(): string {
+    return this.data.mrString;
   }
 }
 
@@ -101,16 +115,15 @@ export const spec: Spec<Data> = {
   },
 
   storageDescriptor: {
-    nativeStorageType: "Postgres",
+    engine: "postgres",
+    db: "test",
+    type: "sql",
+    tablish: "primitivefields",
   },
 };
 `);
 });
 
-function genIt(schema: Schema) {
-  // return new GenTypescriptModel(schema).gen();
-  return {
-    name: "",
-    contents: "",
-  };
+function genIt(schema: Node) {
+  return new GenTypescriptModel(schema).gen();
 }
