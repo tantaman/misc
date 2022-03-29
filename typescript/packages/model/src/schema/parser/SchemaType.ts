@@ -34,9 +34,12 @@ export type Node = {
   storage: StorageConfig;
 };
 
-type TypeConfig = {} & MaybeDecoratored;
+type TypeConfig = {
+  name: "typeConfig";
+} & MaybeDecoratored;
 
 type ModuleConfig = {
+  name: "moduleConfig";
   imports: Import[];
 };
 
@@ -127,8 +130,7 @@ type NodeReferenceOrQualifiedColumn = {
 type EdgeDeclaration = {
   type: "edge";
   name: string;
-  src: NodeReferenceOrQualifiedColumn;
-  dest: NodeReferenceOrQualifiedColumn | null;
+  throughOrTo: NodeReferenceOrQualifiedColumn;
 };
 
 type EdgeReferenceDeclaration = {

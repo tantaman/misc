@@ -17,7 +17,7 @@ Node<Person> {
   thing2: string
 } | OutboundEdges {
   wallet: Edge<Person.walletId>
-  friends: Edge<Person, Person>
+  friends: Edge<Person>
   cars: Edge<Car.ownerId>
   follows: FollowEdge
   followedBy: FollowerEdge
@@ -91,30 +91,25 @@ export const ast: SchemaFileAst = {
             {
               name: "wallet",
               type: "edge",
-              src: {
+              throughOrTo: {
                 type: "Person",
                 column: "walletId",
               },
-              dest: null,
             },
             {
               name: "friends",
               type: "edge",
-              src: {
-                type: "Person",
-              },
-              dest: {
+              throughOrTo: {
                 type: "Person",
               },
             },
             {
               name: "cars",
               type: "edge",
-              src: {
+              throughOrTo: {
                 type: "Car",
                 column: "ownerId",
               },
-              dest: null,
             },
             {
               name: "follows",
@@ -132,10 +127,9 @@ export const ast: SchemaFileAst = {
           name: "inboundEdges",
           declarations: [
             {
-              dest: null,
               name: "fromWallet",
               type: "edge",
-              src: {
+              throughOrTo: {
                 type: "Person",
                 column: "walletId",
               },
@@ -307,30 +301,25 @@ export const schemaFile: SchemaFile = {
             wallet: {
               name: "wallet",
               type: "edge",
-              src: {
+              throughOrTo: {
                 type: "Person",
                 column: "walletId",
               },
-              dest: null,
             },
             friends: {
               name: "friends",
               type: "edge",
-              src: {
-                type: "Person",
-              },
-              dest: {
+              throughOrTo: {
                 type: "Person",
               },
             },
             cars: {
               name: "cars",
               type: "edge",
-              src: {
+              throughOrTo: {
                 type: "Car",
                 column: "ownerId",
               },
-              dest: null,
             },
             follows: {
               name: "follows",
@@ -348,10 +337,9 @@ export const schemaFile: SchemaFile = {
           name: "inboundEdges",
           edges: {
             fromWallet: {
-              dest: null,
               name: "fromWallet",
               type: "edge",
-              src: {
+              throughOrTo: {
                 type: "Person",
                 column: "walletId",
               },

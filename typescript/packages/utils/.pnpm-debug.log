@@ -3,22 +3,13 @@
     "selected": 1,
     "workspacePrefix": "/Users/tantaman/workspace/mealtrained-main"
   },
-  "1 info pnpm": {
-    "err": {
-      "name": "Error",
-      "message": "not found: watch",
-      "code": "ENOENT",
-      "stack": "Error: not found: watch\n    at getNotFoundError (/Users/tantaman/.nvm/versions/node/v17.5.0/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:41575:51)\n    at Function.whichSync [as sync] (/Users/tantaman/.nvm/versions/node/v17.5.0/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:41652:13)\n    at getCommandAbsolutePathSync (/Users/tantaman/.nvm/versions/node/v17.5.0/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:43217:44)\n    at default_1 (/Users/tantaman/.nvm/versions/node/v17.5.0/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:43226:32)\n    at /Users/tantaman/.nvm/versions/node/v17.5.0/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:178151:39"
-    }
-  },
-  "2 error pnpm": {
-    "code": "ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL",
-    "prefix": "/Users/tantaman/workspace/mealtrained-main/git_modules/mono/typescript/packages/utils",
+  "1 error pnpm": {
+    "code": "ERR_PNPM_NO_SCRIPT",
     "err": {
       "name": "pnpm",
-      "message": "not found: watch",
-      "code": "ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL",
-      "stack": "Error: not found: watch\n    at getNotFoundError (/Users/tantaman/.nvm/versions/node/v17.5.0/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:41575:51)\n    at Function.whichSync [as sync] (/Users/tantaman/.nvm/versions/node/v17.5.0/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:41652:13)\n    at getCommandAbsolutePathSync (/Users/tantaman/.nvm/versions/node/v17.5.0/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:43217:44)\n    at default_1 (/Users/tantaman/.nvm/versions/node/v17.5.0/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:43226:32)\n    at /Users/tantaman/.nvm/versions/node/v17.5.0/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:178151:39"
+      "message": "Missing script: test",
+      "code": "ERR_PNPM_NO_SCRIPT",
+      "stack": "pnpm: Missing script: test\n    at Object.handler (/Users/tantaman/.nvm/versions/node/v17.5.0/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:177914:15)\n    at async /Users/tantaman/.nvm/versions/node/v17.5.0/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:182165:21\n    at async run (/Users/tantaman/.nvm/versions/node/v17.5.0/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:182139:34)\n    at async runPnpm (/Users/tantaman/.nvm/versions/node/v17.5.0/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:182358:5)\n    at async /Users/tantaman/.nvm/versions/node/v17.5.0/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:182350:7"
     }
   }
 }

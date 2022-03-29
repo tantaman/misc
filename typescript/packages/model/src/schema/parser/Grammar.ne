@@ -85,11 +85,10 @@ edgeDeclaration -> _ name ":" _ (
   ...definition
 }) %}
 
-inlineEdgeDefinition -> "Edge<" _ nameOrResolution _ ("," _ nameOrResolution _):? ">\n" _ {%
-  ([_kw, _ws, src, _ws2, dest]) => ({
+inlineEdgeDefinition -> "Edge<" _ nameOrResolution _ ">\n" _ {%
+  ([_kw, _ws, throughOrTo]) => ({
     type: "edge",
-    src,
-    dest: dest != null ? dest[2] : null,
+    throughOrTo,
   })
 %}
 

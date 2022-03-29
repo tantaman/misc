@@ -108,5 +108,9 @@ export const spec: Spec<Data> = {
 });
 
 function genIt(schema: Schema) {
-  return new GenTypescriptModel(schema).gen();
+  // return new GenTypescriptModel(schema).gen();
+  return {
+    name: "",
+    contents: "",
+  };
 }

@@ -15,9 +15,9 @@ type Step = {
 
 const defaultSteps: readonly Step[] = [
   GenTypescriptModel,
-  GenTypescriptQuery,
-  GenMySqlTableSchema,
-  GenPostgresTableSchema,
+  // GenTypescriptQuery,
+  // GenMySqlTableSchema,
+  // GenPostgresTableSchema,
 ];
 
 export default class CodegenPipleine {

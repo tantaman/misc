@@ -57,58 +57,61 @@ ${this.getSpecCode()}
         ret.push(`import ${name}${as}from '${val.from}';`);
       }
     }
-    for (const [_, edge] of Object.entries(this.schema.getEdges())) {
-      ret.push(
-        `import ${edge.getQueryTypeName()} from "./${edge.getQueryTypeName()}.js"`
-      );
-      ret.push(
-        `import ${edge.getDest().getModelTypeName()} from "./${edge
-          .getDest()
-          .getModelTypeName()}.js"`
-      );
-    }
+    // for (const [_, edge] of Object.entries(this.schema.getEdges())) {
+    //   ret.push(
+    //     `import ${edge.getQueryTypeName()} from "./${edge.getQueryTypeName()}.js"`
+    //   );
+    //   ret.push(
+    //     `import ${edge.getDest().getModelTypeName()} from "./${edge
+    //       .getDest()
+    //       .getModelTypeName()}.js"`
+    //   );
+    // }
     return ret.join("\n");
   }
 
   private getFieldCode(): string {
-    return Object.entries(this.schema.getFields())
-      .map(
-        ([key, field]) =>
-          `  ${field.decorators.join("\n  ")}
-  get ${key}(): ${fieldToTsType(field)} {
-    return this.data${isValidPropertyAccessor(key) ? `.${key}` : `['${key}']`};
-  }
-`
-      )
-      .join("\n");
+    return "";
+    //     return Object.entries(this.schema.getFields())
+    //       .map(
+    //         ([key, field]) =>
+    //           `  ${field.decorators.join("\n  ")}
+    //   get ${key}(): ${fieldToTsType(field)} {
+    //     return this.data${isValidPropertyAccessor(key) ? `.${key}` : `['${key}']`};
+    //   }
+    // `
+    //       )
+    //       .join("\n");
   }
 
   private getEdgeCode(): string {
-    return Object.entries(this.schema.getEdges())
-      .map(
-        ([key, edge]) =>
-          `  query${upcaseAt(key, 0)}(): ${edge.getQueryTypeName()} {
-    return ${edge.getQueryTypeName()}.${this.getFromMethodName(edge)}(
-      this.id
-    );
-  }
-`
-      )
-      .join("\n");
+    return "";
+    //     return Object.entries(this.schema.getEdges())
+    //       .map(
+    //         ([key, edge]) =>
+    //           `  query${upcaseAt(key, 0)}(): ${edge.getQueryTypeName()} {
+    //     return ${edge.getQueryTypeName()}.${this.getFromMethodName(edge)}(
+    //       this.id
+    //     );
+    //   }
+    // `
+    //       )
+    //       .join("\n");
   }
 
   private getSpecCode(): string {
-    return `
-export const spec: Spec<Data> = {
-  createFrom(data: Data) {
-    return new ${this.schema.getModelTypeName()}(data);
-  },
+    return "";
+    //     return `
+    // export const spec: Spec<Data> = {
+    //   createFrom(data: Data) {
+    //     return new ${this.schema.getModelTypeName()}(data);
+    //   },
 
-  storageDescriptor: {
-    nativeStorageType: "${this.schema.getConfig().storage.providerType}",
-  },
-}
-`;
+    //   storageDescriptor: {
+    //     nativeStorageType: "${this.schema.getConfig().storage.providerType}",
+    //   },
+    // }
+    // `;
   }
 
   // TODO: not `fromFroeignId` but `fromForiegnKeyEdgeName` e.g., `fromSlideId`

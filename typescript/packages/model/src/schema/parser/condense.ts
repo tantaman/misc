@@ -110,6 +110,12 @@ function condenseNode(
     nodeExtensionCondensor
   );
 
+  const inboundEdges = extensions.inboundEdges;
+  const outboundEdges = extensions.outboundEdges;
+
+  if (inboundEdges && inboundEdges.name === "inboundEdges") {
+  }
+
   return [
     [...fieldErrors, ...extensionErrors],
     {

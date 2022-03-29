@@ -17,3 +17,5 @@ const outboundEdges = {
 };
 
 const fields = {};
+
+export default {};
