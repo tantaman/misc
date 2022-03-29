@@ -19,3 +19,12 @@ export default function validate(schemaFile: SchemaFile): ValidationError[] {
 export function stopsCodegen(error: ValidationError): boolean {
   return error.severity === "error";
 }
+
+/*
+- Validate imports
+- Validate id_of
+- Validate inbound and outbound edges
+
+SQL:
+- Validate indexing of fields (foreign key, junction)
+*/

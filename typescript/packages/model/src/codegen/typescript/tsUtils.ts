@@ -1,24 +1,39 @@
-import { Field, FieldType, MapField } from "../../schema/Field.js";
+import { Field, RemoveNameField } from "../../schema/parser/SchemaType";
 
-function fieldToTsType(field: Field<FieldType>): string {
-  switch (field.storageType) {
+function fieldToTsType(field: RemoveNameField<Field>): string {
+  switch (field.type) {
     case "id":
       // TODO: pull in the correct id type.
       return "SID_of<any>";
-    case "int32":
-    case "float32":
-      return "number";
-    case "int64":
-    case "uint64":
-      // since JS can't represent 64 bit numbers -- 53 bits is js max int.
+    case "naturalLanguage":
       return "string";
+    case "enumeration":
+      return field.keys.join("|");
+    case "currency":
+    case "timestamp":
+      return "number";
+    case "primitive":
+      switch (field.subtype) {
+        case "bool":
+          return "boolean";
+        case "int32":
+        case "float32":
+        case "uint32":
+          return "number";
+        // since JS can't represent 64 bit numbers -- 53 bits is js max int.
+        case "int64":
+        case "float64":
+        case "uint64":
+        case "string":
+          return "string";
+      }
     case "map":
-      return `ReadonlyMap<string, ${fieldToTsType(
-        (field as MapField<any, any>).valueType
+      return `ReadonlyMap<${fieldToTsType(field.keys)}, ${fieldToTsType(
+        field.values
       )}>`;
   }
 
-  return field.storageType;
+  throw new Error(`Cannot convert from ${field.type} to a ts type`);
 }
 
 export { fieldToTsType };

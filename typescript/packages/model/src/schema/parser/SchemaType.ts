@@ -28,8 +28,22 @@ export type Node = {
     inboundEdges?: InboundEdges;
     index?: Index;
     storage?: Storage;
+    type?: TypeConfig;
+    module?: ModuleConfig;
   };
   storage: StorageConfig;
+};
+
+type TypeConfig = {} & MaybeDecoratored;
+
+type ModuleConfig = {
+  imports: Import[];
+};
+
+type Import = {
+  name?: string | null;
+  as?: string | null;
+  from: string;
 };
 
 type StorageConfig = {
@@ -52,7 +66,7 @@ export type Edge = {
   storage: StorageConfig;
 };
 
-type RemoveNameField<Type> = {
+export type RemoveNameField<Type> = {
   [Property in keyof Type as Exclude<Property, "name">]: Type[Property];
 };
 
@@ -123,33 +137,37 @@ type EdgeReferenceDeclaration = {
   reference: EdgeReference;
 };
 
-type ID = {
+type MaybeDecoratored = {
+  decorators?: [];
+};
+
+export type ID = {
   name: string;
   type: "id";
   of: NodeReference;
-};
+} & MaybeDecoratored;
 
 type NaturalLanguage = {
   name: string;
   type: "naturalLanguage";
-};
+} & MaybeDecoratored;
 
 type Enum = {
   name: string;
   type: "enumeration";
   keys: string[];
-};
+} & MaybeDecoratored;
 
 type Currency = {
   name: string;
   type: "currency";
   denomination: string;
-};
+} & MaybeDecoratored;
 
 type Time = {
   name: string;
   type: "timestamp";
-};
+} & MaybeDecoratored;
 
 type Primitive = {
   name: string;
@@ -163,7 +181,7 @@ type Primitive = {
     | "uint32"
     | "uint64"
     | "string";
-};
+} & MaybeDecoratored;
 
 type Map = {
   name: string;

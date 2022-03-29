@@ -1,32 +1,32 @@
-import Schema from "../../schema/Schema.js";
 import { Edge, ForeignKeyEdge } from "../../schema/Edge.js";
-import { upcaseAt } from "@strut/utils";
+import { asPropertyAccessor, upcaseAt } from "@strut/utils";
 import CodegenStep from "../CodegenStep.js";
 import { isValidPropertyAccessor } from "@strut/utils";
 import { fieldToTsType } from "./tsUtils.js";
 import { CodegenFile } from "../CodegenFile.js";
 import TypescriptFile from "./TypescriptFile.js";
+import { Node } from "../../schema/parser/SchemaType.js";
 
 export default class GenTypescriptModel extends CodegenStep {
-  static accepts(_schema: Schema): boolean {
+  static accepts(_schema: Node): boolean {
     return true;
   }
 
-  constructor(private schema: Schema) {
+  constructor(private schema: Node) {
     super();
   }
 
   gen(): CodegenFile {
     return new TypescriptFile(
-      this.schema.getModelTypeName() + ".ts",
+      this.schema.name + ".ts",
       `import Model, {Spec} from '@strut/model/Model.js';
 import {SID_of} from '@strut/sid';
 ${this.getImportCode()}
 
 export type Data = ${this.getDataShapeCode()};
 
-${this.schema.getConfig().class.decorators.join("\n")}
-export default class ${this.schema.getModelTypeName()}
+${this.schema.extensions.type?.decorators?.join("\n")}
+export default class ${this.schema.name}
   extends Model<Data> {
   ${this.getFieldCode()}
   ${this.getEdgeCode()}
@@ -38,25 +38,17 @@ ${this.getSpecCode()}
   }
 
   private getDataShapeCode(): string {
-    const fieldProps = Object.entries(this.schema.getFields()).map(
-      ([key, field]) =>
-        `${isValidPropertyAccessor(key) ? key : `'${key}'`}: ${fieldToTsType(
-          field
-        )}`
-    );
-    const edgeProps = this.schema.getFieldsDefinedThroughEdges().map(
-      (edge) =>
-        `${edge.fieldName}: SID_of<${edge.getDest().getModelTypeName()}>
-      `
+    const fieldProps = Object.values(this.schema.fields).map(
+      (field) => `${asPropertyAccessor(field.name)}: ${fieldToTsType(field)}`
     );
     return `{
-  ${fieldProps.concat(edgeProps).join(",\n  ")}
+  ${fieldProps.join(",\n  ")}
 }`;
   }
 
   private getImportCode(): string {
     const ret: string[] = [];
-    for (const val of this.schema.getConfig().module.imports.values()) {
+    for (const val of this.schema.extensions.module?.imports || []) {
       const name = val.name != null ? val.name + " " : "";
       const as = val.as != null ? "as " + val.as + " " : "";
       if (name === "") {

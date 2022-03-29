@@ -29,6 +29,10 @@ function not(x) {
   return !x;
 }
 
+function asPropertyAccessor(a: string): string {
+  return isValidPropertyAccessor(a) ? a : `'${a}'`;
+}
+
 export {
   invariant,
   math,
@@ -49,4 +53,5 @@ export {
   not,
   only,
   maybeMap,
+  asPropertyAccessor,
 };

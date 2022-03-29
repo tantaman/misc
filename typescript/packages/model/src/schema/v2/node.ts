@@ -1,3 +1,5 @@
+import { ID, Node } from "../parser/SchemaType.js";
+
 const inboundEdges = {
   isForeignKeyEdge() {},
 
@@ -13,3 +15,5 @@ const outboundEdges = {
 
   isJunctionEdge() {},
 };
+
+const fields = {};
