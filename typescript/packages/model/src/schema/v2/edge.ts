@@ -46,7 +46,16 @@ export default {
     }
   },
 
-  destModelTypeName(src: Node, edge: EdgeDeclaration): string {
+  destModelTypeName(
+    src: Node,
+    edge: EdgeDeclaration | EdgeReferenceDeclaration
+  ): string {
+    if (edge.type === "edgeReference") {
+      throw new Error(
+        "Edge references not yet supported. Need to do some condensing"
+      );
+    }
+
     const column = edge.throughOrTo.column;
     if (column == null) {
       return edge.throughOrTo.type;

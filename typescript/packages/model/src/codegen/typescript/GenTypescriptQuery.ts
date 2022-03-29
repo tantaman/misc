@@ -7,6 +7,7 @@ import {
   Node,
   EdgeDeclaration,
   EdgeReferenceDeclaration,
+  ID,
 } from "../../schema/parser/SchemaType.js";
 import nodeFn from "../../schema/v2/node.js";
 import edgeFn from "../../schema/v2/edge.js";
@@ -146,6 +147,17 @@ static from${upcaseAt(column, 0)}(id: SID_of<${field.of}>) {
       .join("\n");
 
     // import edge reference queries too
+  }
+
+  private getIdFieldImports(): string {
+    // TODO: fix all these cases on filter(s)
+    const idFields = Object.values(this.schema.fields).filter(
+      (f) => f.type === "id"
+    ) as ID[];
+
+    return idFields
+      .map((f) => `import ${f.name} from "./${f.name}.js"`)
+      .join("\n");
   }
 
   private getHopMethodsCode(): string {
