@@ -1,7 +1,5 @@
-import { Edge, ForeignKeyEdge } from "../../schema/Edge.js";
 import { asPropertyAccessor, upcaseAt } from "@strut/utils";
 import CodegenStep from "../CodegenStep.js";
-import { isValidPropertyAccessor } from "@strut/utils";
 import { fieldToTsType } from "./tsUtils.js";
 import { CodegenFile } from "../CodegenFile.js";
 import TypescriptFile from "./TypescriptFile.js";
@@ -133,18 +131,20 @@ ${this.getSpecCode()}
   }
 
   private getSpecCode(): string {
-    return "";
-    //     return `
-    // export const spec: Spec<Data> = {
-    //   createFrom(data: Data) {
-    //     return new ${this.schema.getModelTypeName()}(data);
-    //   },
+    return `
+    export const spec: Spec<Data> = {
+      createFrom(data: Data) {
+        return new ${this.schema.name}(data);
+      },
 
-    //   storageDescriptor: {
-    //     nativeStorageType: "${this.schema.getConfig().storage.providerType}",
-    //   },
-    // }
-    // `;
+      storageDescriptor: {
+        engine: "${this.schema.storage.engine}",
+        db: "${this.schema.storage.db}",
+        type: "${this.schema.storage.type}",
+        tablish: "${this.schema.storage.table}",
+      },
+    }
+    `;
   }
 
   // inbound edges would be static methods
