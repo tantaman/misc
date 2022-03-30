@@ -125,7 +125,7 @@ test("OutboundEdgeViaFieldSchema", () => {
   // TODO: queryBar is wrong as it needs a `where` statement applied
   // to understand _how_ we're hopping.
   // queryBar().whereId(P.equals(this.barId));
-  expect(contents).toEqual(`// SIGNED-SOURCE: <aa437a9f5f979da5950a35d25d5098b5>
+  expect(contents).toEqual(`// SIGNED-SOURCE: <b4891c29f54c49e88415cc6e1ffbf41f>
 import { DerivedQuery } from "@strut/model/query/Query.js";
 import QueryFactory from "@strut/model/query/QueryFactory.js";
 import { modelLoad, filter } from "@strut/model/query/Expression.js";
@@ -159,7 +159,7 @@ export default class FooQuery extends DerivedQuery<Foo> {
     return new BarQuery(
       QueryFactory.createHopQueryFor(this, spec, BarSpec),
       modelLoad(BarSpec.createFrom)
-    );
+    ).whereId(P.equals(this.barId));
   }
 }
 `);
@@ -170,11 +170,7 @@ test("OutboundThroughForeignFieldSchema", () => {
     compileFromString(OutboundThroughForeignFieldSchema)[1].nodes.Foo
   ).contents;
 
-  // TODO: queryBar is wrong as it needs a `where` statement applied
-  // to understand _how_ we're hopping.
-  // queryBar().whereFooId(P.equals(this.id));
-
-  expect(contents).toEqual(`// SIGNED-SOURCE: <faee2e6d5e8d43524b454cc0adeb6ef0>
+  expect(contents).toEqual(`// SIGNED-SOURCE: <36a1dcef7580bd1dd135c23ca050b6ef>
 import { DerivedQuery } from "@strut/model/query/Query.js";
 import QueryFactory from "@strut/model/query/QueryFactory.js";
 import { modelLoad, filter } from "@strut/model/query/Expression.js";
@@ -202,7 +198,7 @@ export default class FooQuery extends DerivedQuery<Foo> {
     return new BarQuery(
       QueryFactory.createHopQueryFor(this, spec, BarSpec),
       modelLoad(BarSpec.createFrom)
-    );
+    ).whereFooId(P.equals(this.id));
   }
 }
 `);

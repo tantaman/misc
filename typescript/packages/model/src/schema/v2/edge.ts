@@ -75,7 +75,15 @@ export default {
     return field.of;
   },
 
-  isThrough(node: Node, edge: EdgeDeclaration): boolean {
+  isThrough(edge: EdgeDeclaration): boolean {
+    return edge.throughOrTo.column != null;
+  },
+
+  isTo(edge: EdgeDeclaration): boolean {
+    return edge.throughOrTo.column == null;
+  },
+
+  isThroughNode(node: Node, edge: EdgeDeclaration): boolean {
     return (
       edge.throughOrTo.type === node.name && edge.throughOrTo.column != null
     );

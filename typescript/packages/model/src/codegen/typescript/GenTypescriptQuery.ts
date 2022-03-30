@@ -100,7 +100,7 @@ static fromId(id: SID_of<${this.schema.name}>) {
     )
       .filter((edge) => edge.type === "edge")
       .filter((edge: EdgeDeclaration) =>
-        edgeFn.isThrough(this.schema, edge)
+        edgeFn.isThroughNode(this.schema, edge)
       ) as EdgeDeclaration[];
 
     return inbound.map(this.getFromInboundFieldEdgeMethodCode).join("\n");
@@ -172,24 +172,51 @@ static from${upcaseAt(column, 0)}(id: SID_of<${field.of}>) {
   private getHopMethod(
     edge: EdgeDeclaration | EdgeReferenceDeclaration
   ): string {
+    if (edge.type === "edgeReference") {
+      throw new Error("Edge references not yet supported...");
+    }
+
+    let body = "";
+    if (edgeFn.isTo(edge)) {
+      body = this.getHopMethodForJunctionLikeEdge(edge);
+    } else {
+      body = this.getHopMethodForFieldLikeEdge(edge);
+    }
+
     return `query${upcaseAt(edge.name, 0)}(): ${edgeFn.queryTypeName(
       this.schema,
       edge
     )} {
-      return new ${edgeFn.queryTypeName(
-        this.schema,
-        edge
-      )}(QueryFactory.createHopQueryFor(this, spec, ${edgeFn.destModelTypeName(
+      ${body}
+    }`;
+  }
+
+  private getHopMethodForJunctionLikeEdge(edge: EdgeDeclaration): string {
+    return "";
+  }
+
+  private getHopMethodForFieldLikeEdge(edge: EdgeDeclaration): string {
+    let hopOperation = "";
+    // are we through a field on our own type?
+    if (edgeFn.isThroughNode(this.schema, edge)) {
+      hopOperation = `whereId(P.equals(this.${edge.throughOrTo.column}))`;
+    } else {
+      // we are through a field on the dest node.
+      hopOperation = `where${upcaseAt(
+        nullthrows(edge.throughOrTo.column),
+        0
+      )}(P.equals(this.id))`;
+    }
+
+    return `return new ${edgeFn.queryTypeName(
+      this.schema,
+      edge
+    )}(QueryFactory.createHopQueryFor(this, spec, ${edgeFn.destModelTypeName(
       this.schema,
       edge
     )}Spec),
       modelLoad(${edgeFn.destModelTypeName(this.schema, edge)}Spec.createFrom),
-      );
-    }`;
-
-    // TODO: the hop query needs:
-    // `whereId`
-    // or `whereFkId` methods invoked on it
+      ).${hopOperation};`;
   }
 }
 
