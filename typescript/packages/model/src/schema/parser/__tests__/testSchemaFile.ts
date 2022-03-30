@@ -9,7 +9,7 @@ export const contents = `
 engine: postgres
 db: test
 
-Node<Person> {
+Person as Node {
   id: ID<Person>
   name: NaturalLanguage<string>
   walletId: ID<Wallet>
@@ -29,18 +29,18 @@ Node<Person> {
   thing2
 }
 
-Edge<Person, Person> as FollowEdge {
+FollowEdge as Edge<Person, Person> {
   when: Timestamp
 } | Invert as FollowerEdge
 
-Node<Wallet> {
+Wallet as Node {
   id: ID<Wallet>
   balance: Currency<usd>
   status: Enumeration<Active | Locked>
   alias: NaturalLanguage<string>
 }
 
-Node<Transaction> {
+Transaction as Node {
   id: ID<Transaction>
   time: Timestamp
   blob: Map<string, string>

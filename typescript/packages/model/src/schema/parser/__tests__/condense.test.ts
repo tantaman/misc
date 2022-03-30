@@ -12,8 +12,8 @@ test("Duplicate nodes", () => {
   const ast = parseString(`
 engine: postgres
 db: test
-Node<Foo> {}
-Node<Foo> {}
+Foo as Node {}
+Foo as Node {}
 `);
   const [errors, condensed] = condense(ast);
   expect(errors.length).toBe(1);
@@ -26,8 +26,8 @@ test("Duplicate top level edges", () => {
   const ast = parseString(`
 engine: postgres
 db: test
-Edge<Person, Person> as Friends {}
-Edge<Person, Person> as Friends {}
+Friends as Edge<Person, Person> {}
+Friends as Edge<Person, Person> {}
 `);
   const [errors, condensed] = condense(ast);
   expect(errors.length).toBe(1);
@@ -40,7 +40,7 @@ test("Duplicate fields on node", () => {
   const ast = parseString(`
 engine: postgres
 db: test
-Node<Foo> {
+Foo as Node {
   bar: int32
   bar: int32
 }
@@ -56,7 +56,7 @@ test("Duplicate outbound edges on node", () => {
   const ast = parseString(`
 engine: postgres
 db: test
-Node<Foo> {
+Foo as Node {
   barId: ID<Bar>
 } | OutboundEdges {
   bar: Edge<Foo.barId>
@@ -75,7 +75,7 @@ test("Duplicate inbound edges on node", () => {
   const ast = parseString(`
 engine: postgres
 db: test
-Node<Foo> {
+Foo as Node {
   barId: ID<Bar>
 } | InboundEdges {
   fromBar: Edge<Foo.barId>
@@ -94,7 +94,7 @@ test("Duplicate extensions on node", () => {
   const ast = parseString(`
 engine: postgres
 db: test
-Node<Foo> {
+Foo as Node {
   barId: ID<Bar>
 } | InboundEdges {
 } | InboundEdges {}
@@ -109,7 +109,7 @@ test("Duplicate extensions on edge", () => {
   const ast = parseString(`
 engine: postgres
 db: test
-Edge<Foo, Foo> as FooToFooEdge {
+FooToFooEdge as Edge<Foo, Foo> {
   barId: ID<Bar>
 } | Index {
 } | Index {}
@@ -124,7 +124,7 @@ test("Duplicate fields on edge", () => {
   const ast = parseString(`
 engine: postgres
 db: test
-Edge<Foo, Foo> as Bar {
+Bar as Edge<Foo, Foo> {
   bar: int32
   bar: int32
 }

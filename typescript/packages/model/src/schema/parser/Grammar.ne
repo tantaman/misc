@@ -20,15 +20,15 @@ dbName -> [a-zA-Z0-9]:+ {% d => d[0].join("") %}
 
 entities -> null | entities node {% ([e, node]) => (e.concat(node)) %} | entities edge {% ([e, edge]) => (e.concat(edge)) %}
 
-node -> "Node<" _ name _ ">" _ nodeFields _ nodeFunctions {% ([kw, ws, name, ws2, kw2, ws3, fields, ws4, funcs]) => ({
+node -> name _ "as" _ "Node" _ nodeFields _ nodeFunctions {% ([name, _ws, kw, _ws2, _kw2, _ws3, fields, ws4, funcs]) => ({
   type: "node",
   name,
   fields: fields || [],
   extensions: funcs || []
 }) %}
 
-edge -> "Edge<" _ name _ "," _ name _ ">" _ "as" _ name _ edgeFields _ edgeFunctions {%
-  ([_kw, _ws, src, _ws2, _kw2, _ws3, dest, _ws4, _kw3, _ws5, _kw4, _ws6, name, _ws7, fields, ws6, funcs]) => ({
+edge -> name _ "as" _ "Edge<" _ name _ "," _ name _ ">" _ edgeFields _ edgeFunctions {%
+  ([name, _ws, _kw, _ws2, _kw2, _ws3, src, _ws4, _kw3, _ws5, dest, _ws6, _kw4, _ws7, fields, ws8, funcs]) => ({
     type: "edge",
     src: {
       type: src,
