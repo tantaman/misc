@@ -6,7 +6,7 @@ const IDOnlySchema = `
 engine: postgres
 db: test
 
-Node<IDOnly> {
+IDOnly as Node {
   id: ID<IDOnly>
 }
 `;
@@ -15,7 +15,7 @@ const PrimitiveFieldsSchema = `
 engine: postgres
 db: test
 
-Node<PrimitiveFields> {
+PrimitiveFields as Node {
   id: ID<PrimitiveFields>
   mrBool: bool
   mrInt32: int32
@@ -30,10 +30,10 @@ const OutboundFieldEdgeSchema = `
 engine: postgres
 db: test
 
-Node<OutboundFieldEdge> {
+Foo as Node {
   fooId: ID<Foo>
 } | OutboundEdges {
-  foos: Edge<OutboundFieldEdge.fooId>
+  foos: Edge<Foo.fooId>
 }
 `;
 
@@ -41,7 +41,7 @@ const OutboundForeignKeyEdgeSchema = `
 engine: postgres
 db: test
 
-Node<Bar> {
+Bar as Node {
 } | OutboundEdges {
   foos: Edge<Foo.barId>
 }
@@ -147,20 +147,19 @@ export const spec: Spec<Data> = {
 
 test("Outbound field edge", () => {
   const contents = genIt(
-    compileFromString(OutboundFieldEdgeSchema)[1].nodes.OutboundFieldEdge
+    compileFromString(OutboundFieldEdgeSchema)[1].nodes.Foo
   ).contents;
 
-  expect(contents).toEqual(`// SIGNED-SOURCE: <b9f7e92c2b117ddfa448cc4eef5637de>
+  expect(contents).toEqual(`// SIGNED-SOURCE: <086958ea3a098479094bc9e4d2242319>
 import Model, { Spec } from "@strut/model/Model.js";
 import { SID_of } from "@strut/sid";
 import FooQuery from "./FooQuery.js";
-import OutboundFieldEdge from "./OutboundFieldEdge.js";
 
 export type Data = {
   fooId: SID_of<any>;
 };
 
-export default class OutboundFieldEdge extends Model<Data> {
+export default class Foo extends Model<Data> {
   get fooId(): SID_of<any> {
     return this.data.fooId;
   }
@@ -172,14 +171,14 @@ export default class OutboundFieldEdge extends Model<Data> {
 
 export const spec: Spec<Data> = {
   createFrom(data: Data) {
-    return new OutboundFieldEdge(data);
+    return new Foo(data);
   },
 
   storageDescriptor: {
     engine: "postgres",
     db: "test",
     type: "sql",
-    tablish: "outboundfieldedge",
+    tablish: "foo",
   },
 };
 `);

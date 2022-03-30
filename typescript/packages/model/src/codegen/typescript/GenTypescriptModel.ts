@@ -69,9 +69,11 @@ ${this.getSpecCode()}
         )} from "./${edgeFn.queryTypeName(this.schema, edge)}.js"`
       );
       if (edge.type === "edge") {
-        ret.push(
-          `import ${edge.throughOrTo.type} from "./${edge.throughOrTo.type}.js"`
-        );
+        if (edge.throughOrTo.type !== this.schema.name) {
+          ret.push(
+            `import ${edge.throughOrTo.type} from "./${edge.throughOrTo.type}.js"`
+          );
+        }
       }
     }
     return ret.join("\n");

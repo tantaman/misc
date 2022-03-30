@@ -1,7 +1,6 @@
 import { ast, schemaFile } from "./testSchemaFile.js";
 import condense from "../condense.js";
 import { parseString } from "../parse";
-import { InboundEdges } from "../SchemaType.js";
 
 test("Condensing the AST to proper schema types", () => {
   const [_errors, condensed] = condense(ast);
