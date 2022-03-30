@@ -1,8 +1,8 @@
 import { invariant } from "@strut/utils";
 import { HopExpression } from "query/Expression.js";
 import { HopQuery, Query } from "query/Query";
-import { StorageDescriptor } from "schema/StorageConfig.js";
 import { Spec } from "../../Model.js";
+import { StorageConfig } from "../../schema/parser/SchemaType.js";
 
 export default class SQLHopQuery<TIn, TOut> extends HopQuery<TIn, TOut> {
   /*
@@ -24,16 +24,14 @@ function createExpression<TIn, TOut>(
   sourceSpec: Spec<TIn>,
   destSpec: Spec<TOut>
 ): HopExpression<TIn, TOut> {
-  if (sourceSpec.storageDescriptor.nativeStorageType === "MySQL") {
+  if (sourceSpec.storageDescriptor.type === "sql") {
     invariant(
-      destSpec.storageDescriptor.nativeStorageType === "MySQL",
+      destSpec.storageDescriptor.type === "sql",
       "SQLHopQuery created for non-sql destination"
     );
 
     // If we're the same storage on the same DB, we can use a join expression
-    if (
-      sourceSpec.storageDescriptor.dbName === destSpec.storageDescriptor.dbName
-    ) {
+    if (sourceSpec.storageDescriptor.db === destSpec.storageDescriptor.db) {
       return createJoinExpression(
         sourceSpec.storageDescriptor,
         destSpec.storageDescriptor
@@ -48,15 +46,15 @@ function createExpression<TIn, TOut>(
 }
 
 function createJoinExpression<TIn, TOut>(
-  sourceDescriptor: StorageDescriptor,
-  destDescriptor: StorageDescriptor
+  sourceDescriptor: StorageConfig,
+  destDescriptor: StorageConfig
 ): HopExpression<TIn, TOut> {
   throw new Error("Join not yet supported");
 }
 
 function createChainedHopExpression<TIn, TOut>(
-  sourceDescriptor: StorageDescriptor,
-  destDescriptor: StorageDescriptor
+  sourceDescriptor: StorageConfig,
+  destDescriptor: StorageConfig
 ): HopExpression<TIn, TOut> {
   throw new Error("In memory hop not yet supported");
 }

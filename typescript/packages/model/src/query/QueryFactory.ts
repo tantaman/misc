@@ -1,4 +1,3 @@
-import assertUnreachable from "@strut/utils/lib/assertUnreachable";
 import { Spec } from "../Model.js";
 import { DerivedQuery, HopQuery, Query } from "./Query.js";
 import SQLHopQuery from "./sql/SqlHopQuery.js";
@@ -8,14 +7,11 @@ import SQLSourceQuery from "./sql/SqlSourceQuery.js";
 // the native platform.
 const factory = {
   createSourceQueryFor<T>(spec: Spec<T>): Query<T> {
-    switch (spec.storageDescriptor.nativeStorageType) {
-      case "MySQL":
-      case "Postgres":
+    switch (spec.storageDescriptor.type) {
+      case "sql":
         return new SQLSourceQuery(spec);
-      case "Neo4j":
-        throw new Error("Neo4j is not yet supported");
-      // case "Wire":
-      //   throw new Error("Wire is not yet supported");
+      default:
+        throw new Error(spec.storageDescriptor.type + " is not yet supported");
     }
   },
 
@@ -25,7 +21,7 @@ const factory = {
     destSpec: Spec<TDest>
   ): HopQuery<any, TDest> {
     // SQLHopQuery and so on
-    if (destSpec.storageDescriptor.nativeStorageType === "MySQL") {
+    if (destSpec.storageDescriptor.type === "sql") {
       return SQLHopQuery.create(priorQuery, sourceSpec, destSpec);
     }
 

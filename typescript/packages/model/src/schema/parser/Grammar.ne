@@ -65,6 +65,7 @@ idField -> "ID<" _ name _ ">" {% ([_kw, _ws, of]) => ({type: "id", of }) %}
 naturalLanguageField -> "NaturalLanguage<string>" {% () => ({type: "naturalLanguage"}) %}
 enumField -> "Enumeration<" _ enumKeys _ ">" {% ([_kw, _ws, keys]) => ({type: "enumeration", keys}) %}
 enumKeys -> name | enumKeys _ "|" _ name {% ([e, _ws, _kw, _ws2, key]) => (e.concat(key)) %}
+bitmaskField -> "Bitmask<" _ enumKeys + ">" {% ([_kw, _ws, keys]) => ({type: "bitmask", keys}) %}
 timeField -> "Timestamp" {% () => ({type: "timestamp"}) %}
 currencyField -> "Currency<" _ name _ ">" {% ([_kw, _ws, denomination]) => ({type: "currency", denomination}) %}
 primitiveField -> ("bool" | "int32" | "int64" | "float32" | "float64" | "uint32" | "uint64" | "string") {%

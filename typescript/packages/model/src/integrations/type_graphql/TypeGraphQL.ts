@@ -1,14 +1,16 @@
-import { Field, FieldType } from "../../schema/Field.js";
-import { tsImport } from "../../schema/ModuleConfig.js";
-import Schema from "../../schema/Schema.js";
 import { select } from "@strut/utils";
 import AphroditeIntegration from "../AphroditeIntegration.js";
+import { Node, Field } from "../../schema/parser/SchemaType.js";
+import nodeFn from "../../schema/v2/node.js";
+import fieldFn from "../../schema/v2/field.js";
+import { tsImport } from "../../schema/v2/module.js";
 
 interface TypeGraphQLOptions {
   nullable: boolean;
   description: string;
 }
 
+// TODO: integrations should be able to contribute validation steps too!
 export class TypeGraphQL implements AphroditeIntegration {
   private fieldsOrEdges: string[] = [];
 
@@ -17,29 +19,29 @@ export class TypeGraphQL implements AphroditeIntegration {
     return this;
   }
 
-  applyTo(schema: Schema): void {
-    select(this.fieldsOrEdges, schema.getFields()).forEach((field) => {
-      field?.decorator(this.createFieldDecorator(schema, field));
-    });
-
-    schema.getConfig().module.import(
-      // TODO: clean up to be smart imports based on usage
-      tsImport("{ Field, ObjectType, Int, Float, ID }", null, "type-graphql"),
-      tsImport(null, null, "reflect-metadata")
+  applyTo(schema: Node): void {
+    // TODO: need to be able to expose edges too. That's missing here.
+    select(this.fieldsOrEdges, schema.fields).forEach((field) =>
+      fieldFn.decorate(field, this.createFieldDecorator(schema, field))
     );
 
-    schema
-      .getConfig()
-      .class.decorator(
-        `@ObjectType({description: "${schema.getConfig().getDescription()}"})`
-      );
+    nodeFn.addModuleImport(
+      schema,
+      tsImport("{ Field, ObjectType, Int, Float, ID }", null, "type-graphql")
+    );
+    nodeFn.addModuleImport(schema, tsImport(null, null, "reflect-metadata"));
+
+    nodeFn.decorateType(
+      schema,
+      `@ObjectType({description: ""})` // ${schema.description}
+    );
   }
 
-  private createFieldDecorator(schema: Schema, field: Field<FieldType>) {
+  private createFieldDecorator(schema: Node, field: Field) {
     // TODO: add imports to the schema.
     const options = {} as TypeGraphQLOptions;
     options.nullable = !field.isRequired;
-    options.description = field.description;
+    options.description = field.description || "";
 
     let optionsString = "";
     if (Object.values(options).filter((x) => !!x).length > 0) {
@@ -52,22 +54,29 @@ export class TypeGraphQL implements AphroditeIntegration {
     return `@Field(_ => ${type}${optionsString})`;
   }
 
-  private getGraphQLType(field: Field<FieldType>): string {
-    switch (field.storageType) {
+  private getGraphQLType(field: Field): string {
+    switch (field.type) {
       case "id":
         return "ID";
-      case "boolean":
-        return "Boolean";
-      case "string":
-        return "String";
-      case "int32":
-      // TODO: does typegraphql convert > 53 bit ints to strings for js?
-      case "int64":
-      case "uint64":
-        return "Int";
+      case "primitive":
+        switch (field.subtype) {
+          case "bool":
+            return "Boolean";
+          case "float32":
+          case "float64":
+            return "Float";
+          case "int32":
+          case "int64":
+          case "uint32":
+          case "uint64":
+            // TODO: does typegraphql convert > 53 bit ints to strings for js?
+            return "Int";
+          case "string":
+            return "String";
+        }
       default:
         throw new Error(
-          `${field.storageType} is not yet support by the TypeGraphQL integration`
+          `${field.type} is not yet support by the TypeGraphQL integration`
         );
     }
   }

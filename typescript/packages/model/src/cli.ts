@@ -3,11 +3,8 @@
 import commandLineArgs from "command-line-args";
 import commandLineUsage from "command-line-usage";
 import CodegenPipleine from "./codegen/CodegenPipeline.js";
-import Schema from "./schema/Schema.js";
 import * as process from "process";
 import * as path from "path";
-
-type SchemaModule = { default: { get(): Schema } };
 
 async function run() {
   const mainDefinitions = [{ name: "gen", defaultOption: true }];
@@ -32,12 +29,12 @@ async function run() {
       return;
     }
 
-    const schemaModules = await Promise.all(
-      genOptions.src.map((s) => import("file://" + path.join(process.cwd(), s)))
-    );
-    const schemas = schemaModules.map((s) => (<SchemaModule>s).default.get());
-    const pipeline = new CodegenPipleine();
-    await pipeline.gen(schemas, genOptions.dest);
+    // const schemaModules = await Promise.all(
+    //   genOptions.src.map((s) => import("file://" + path.join(process.cwd(), s)))
+    // );
+    // const schemas = schemaModules.map((s) => (<SchemaModule>s).default.get());
+    // const pipeline = new CodegenPipleine();
+    // await pipeline.gen(schemas, genOptions.dest);
 
     return;
   }

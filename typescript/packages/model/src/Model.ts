@@ -1,7 +1,7 @@
 type Disposer = () => void;
 import { SID_of } from "@strut/sid";
 import { typedKeys } from "@strut/utils";
-import { StorageDescriptor } from "schema/StorageConfig.js";
+import { StorageConfig } from "./schema/parser/SchemaType.js";
 import { Changeset } from "./Changeset.js";
 
 export interface IModel<T extends Object> {
@@ -17,7 +17,7 @@ export interface IModel<T extends Object> {
 
 export type Spec<T extends Object> = {
   createFrom(data: T): IModel<T>;
-  readonly storageDescriptor: StorageDescriptor;
+  readonly storageDescriptor: StorageConfig;
 };
 
 export interface HasId {

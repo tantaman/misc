@@ -1,4 +1,4 @@
-export type StorageEngine = "postgres"; // mysql | maria | neo4j | redis ...
+export type StorageEngine = "postgres" | "mysql"; // | maria | neo4j | redis ...
 export type StorageType = "sql"; // opencypher
 
 export type SchemaFileAst = {
@@ -40,16 +40,16 @@ type TypeConfig = {
 
 type ModuleConfig = {
   name: "moduleConfig";
-  imports: Import[];
+  imports: Map<string, Import>;
 };
 
-type Import = {
+export type Import = {
   name?: string | null;
   as?: string | null;
   from: string;
 };
 
-type StorageConfig = {
+export type StorageConfig = {
   type: "sql";
   db: string;
   table: string;
@@ -85,7 +85,7 @@ type NonComplexField =
   | Time
   | Primitive;
 
-type ComplexField = Map | Array;
+type ComplexField = MapField | ArrayField;
 
 export type Field = NonComplexField | ComplexField;
 export type NodeAstExtension =
@@ -140,36 +140,42 @@ export type EdgeReferenceDeclaration = {
 };
 
 type MaybeDecoratored = {
-  decorators?: [];
+  decorators?: string[];
+};
+
+type FieldBase = {
+  decorators?: string[];
+  description?: string;
+  isRequired?: boolean;
 };
 
 export type ID = {
   name: string;
   type: "id";
   of: NodeReference;
-} & MaybeDecoratored;
+} & FieldBase;
 
 type NaturalLanguage = {
   name: string;
   type: "naturalLanguage";
-} & MaybeDecoratored;
+} & FieldBase;
 
 type Enum = {
   name: string;
   type: "enumeration";
   keys: string[];
-} & MaybeDecoratored;
+} & FieldBase;
 
 type Currency = {
   name: string;
   type: "currency";
   denomination: string;
-} & MaybeDecoratored;
+} & FieldBase;
 
 type Time = {
   name: string;
   type: "timestamp";
-} & MaybeDecoratored;
+} & FieldBase;
 
 type Primitive = {
   name: string;
@@ -183,22 +189,22 @@ type Primitive = {
     | "uint32"
     | "uint64"
     | "string";
-} & MaybeDecoratored;
+} & FieldBase;
 
-type Map = {
+type MapField = {
   name: string;
   type: "map";
   // Ideally we use `Omit` on name but see https://github.com/microsoft/TypeScript/issues/31501
   keys: RemoveNameField<NonComplexField>;
   values: RemoveNameField<Field>;
-} & MaybeDecoratored;
+} & FieldBase;
 
-type Array = {
+type ArrayField = {
   name: string;
   type: "array";
   // Ideally we use `Omit` on name but see https://github.com/microsoft/TypeScript/issues/31501
   values: RemoveNameField<Field>;
-} & MaybeDecoratored;
+} & FieldBase;
 
 export type OutboundEdgesAst = {
   name: "outboundEdges";

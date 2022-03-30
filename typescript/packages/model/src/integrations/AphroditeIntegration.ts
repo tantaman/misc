@@ -1,5 +1,5 @@
-import Schema from "../schema/Schema.js";
+import { Node } from "../schema/parser/SchemaType.js";
 
 export default interface AphroditeIntegration {
-  applyTo(schema: Schema): void;
+  applyTo(schema: Node): void;
 }

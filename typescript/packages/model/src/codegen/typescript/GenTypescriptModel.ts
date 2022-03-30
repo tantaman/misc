@@ -52,7 +52,7 @@ ${this.getSpecCode()}
 
   private getImportCode(): string {
     const ret: string[] = [];
-    for (const val of this.schema.extensions.module?.imports || []) {
+    for (const val of this.schema.extensions.module?.imports.values() || []) {
       const name = val.name != null ? val.name + " " : "";
       const as = val.as != null ? "as " + val.as + " " : "";
       if (name === "") {
