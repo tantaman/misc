@@ -13,6 +13,8 @@ import nodeFn from "../../schema/v2/node.js";
 import edgeFn from "../../schema/v2/edge.js";
 
 export default class GenTypescriptQuery extends CodegenStep {
+  // This can technicall take a node _or_ an edge.
+  // also... should we have access to the entire schema file?
   static accepts(_schema: Node): boolean {
     return true;
   }
@@ -142,7 +144,7 @@ static from${upcaseAt(column, 0)}(id: SID_of<${field.of}>) {
         import ${edgeFn.queryTypeName(
           this.schema,
           edge
-        )} from "./${edgeFn.queryTypeName(this.schema, edge)}`;
+        )} from "./${edgeFn.queryTypeName(this.schema, edge)}"`;
       })
       .join("\n");
 
@@ -155,23 +157,16 @@ static from${upcaseAt(column, 0)}(id: SID_of<${field.of}>) {
       (f) => f.type === "id"
     ) as ID[];
 
-    return idFields
-      .map((f) => `import ${f.name} from "./${f.name}.js"`)
-      .join("\n");
+    return idFields.map((f) => `import ${f.of} from "./${f.of}.js"`).join("\n");
   }
 
   private getHopMethodsCode(): string {
     // hop methods are edges
     // e.g., Deck.querySlides().queryComponents()
-    const inbound = Object.values(
-      this.schema.extensions.inboundEdges?.edges || {}
-    );
     const outbound = Object.values(
       this.schema.extensions.outboundEdges?.edges || {}
     );
-    return [...inbound, ...outbound]
-      .map((e) => this.getHopMethod(e))
-      .join("\n");
+    return outbound.map((e) => this.getHopMethod(e)).join("\n");
   }
 
   private getHopMethod(
@@ -191,6 +186,10 @@ static from${upcaseAt(column, 0)}(id: SID_of<${field.of}>) {
       modelLoad(${edgeFn.destModelTypeName(this.schema, edge)}Spec.createFrom),
       );
     }`;
+
+    // TODO: the hop query needs:
+    // `whereId`
+    // or `whereFkId` methods invoked on it
   }
 }
 

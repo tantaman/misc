@@ -61,6 +61,10 @@ export default {
       return edge.throughOrTo.type;
     }
 
+    if (edge.throughOrTo.type !== src.name) {
+      return edge.throughOrTo.type;
+    }
+
     const field = src.fields[column];
     if (field.type != "id") {
       throw new Error(
