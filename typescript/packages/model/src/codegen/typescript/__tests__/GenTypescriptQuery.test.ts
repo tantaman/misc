@@ -16,7 +16,7 @@ db: test
 
 Foo as Node {
   barId: ID<Bar>
-} | OutboundEdges {
+} & OutboundEdges {
   bar: Edge<Foo.barId>
 }
 `;
@@ -25,7 +25,7 @@ const OutboundThroughForeignFieldSchema = `
 engine: postgres
 db: test
 
-Foo as Node {} | OutboundEdges {
+Foo as Node {} & OutboundEdges {
   bars: Edge<Bar.fooId>
 }
 `;
@@ -36,7 +36,7 @@ db: test
 
 Foo as Node {
   barId: ID<Bar>
-} | InboundEdges {
+} & InboundEdges {
   fromBar: Edge<Foo.barId>
 }
 `;
@@ -46,7 +46,7 @@ engine: postgres
 db: test
 
 Foo as Node {
-} | OutboundEdges {
+} & OutboundEdges {
   bars: Edge<Bar>
 }
 `;
@@ -56,12 +56,12 @@ engine: postgres
 db: test
 
 Foo as Node {
-} | OutboundEdges {
+} & OutboundEdges {
   bars: Edge<Bar>
 }
 
 Bar as Node {
-} | OutboundEdges {
+} & OutboundEdges {
   foos: InverseEdge<Foo.bar>
 }
 `;
@@ -71,12 +71,12 @@ engine: postgres
 db: test
 
 Foo as Node {
-} | OutboundEdges {
+} & OutboundEdges {
   bars: FooToBarEdge
 }
 
 Bar as Node {
-} | OutboundEdges {
+} & OutboundEdges {
   foos: BarToFooEdge
 }
 

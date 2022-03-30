@@ -1,9 +1,4 @@
-import {
-  InboundEdges,
-  InboundEdgesAst,
-  SchemaFile,
-  SchemaFileAst,
-} from "../SchemaType.js";
+import { InboundEdgesAst, SchemaFile, SchemaFileAst } from "../SchemaType.js";
 
 export const contents = `
 engine: postgres
@@ -15,15 +10,15 @@ Person as Node {
   walletId: ID<Wallet>
   thing1: string
   thing2: string
-} | OutboundEdges {
+} & OutboundEdges {
   wallet: Edge<Person.walletId>
   friends: Edge<Person>
   cars: Edge<Car.ownerId>
   follows: FollowEdge
   followedBy: FollowerEdge
-} | InboundEdges {
+} & InboundEdges {
   fromWallet: Edge<Person.walletId>
-} | Index {
+} & Index {
   walletId: unique(walletId)
   compound: thing1, thing2
   thing2
@@ -31,7 +26,7 @@ Person as Node {
 
 FollowEdge as Edge<Person, Person> {
   when: Timestamp
-} | Invert as FollowerEdge
+} & Invert as FollowerEdge
 
 Wallet as Node {
   id: ID<Wallet>

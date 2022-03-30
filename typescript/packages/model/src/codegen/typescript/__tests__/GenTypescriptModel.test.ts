@@ -32,7 +32,7 @@ db: test
 
 Foo as Node {
   fooId: ID<Foo>
-} | OutboundEdges {
+} & OutboundEdges {
   foos: Edge<Foo.fooId>
 }
 `;
@@ -42,7 +42,7 @@ engine: postgres
 db: test
 
 Bar as Node {
-} | OutboundEdges {
+} & OutboundEdges {
   foos: Edge<Foo.barId>
 }
 `;

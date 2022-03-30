@@ -57,7 +57,7 @@ engine: postgres
 db: test
 Foo as Node {
   barId: ID<Bar>
-} | OutboundEdges {
+} & OutboundEdges {
   bar: Edge<Foo.barId>
   bar: Edge<Foo.barId>
 }
@@ -76,7 +76,7 @@ engine: postgres
 db: test
 Foo as Node {
   barId: ID<Bar>
-} | InboundEdges {
+} & InboundEdges {
   fromBar: Edge<Foo.barId>
   fromBar: Edge<Foo.barId>
 }
@@ -95,8 +95,8 @@ engine: postgres
 db: test
 Foo as Node {
   barId: ID<Bar>
-} | InboundEdges {
-} | InboundEdges {}
+} & InboundEdges {
+} & InboundEdges {}
 `);
   const [errors, condensed] = condense(ast);
   expect(errors.length).toBe(1);
@@ -110,8 +110,8 @@ engine: postgres
 db: test
 FooToFooEdge as Edge<Foo, Foo> {
   barId: ID<Bar>
-} | Index {
-} | Index {}
+} & Index {
+} & Index {}
 `);
   const [errors, condensed] = condense(ast);
   expect(errors.length).toBe(1);

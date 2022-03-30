@@ -16,15 +16,15 @@ preamble -> ((engineDeclaration dbDeclaration) | (dbDeclaration engineDeclaratio
   db: engineOrDb.type === "db" ? engineOrDb.name : dbOrEngine.name
 }) %}
 
-engineDeclaration -> "engine:" inlineSpace engine comments "\n" {% ([keyword, ws, [name]]) => ({type: "engine", name}) %}
-dbDeclaration -> "db:" inlineSpace dbName comments "\n" {% ([keyword, ws, name]) => ({type: "db", name}) %}
+engineDeclaration -> "engine:" inlineSpace engine _ "\n" {% ([keyword, ws, [name]]) => ({type: "engine", name}) %}
+dbDeclaration -> "db:" inlineSpace dbName _ "\n" {% ([keyword, ws, name]) => ({type: "db", name}) %}
 engine -> "postgres" # | "mysql" | "neo4j" | "redis" | "redis-graph" | "singlestore" | "mariadb" | "gremlin" | "opencypher"
 dbName -> [a-zA-Z0-9]:+ {% d => d[0].join("") %}
 
 entities -> null
-  | entities node comments {% ([e, node]) => (e.concat(node)) %}
-  | entities edge comments {% ([e, edge]) => (e.concat(edge)) %}
-  | entities nodeTrait comments {% ([e, edge]) => (e.concat(edge)) %}
+  | entities node {% ([e, node]) => (e.concat(node)) %}
+  | entities edge {% ([e, edge]) => (e.concat(edge)) %}
+  | entities nodeTrait {% ([e, edge]) => (e.concat(edge)) %}
 
 node -> name _ "as" _ "Node" _ nodeFields _ nodeFunctions {% ([name, _ws, kw, _ws2, _kw2, _ws3, fields, ws4, funcs]) => ({
   type: "node",
@@ -60,7 +60,7 @@ nodeTrait -> name _ "as" _ "NodeTrait" _ nodeFields _ nodeFunctions {%
 name -> [a-zA-Z_] [a-zA-Z0-9_]:* {% ([pre, post]) => pre + post.join("") %}
 
 nodeFields -> "{" _ fieldDeclarations "}" {% ([_kw, _ws, decl]) => decl %}
-nodeFunctions -> null | nodeFunctions "|" _ nodeFunction _ {% ([e, _kw, _ws, func]) => e.concat(func) %}
+nodeFunctions -> null | nodeFunctions "&" _ nodeFunction _ {% ([e, _kw, _ws, func]) => e.concat(func) %}
 
 fieldDeclarations -> null | fieldDeclaration | fieldDeclarations fieldDeclaration {% ([e, declaration]) => e.concat(declaration) %}
 fieldDeclaration -> name ":" _ fieldType "\n" _ {% ([name, _kw, _ws, [[definition]]]) => ({
@@ -125,12 +125,12 @@ index -> "unique(" _ nameList _ ")" {% ([_kw, _ws, columns]) => ({type: "unique"
   | nameList {% ([columns]) => ({type: "nonUnique", columns}) %}
 
 nameList -> name | nameList _ "," _ name {% ([e, _ws, _kw, _ws2, name]) => e.concat(name) %}
-newlineNameList -> name | newlineNameList name _ comments "\n" {% ([e, name]) => e.concat(name) %}
+newlineNameList -> name | newlineNameList name "\n" {% ([e, name]) => e.concat(name) %}
 
 privacyPolicy -> null
 
 edgeFields -> "{" _  fieldDeclarations "}" {% ([_kw, _ws, decl]) => decl %}
-edgeFunctions -> null | edgeFunctions "|" _ edgeFunction _ {% ([e, _kw, _ws, func]) => e.concat(func) %}
+edgeFunctions -> null | edgeFunctions "&" _ edgeFunction _ {% ([e, _kw, _ws, func]) => e.concat(func) %}
 
 edgeFunction -> "Index" _ "{" _ indices "}" {% ([_kw, _ws, _kw2, _ws2, declarations]) => ({name: "index", declarations }) %}
   | "Invert" _ "as" _ name {% ([_kw, _ws, _kw2, _ws3, as]) => ({name: "invert", as}) %}
