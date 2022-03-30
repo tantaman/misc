@@ -8,17 +8,23 @@ main -> _ preamble _ entities _ {% ([ws, preamble, ws2, entities]) => ({
   entities
 }) %}
 
+comments -> null | comments comment
+comment -> "#" [^\n]:*
+
 preamble -> ((engineDeclaration dbDeclaration) | (dbDeclaration engineDeclaration)) {% ([[[engineOrDb, dbOrEngine]]]) => ({
   engine: engineOrDb.type === "engine" ? engineOrDb.name : dbOrEngine.name,
   db: engineOrDb.type === "db" ? engineOrDb.name : dbOrEngine.name
 }) %}
 
-engineDeclaration -> "engine:" inlineSpace engine "\n" {% ([keyword, ws, [name]]) => ({type: "engine", name}) %}
-dbDeclaration -> "db:" inlineSpace dbName "\n" {% ([keyword, ws, name]) => ({type: "db", name}) %}
+engineDeclaration -> "engine:" inlineSpace engine comments "\n" {% ([keyword, ws, [name]]) => ({type: "engine", name}) %}
+dbDeclaration -> "db:" inlineSpace dbName comments "\n" {% ([keyword, ws, name]) => ({type: "db", name}) %}
 engine -> "postgres" # | "mysql" | "neo4j" | "redis" | "redis-graph" | "singlestore" | "mariadb" | "gremlin" | "opencypher"
 dbName -> [a-zA-Z0-9]:+ {% d => d[0].join("") %}
 
-entities -> null | entities node {% ([e, node]) => (e.concat(node)) %} | entities edge {% ([e, edge]) => (e.concat(edge)) %}
+entities -> null
+  | entities node comments {% ([e, node]) => (e.concat(node)) %}
+  | entities edge comments {% ([e, edge]) => (e.concat(edge)) %}
+  | entities nodeTrait comments {% ([e, edge]) => (e.concat(edge)) %}
 
 node -> name _ "as" _ "Node" _ nodeFields _ nodeFunctions {% ([name, _ws, kw, _ws2, _kw2, _ws3, fields, ws4, funcs]) => ({
   type: "node",
@@ -41,6 +47,16 @@ edge -> name _ "as" _ "Edge<" _ name _ "," _ name _ ">" _ edgeFields _ edgeFunct
     extensions: funcs || []
   })
 %}
+
+nodeTrait -> name _ "as" _ "NodeTrait" _ nodeFields _ nodeFunctions {%
+  ([name, _ws, kw, _ws2, _kw2, _ws3, fields, ws4, funcs]) => ({
+    type: "nodeTrait",
+    name,
+    fields: fields || [],
+    extensions: funcs || []
+  })
+%}
+
 name -> [a-zA-Z_] [a-zA-Z0-9_]:* {% ([pre, post]) => pre + post.join("") %}
 
 nodeFields -> "{" _ fieldDeclarations "}" {% ([_kw, _ws, decl]) => decl %}
@@ -65,7 +81,7 @@ idField -> "ID<" _ name _ ">" {% ([_kw, _ws, of]) => ({type: "id", of }) %}
 naturalLanguageField -> "NaturalLanguage<string>" {% () => ({type: "naturalLanguage"}) %}
 enumField -> "Enumeration<" _ enumKeys _ ">" {% ([_kw, _ws, keys]) => ({type: "enumeration", keys}) %}
 enumKeys -> name | enumKeys _ "|" _ name {% ([e, _ws, _kw, _ws2, key]) => (e.concat(key)) %}
-bitmaskField -> "Bitmask<" _ enumKeys + ">" {% ([_kw, _ws, keys]) => ({type: "bitmask", keys}) %}
+bitmaskField -> "Bitmask<" _ enumKeys _ ">" {% ([_kw, _ws, keys]) => ({type: "bitmask", keys}) %}
 timeField -> "Timestamp" {% () => ({type: "timestamp"}) %}
 currencyField -> "Currency<" _ name _ ">" {% ([_kw, _ws, denomination]) => ({type: "currency", denomination}) %}
 primitiveField -> ("bool" | "int32" | "int64" | "float32" | "float64" | "uint32" | "uint64" | "string") {%
@@ -76,6 +92,7 @@ nodeFunction -> "OutboundEdges" _ "{" _ edgeDeclarations "}" {% ([_kw, _ws, _kw2
   | "InboundEdges" _ "{" _ edgeDeclarations "}" {% ([_kw, _ws, _kw2, _ws2, declarations]) => ({name: "inboundEdges", declarations}) %}
   | "Index" _ "{" _ indices "}" {% ([_kw, _ws, _kw2, _ws2, declarations]) => ({name: "index", declarations}) %}
   | "ReadPrivacy" _ "{" _ privacyPolicy "}"
+  | "Traits" _ "{" _ newlineNameList _ "}"
 
 edgeDeclarations -> null | edgeDeclaration | edgeDeclarations edgeDeclaration {% ([e, decl]) => e.concat(decl) %}
 edgeDeclaration -> _ name ":" _ (
@@ -108,6 +125,7 @@ index -> "unique(" _ nameList _ ")" {% ([_kw, _ws, columns]) => ({type: "unique"
   | nameList {% ([columns]) => ({type: "nonUnique", columns}) %}
 
 nameList -> name | nameList _ "," _ name {% ([e, _ws, _kw, _ws2, name]) => e.concat(name) %}
+newlineNameList -> name | newlineNameList name _ comments "\n" {% ([e, name]) => e.concat(name) %}
 
 privacyPolicy -> null
 

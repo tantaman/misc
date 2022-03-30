@@ -12,8 +12,11 @@ import {
   NodeAstExtension,
   EdgeExtension,
   NodeExtension,
+  NodeTraitAst,
+  NodeAstCommon,
 } from "./SchemaType.js";
 import { ValidationError } from "../v2/validate.js";
+import { assertUnreahable } from "@strut/utils";
 
 /**
  * The AST returned by the parser gives us lists of items.
@@ -49,14 +52,24 @@ import { ValidationError } from "../v2/validate.js";
 export default function condense(
   schemaFile: SchemaFileAst
 ): [ValidationError[], SchemaFile] {
-  const [nodes, edges] = schemaFile.entities.reduce(
-    (left: [NodeAst[], EdgeAst[]], nodeOrEdge) => {
-      nodeOrEdge.type === "node"
-        ? left[0].push(nodeOrEdge)
-        : left[1].push(nodeOrEdge);
+  const [nodes, edges, traits] = schemaFile.entities.reduce(
+    (left: [NodeAst[], EdgeAst[], NodeTraitAst[]], nodeOrEdge) => {
+      switch (nodeOrEdge.type) {
+        case "node":
+          left[0].push(nodeOrEdge);
+          break;
+        case "edge":
+          left[1].push(nodeOrEdge);
+          break;
+        case "nodeTrait":
+          left[2].push(nodeOrEdge);
+          break;
+        default:
+          assertUnreahable(nodeOrEdge);
+      }
       return left;
     },
-    [[], []]
+    [[], [], []]
   );
 
   const [nodeMappingErrors, nodesByName] = arrayToMap(
@@ -77,6 +90,15 @@ export default function condense(
       type: "duplicate-edges",
     })
   );
+  const [traitMappingErrors, traitsByName] = arrayToMap(
+    traits,
+    (e) => e.name,
+    (e) => ({
+      message: "An trait has already been defined with the name " + e.name,
+      severity: "error",
+      type: "duplicate-traits",
+    })
+  );
 
   const [nodeErrors, validatedNodes] = condenseEntities(
     nodesByName,
@@ -90,6 +112,12 @@ export default function condense(
     condenseEdge
   );
 
+  const [traitErrors, validatedTraits] = condenseEntities(
+    traitsByName,
+    schemaFile.preamble,
+    condenseNode
+  );
+
   return [
     [...nodeMappingErrors, ...edgeMappingErrors, ...nodeErrors, ...edgeErrors],
     {
@@ -100,7 +128,7 @@ export default function condense(
 }
 
 function condenseNode(
-  node: NodeAst,
+  node: NodeAstCommon,
   preamble: SchemaFileAst["preamble"]
 ): [ValidationError[], Node] {
   const [fieldErrors, fields] = condenseFieldsFor("Node", node);
@@ -109,12 +137,6 @@ function condenseNode(
     node,
     nodeExtensionCondensor
   );
-
-  const inboundEdges = extensions.inboundEdges;
-  const outboundEdges = extensions.outboundEdges;
-
-  if (inboundEdges && inboundEdges.name === "inboundEdges") {
-  }
 
   return [
     [...fieldErrors, ...extensionErrors],

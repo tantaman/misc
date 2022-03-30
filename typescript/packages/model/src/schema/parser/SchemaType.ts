@@ -6,7 +6,7 @@ export type SchemaFileAst = {
     engine: StorageEngine;
     db: string;
   };
-  entities: (NodeAst | EdgeAst)[];
+  entities: (NodeAst | EdgeAst | NodeTraitAst)[];
 };
 
 export type SchemaFile = {
@@ -97,6 +97,13 @@ export type NodeExtension = Node["extensions"][keyof Node["extensions"]];
 
 export type NodeAst = {
   type: "node";
+} & NodeAstCommon;
+
+export type NodeTraitAst = {
+  type: "nodeTrait";
+} & NodeAstCommon;
+
+export type NodeAstCommon = {
   name: string;
   fields: Field[];
   extensions: NodeAstExtension[];

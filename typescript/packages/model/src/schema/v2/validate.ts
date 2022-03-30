@@ -9,7 +9,8 @@ export type ValidationError = {
     | "duplicate-fields"
     | "duplicate-ob-edges"
     | "duplicate-ib-edges"
-    | "duplicate-extensions";
+    | "duplicate-extensions"
+    | "duplicate-traits";
 };
 
 export default function validate(schemaFile: SchemaFile): ValidationError[] {
