@@ -106,32 +106,32 @@ Aphro {
     | ""
   
   EdgeFunction
-  	= Index
-    | Invert
+  	= IndexFn
+    | InvertFn
   
   NodeFunction
-  	= OutboundEdges
-    | InboundEdges
-    | Index
-    | ReadPrivacy
-    | Traits
+  	= OutboundEdgesFn
+    | InboundEdgesFn
+    | IndexFn
+    | ReadPrivacyFn
+    | TraitsFn
   
-  OutboundEdges
+  OutboundEdgesFn
   	= "OutboundEdges" "{" EdgeDeclarations "}"
   
-  InboundEdges
+  InboundEdgesFn
   	= "InboundEdges" "{" EdgeDeclarations "}"
   
-  Index
+  IndexFn
   	= "Index" "{" Indices "}"
   
-  Invert
+  InvertFn
   	= "Invert" "as" name
   
-  ReadPrivacy
+  ReadPrivacyFn
   	= "ReadPrivacy" "{" "}"
   
-  Traits
+  TraitsFn
   	= "Traits" "{" NameList "}"
   
   EdgeDeclarations
@@ -156,6 +156,20 @@ Aphro {
   IndexDeclaration
   	= propertyKey Index -- fullDef
     | name -- shortDef
+  
+  Index
+    = UniqueIndex
+    | NonUnique
+  
+  UniqueIndex
+    = "unique" "(" CommaNameList ")"
+
+  NonUnique
+    = CommaNameList
+  
+  CommaNameList
+    = CommaNameList "," name -- list
+    | name
   
   NameList
   	= NameList name -- list
