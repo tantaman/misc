@@ -24,7 +24,7 @@
     "jison": "^0.4.18",
     "md5": "^2.3.0",
     "moo": "^0.5.1",
-    "nearley": "^2.20.1",
+    "ohm-js": "^16.3.2",
     "prettier": "^2.5.1",
     "react": "^17.0.2",
     "sql-formatter": "^4.0.2",
@@ -32,7 +32,7 @@
     "typescript": "^4.6.2"
   },
   "scripts": {
-    "build": "rm -rf ./lib && node ./node_modules/nearley/bin/nearleyc.js ./src/schema/parser/Grammar.ne -o ./src/schema/parser/Grammar.js && tsc",
+    "build": "rm -rf ./lib && tsc",
     "watch": "tsc -w",
     "test": "node ./node_modules/jest/bin/jest.js"
   },

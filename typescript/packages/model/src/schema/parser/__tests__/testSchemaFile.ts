@@ -6,7 +6,7 @@ db: test
 
 Person as Node {
   id: ID<Person>
-  name: NaturalLanguage<string>
+  name: NaturalLanguage
   walletId: ID<Wallet>
   thing1: string
   thing2: string
@@ -32,7 +32,7 @@ Wallet as Node {
   id: ID<Wallet>
   balance: Currency<usd>
   status: Enumeration<Active | Locked>
-  alias: NaturalLanguage<string>
+  alias: NaturalLanguage
 }
 
 Transaction as Node {

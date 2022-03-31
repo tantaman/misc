@@ -1,4 +1,6 @@
-// https://ohmjs.org/editor/
+import * as ohm from "ohm-js";
+
+const grammarDefinition = String.raw`
 Aphro {
   Main
   	= PropertyList Entities
@@ -144,8 +146,8 @@ Aphro {
     = "Edge" "<" NameOrResolution ">"
   
   NameOrResolution
-  	= name
-    | name "." name -- resolution
+  	= name "." name -- resolution
+    | name
   
   Indices
   	= Indices IndexDeclaration -- list
@@ -159,3 +161,8 @@ Aphro {
   	= NameList name -- list
     | name
 }
+`;
+
+const grammar = ohm.grammar(grammarDefinition);
+
+export default grammar;
