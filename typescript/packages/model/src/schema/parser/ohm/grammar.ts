@@ -6,8 +6,8 @@ Aphro {
   	= PropertyList Entities
   
   PropertyList
-  	= PropertyList Property -- proplist
-    | ""
+  	= PropertyList Property -- list
+    | "" -- empty
   
   Property
   	= propertyKey name
@@ -21,8 +21,8 @@ Aphro {
   Entities
   	= Entities Node -- node
     | Entities Edge -- edge
-    | Entities NodeTrait -- nodeTrait
-    | ""
+    | Entities NodeTrait -- trait
+    | "" -- empty
   
   Node
   	= name "as" "Node" NodeFields NodeFunctions
@@ -38,7 +38,7 @@ Aphro {
   
   FieldDeclarations
   	= FieldDeclarations FieldDeclaration -- list
-    | ""
+    | "" -- empty
   
   FieldDeclaration
   	= propertyKey FieldType
@@ -70,7 +70,7 @@ Aphro {
   
   EnumKeys
   	= EnumKeys "|" name -- list
-    | name
+    | name -- key
     
   BitmaskField
   	= "Bitmask" "<" EnumKeys ">"
@@ -99,11 +99,11 @@ Aphro {
   
   NodeFunctions
   	= NodeFunctions "&" NodeFunction -- list
-    | ""
+    | "" -- empty
   
   EdgeFunctions
   	= EdgeFunctions "&" EdgeFunction -- list
-    | ""
+    | "" -- empty
   
   EdgeFunction
   	= IndexFn
@@ -136,22 +136,22 @@ Aphro {
   
   EdgeDeclarations
   	= EdgeDeclarations EdgeDeclaration -- list
-    | ""
+    | "" -- empty
   
   EdgeDeclaration
-  	= propertyKey InlineEdgeDefinition
-    | propertyKey name
+  	= propertyKey InlineEdgeDefinition -- inline
+    | propertyKey name -- reference
 
   InlineEdgeDefinition
     = "Edge" "<" NameOrResolution ">"
   
   NameOrResolution
   	= name "." name -- resolution
-    | name
+    | name -- name
   
   Indices
   	= Indices IndexDeclaration -- list
-    | ""
+    | "" -- empty
   
   IndexDeclaration
   	= propertyKey Index -- fullDef
@@ -159,21 +159,21 @@ Aphro {
   
   Index
     = UniqueIndex
-    | NonUnique
+    | NonUniqueIndex
   
   UniqueIndex
     = "unique" "(" CommaNameList ")"
 
-  NonUnique
+  NonUniqueIndex
     = CommaNameList
   
   CommaNameList
     = CommaNameList "," name -- list
-    | name
+    | name -- name
   
   NameList
   	= NameList name -- list
-    | name
+    | name -- name
 }
 `;
 
