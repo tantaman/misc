@@ -5,6 +5,10 @@ import commandLineUsage from "command-line-usage";
 import CodegenPipleine from "./codegen/CodegenPipeline.js";
 import * as process from "process";
 import * as path from "path";
+import compile from "./schema/v2/compile.js";
+import { stopsCodegen, ValidationError } from "./schema/v2/validate.js";
+import { SchemaFile } from "schema/parser/SchemaType.js";
+import chalk from "chalk";
 
 async function run() {
   const mainDefinitions = [{ name: "gen", defaultOption: true }];
@@ -29,17 +33,56 @@ async function run() {
       return;
     }
 
-    // const schemaModules = await Promise.all(
-    //   genOptions.src.map((s) => import("file://" + path.join(process.cwd(), s)))
-    // );
+    const errorsAndFiles: [ValidationError[], SchemaFile, string][] =
+      genOptions.src.map((s: string) => [
+        ...compile(path.join(process.cwd(), s)),
+        s,
+      ]);
+
+    let hadFatal = false;
+    errorsAndFiles.forEach(([errors, _, path]) => {
+      reportErrors(errors, path);
+      if (errors.some(stopsCodegen)) {
+        hadFatal = true;
+      }
+    });
+
+    if (hadFatal) {
+      return;
+    }
+
+    const nodeSchemas = errorsAndFiles.flatMap(([_, file]) =>
+      Object.values(file.nodes)
+    );
+
+    // edgeSchemas
+
+    // and.. map of all the things that were imported and referenced.
+
     // const schemas = schemaModules.map((s) => (<SchemaModule>s).default.get());
-    // const pipeline = new CodegenPipleine();
-    // await pipeline.gen(schemas, genOptions.dest);
+    const pipeline = new CodegenPipleine();
+    await pipeline.gen(nodeSchemas, genOptions.dest);
 
     return;
   }
 
   print_general_usage();
+}
+
+function reportErrors(errors: ValidationError[], filePath: string) {
+  errors.forEach((e) => {
+    let color;
+    switch (e.severity) {
+      case "advice":
+        color = chalk.blue;
+        break;
+      case "warning":
+        color = chalk.yellow;
+      case "error":
+        color = chalk.red;
+    }
+    console.log(color(e.message));
+  });
 }
 
 function print_general_usage() {

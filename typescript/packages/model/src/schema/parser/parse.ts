@@ -281,5 +281,10 @@ export function parseString(schemaFileContents: string): SchemaFileAst {
   const matchResult = grammar.match(schemaFileContents);
   const adapter = semantics(matchResult);
   const ast = adapter.toAst();
+
+  if (matchResult.failed()) {
+    throw new Error(matchResult.message);
+  }
+
   return ast as SchemaFileAst;
 }
