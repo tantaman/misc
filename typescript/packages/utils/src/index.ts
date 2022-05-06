@@ -1,19 +1,19 @@
-import invariant from "./invariant.js";
-import * as math from "./math.js";
-import notEmpty from "./notEmpty.js";
-import nullthrows from "./nullthrows.js";
-import typedKeys from "./typedKeys_UNSAFE.js";
-import memoize from "./memoize.js";
-import asString from "./asString.js";
-import debounce from "./debounce.js";
-import keyById from "./keyById.js";
-import readAndParse from "./readAndParse.js";
-import stripSuffix from "./stripSuffix.js";
-import select from "./select.js";
-import upcaseAt from "./upcaseAt.js";
-import assertUnreahable from "./assertUnreachable.js";
-import only from "./only.js";
-import maybeMap from "./maybeMap.js";
+import invariant from './invariant.js';
+import * as math from './math.js';
+import notEmpty from './notEmpty.js';
+import nullthrows from './nullthrows.js';
+import typedKeys from './typedKeys_UNSAFE.js';
+import memoize from './memoize.js';
+import asString from './asString.js';
+import debounce from './debounce.js';
+import keyById from './keyById.js';
+import readAndParse from './readAndParse.js';
+import stripSuffix from './stripSuffix.js';
+import select from './select.js';
+import upcaseAt from './upcaseAt.js';
+import assertUnreachable from './assertUnreachable.js';
+import only from './only.js';
+import maybeMap from './maybeMap.js';
 
 export type Concat<T, S, V> = string;
 
@@ -47,7 +47,7 @@ export {
   stripSuffix,
   select,
   upcaseAt,
-  assertUnreahable,
+  assertUnreachable,
   falsish,
   isValidPropertyAccessor,
   not,

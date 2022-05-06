@@ -4,11 +4,14 @@
   "main": "lib/index.js",
   "type": "module",
   "dependencies": {
-    "@strut/utils": "workspace:*",
-    "@fingerprintjs/fingerprintjs": "^3.3.2"
+    "@fingerprintjs/fingerprintjs": "^3.3.2",
+    "@strut/utils": "workspace:*"
   },
   "scripts": {
     "build": "tsc",
     "watch:": "tsc -w"
+  },
+  "devDependencies": {
+    "typescript": "^4.6.4"
   }
 }
