@@ -1,5 +1,5 @@
 // JavaScript doesn't support the maximum range of 64 bit unsigned ints, hence we use a string here.
-export { default as deviceId } from "./deviceId";
+export { default as deviceId } from './deviceId';
 
 // https://github.com/seancroach/ts-opaque
 export type Opaque<BaseType, BrandType = unknown> = BaseType & {
@@ -44,6 +44,10 @@ export default function sid<T>(deviceId: DeviceId): SID_of<T> {
 
   const low32 = partialDevice + random;
   return (hi32 + low32) as SID_of<T>;
+}
+
+export function asId<T>(id: string): SID_of<T> {
+  return id as SID_of<T>;
 }
 
 export function truncateForDisplay(id: string) {
