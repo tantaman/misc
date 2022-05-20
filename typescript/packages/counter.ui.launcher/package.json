@@ -7,7 +7,7 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@strut/counter": "^0.0.3"
+    "@strut/counter": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^4.6.4"
