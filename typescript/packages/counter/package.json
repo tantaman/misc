@@ -4,7 +4,7 @@
   "main": "lib/index.js",
   "type": "module",
   "dependencies": {
-    "@strut/utils": "0.0.1"
+    "@strut/utils": "workspace:*"
   },
   "scripts": {
     "build": "tsc --build",
