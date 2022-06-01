@@ -1,5 +1,5 @@
 // JavaScript doesn't support the maximum range of 64 bit unsigned ints, hence we use a string here.
-export { default as deviceId } from './deviceId';
+export { default as deviceId } from './deviceId.js';
 
 // https://github.com/seancroach/ts-opaque
 export type Opaque<BaseType, BrandType = unknown> = BaseType & {
