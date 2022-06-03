@@ -1,4 +1,4 @@
-export * from "./Observable";
+export * from './Observable.js';
 
-import Observable from "./Observable";
+import Observable from './Observable.js';
 export default Observable;
