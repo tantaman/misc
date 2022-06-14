@@ -11,6 +11,7 @@ import readAndParse from './readAndParse.js';
 import stripSuffix from './stripSuffix.js';
 import select from './select.js';
 import upcaseAt from './upcaseAt.js';
+import { lowercaseAt } from './upcaseAt.js';
 import assertUnreachable from './assertUnreachable.js';
 import only from './only.js';
 import maybeMap from './maybeMap.js';
@@ -100,6 +101,7 @@ export {
   stripSuffix,
   select,
   upcaseAt,
+  lowercaseAt,
   assertUnreachable,
   falsish,
   isValidPropertyAccessor,
