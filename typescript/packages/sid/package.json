@@ -9,9 +9,19 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "watch:": "tsc --build -w"
+    "watch:": "tsc --build -w",
+    "test": "node ./node_modules/jest/bin/jest.js"
   },
   "devDependencies": {
+    "@babel/core": "^7.18.5",
+    "@babel/preset-env": "^7.18.2",
+    "@types/jest": "^28.1.1",
+    "jest": "^28.1.1",
     "typescript": "^4.6.4"
+  },
+  "jest": {
+    "testMatch": [
+      "**/__tests__/**/*.test.js"
+    ]
   }
 }

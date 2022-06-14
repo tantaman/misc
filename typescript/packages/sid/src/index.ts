@@ -1,4 +1,5 @@
-// JavaScript doesn't support the maximum range of 64 bit unsigned ints, hence we use a string here.
+import { invariant, isHex } from '@strut/utils';
+
 export { default as deviceId } from './deviceId.js';
 
 // https://github.com/seancroach/ts-opaque
@@ -33,12 +34,23 @@ export type DeviceId = string;
 // 32 bit random var in decimal
 let randomVariable = Math.floor(Number.MAX_SAFE_INTEGER * Math.random());
 
+/**
+ * Creates a 64 bit ID that monotonically increases.
+ * Returns a hex string given that JS does not support 64bit ints.
+ * Guaranteed to be unique on the given device.
+ *
+ * @param deviceId hex string representing the device.
+ * @returns
+ */
 export default function sid<T>(deviceId: DeviceId): SID_of<T> {
+  invariant(isHex(deviceId), 'Device ID must be a hex string');
+  invariant(deviceId.length >= 4, 'Device ids must be at least 2 bytes');
+
   // 32 bits, hex
   const hi32 = Math.floor(Date.now() / 1000).toString(16);
 
   // low 16 bits of device, in hex
-  const partialDevice = deviceId.substr(-4);
+  const partialDevice = deviceId.substring(deviceId.length - 4);
   // low 16 bits of the random variable, in hex
   const random = (++randomVariable & 0xffff).toString(16);
 

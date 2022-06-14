@@ -86,6 +86,11 @@ function curry<FN extends (...args: any[]) => any, STARTING_ARGS extends Partial
   };
 }
 
+const hexReg = /^[0-9A-Fa-f]+$/;
+function isHex(h: string) {
+  return hexReg.exec(h) != null;
+}
+
 export {
   curry,
   invariant,
@@ -109,4 +114,5 @@ export {
   only,
   maybeMap,
   asPropertyAccessor,
+  isHex,
 };
