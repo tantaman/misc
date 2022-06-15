@@ -1,5 +1,13 @@
 # @strut/counter.ui.launcher
 
+## 0.0.9
+
+### Patch Changes
+
+- graphql support, 'create table if not exists' for easier bootstrapping, @databases connection support
+- Updated dependencies
+  - @strut/counter@0.0.9
+
 ## 0.0.8
 
 ### Patch Changes
