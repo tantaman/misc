@@ -1,5 +1,13 @@
 # @strut/counter.ui.launcher
 
+## 0.0.10
+
+### Patch Changes
+
+- .npmignore
+- Updated dependencies
+  - @strut/counter@0.0.10
+
 ## 0.0.9
 
 ### Patch Changes

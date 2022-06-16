@@ -1,5 +1,11 @@
 # @strut/utils
 
+## 0.0.10
+
+### Patch Changes
+
+- .npmignore
+
 ## 0.0.9
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @strut/events
 
+## 0.0.9
+
+### Patch Changes
+
+- .npmignore
+
 ## 0.0.8
 
 ### Patch Changes
