@@ -1,5 +1,11 @@
 # @strut/utils
 
+## 0.0.11
+
+### Patch Changes
+
+- Actually build before deploying
+
 ## 0.0.10
 
 ### Patch Changes
