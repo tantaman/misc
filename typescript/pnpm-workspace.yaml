@@ -1,0 +1,6 @@
+packages:
+  - "packages/counter"
+  - "packages/counter.ui.launcher"
+  - "packages/events"
+  - "packages/sid"
+  - "packages/utils"
