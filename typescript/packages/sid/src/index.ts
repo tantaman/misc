@@ -73,6 +73,10 @@ export default function sid<T>(
   assertUnreachable(base);
 }
 
+export function hid<T>(deviceId: DeviceId): SID_of<T> {
+  return sid(deviceId, "hex");
+}
+
 export function asId<T>(id: string): SID_of<T> {
   return id as SID_of<T>;
 }
