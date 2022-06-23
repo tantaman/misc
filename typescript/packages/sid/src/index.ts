@@ -1,6 +1,6 @@
-import { invariant, isHex } from '@strut/utils';
+import { assertUnreachable, invariant, isHex } from "@strut/utils";
 
-export { default as deviceId } from './deviceId.js';
+export { default as deviceId } from "./deviceId.js";
 
 // https://github.com/seancroach/ts-opaque
 export type Opaque<BaseType, BrandType = unknown> = BaseType & {
@@ -29,6 +29,7 @@ namespace Symbols {
 }
 
 export type SID_of<T> = Opaque<string, T>;
+export type BID_of<T> = Opaque<BigInt, T>;
 export type DeviceId = string;
 
 // 32 bit random var in decimal
@@ -40,11 +41,15 @@ let randomVariable = Math.floor(Number.MAX_SAFE_INTEGER * Math.random());
  * Guaranteed to be unique on the given device.
  *
  * @param deviceId hex string representing the device.
+ * @param base should the returned string be a hex or decimal representation of a 64bit int?
  * @returns
  */
-export default function sid<T>(deviceId: DeviceId): SID_of<T> {
-  invariant(isHex(deviceId), 'Device ID must be a hex string');
-  invariant(deviceId.length >= 4, 'Device ids must be at least 2 bytes');
+export default function sid<T>(
+  deviceId: DeviceId,
+  base: "hex" | "decimal" = "decimal"
+): SID_of<T> {
+  invariant(isHex(deviceId), "Device ID must be a hex string");
+  invariant(deviceId.length >= 4, "Device ids must be at least 2 bytes");
 
   // 32 bits, hex
   const hi32 = Math.floor(Date.now() / 1000).toString(16);
@@ -55,7 +60,17 @@ export default function sid<T>(deviceId: DeviceId): SID_of<T> {
   const random = (++randomVariable & 0xffff).toString(16);
 
   const low32 = partialDevice + random;
-  return (hi32 + low32) as SID_of<T>;
+  const hex = (hi32 + low32) as SID_of<T>;
+
+  if (base === "hex") {
+    return hex;
+  }
+
+  if (base === "decimal") {
+    return BigInt("0x" + hex).toString() as SID_of<T>;
+  }
+
+  assertUnreachable(base);
 }
 
 export function asId<T>(id: string): SID_of<T> {
