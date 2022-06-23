@@ -46,7 +46,7 @@ let randomVariable = Math.floor(Number.MAX_SAFE_INTEGER * Math.random());
  */
 export default function sid<T>(
   deviceId: DeviceId,
-  base: "hex" | "decimal" = "decimal"
+  base: "hex" | "decimal" = "hex"
 ): SID_of<T> {
   invariant(isHex(deviceId), "Device ID must be a hex string");
   invariant(deviceId.length >= 4, "Device ids must be at least 2 bytes");
@@ -73,8 +73,8 @@ export default function sid<T>(
   assertUnreachable(base);
 }
 
-export function hid<T>(deviceId: DeviceId): SID_of<T> {
-  return sid(deviceId, "hex");
+export function did<T>(deviceId: DeviceId): SID_of<T> {
+  return sid(deviceId, "decimal");
 }
 
 export function asId<T>(id: string): SID_of<T> {

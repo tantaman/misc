@@ -24,7 +24,7 @@ test("Device ids are required to be 2 bytes or more", () => {
 });
 
 test("sids can be decimal or hex", () => {
-  const decimal = sid("01AF");
+  const decimal = sid("01AF", "decimal");
   const hex = sid("01AF", "hex");
 
   expect(BigInt("0x" + hex)).toEqual(BigInt(decimal) + 1n);
