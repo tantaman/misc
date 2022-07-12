@@ -1,15 +1,23 @@
 {
   "0 debug pnpm:scope": {
-    "selected": 1,
-    "workspacePrefix": "C:\\Users\\tantaman\\workspace\\breadcrumbs"
+    "selected": 1
   },
-  "1 error pnpm": {
-    "code": "ERR_PNPM_ADDING_TO_ROOT",
+  "1 info pnpm": {
+    "err": {
+      "name": "Error",
+      "message": "not found: changeset",
+      "code": "ENOENT",
+      "stack": "Error: not found: changeset\n    at getNotFoundError (/snapshot/dist/pnpm.cjs)\n    at Function.whichSync [as sync] (/snapshot/dist/pnpm.cjs)\n    at getCommandAbsolutePathSync (/snapshot/dist/pnpm.cjs)\n    at default_1 (/snapshot/dist/pnpm.cjs)\n    at /snapshot/dist/pnpm.cjs"
+    }
+  },
+  "2 error pnpm": {
+    "code": "ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL",
+    "prefix": "/Users/tantaman/workspace",
     "err": {
       "name": "pnpm",
-      "message": "Running this command will add the dependency to the workspace root, which might not be what you want - if you really meant it, make it explicit by running this command again with the -w flag (or --workspace-root). If you don't want to see this warning anymore, you may set the ignore-workspace-root-check setting to true.",
-      "code": "ERR_PNPM_ADDING_TO_ROOT",
-      "stack": "pnpm: Running this command will add the dependency to the workspace root, which might not be what you want - if you really meant it, make it explicit by running this command again with the -w flag (or --workspace-root). If you don't want to see this warning anymore, you may set the ignore-workspace-root-check setting to true.\n    at Object.handler [as add] (C:\\snapshot\\dist\\pnpm.cjs)\n    at C:\\snapshot\\dist\\pnpm.cjs\n    at async run (C:\\snapshot\\dist\\pnpm.cjs)\n    at async runPnpm (C:\\snapshot\\dist\\pnpm.cjs)\n    at async C:\\snapshot\\dist\\pnpm.cjs"
+      "message": "not found: changeset",
+      "code": "ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL",
+      "stack": "Error: not found: changeset\n    at getNotFoundError (/snapshot/dist/pnpm.cjs)\n    at Function.whichSync [as sync] (/snapshot/dist/pnpm.cjs)\n    at getCommandAbsolutePathSync (/snapshot/dist/pnpm.cjs)\n    at default_1 (/snapshot/dist/pnpm.cjs)\n    at /snapshot/dist/pnpm.cjs"
     }
   }
 }
