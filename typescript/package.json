@@ -13,6 +13,7 @@
     "typescript": "^4.6.4"
   },
   "scripts": {
+    "build": "cd build-all && pnpm run build",
     "todos": "leasot '**/*.ts' --ignore '**/node_modules'",
     "preinstall": "npx only-allow pnpm"
   }

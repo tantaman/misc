@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig-templates/lib.json",
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "rootDir": "./src"
+  },
+  "include": ["./src/"],
+  "references": [
+    { "path": "../packages/counter" },
+    { "path": "../packages/events" },
+    { "path": "../packages/sid" },
+    { "path": "../packages/utils" }
+  ]
+}
